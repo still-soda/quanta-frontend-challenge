@@ -1,0 +1,10 @@
+@function px-to-rem($px, $base-font-size: 16) {
+   @return #{$px / $base-font-size}rem;
+}
+
+@function rem-transfer($px, $target-font-size: 16, $original-font-size: 20) {
+   @return px-to-rem(
+      $px * $target-font-size / $original-font-size,
+      $target-font-size
+   );
+}

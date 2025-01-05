@@ -1,0 +1,11 @@
+{
+   "name": "quanta-frontend-challenge",
+   "private": true,
+   "version": "0.0.0",
+   "type": "module",
+   "scripts": {},
+   "devDependencies": {
+      "typescript": "~5.6.3",
+      "vite": "^6.0.7"
+   }
+}

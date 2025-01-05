@@ -1,0 +1,99 @@
+[data-markdown] {
+   @apply text-dark-normal;
+}
+
+[data-markdown]:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
+   @apply ml-3;
+}
+
+h1[data-markdown] {
+   @apply text-[2rem] font-bold w-full text-center;
+}
+
+h2[data-markdown] {
+   @apply text-[1.25rem] font-bold before:content-['#'] before:text-xl before:mr-2 before:text-orange-high;
+}
+
+h3[data-markdown] {
+   @apply text-lg font-bold before:content-['##'] before:text-lg before:mr-2 before:text-orange-high;
+}
+
+h4[data-markdown] {
+   @apply text-base font-bold before:content-['###'] before:text-base before:mr-2 before:text-orange-high;
+}
+
+h5[data-markdown] {
+   @apply text-sm font-bold before:content-['####'] before:text-sm before:mr-2 before:text-orange-high;
+}
+
+h6[data-markdown] {
+   @apply text-xs font-bold before:content-['#####'] before:text-xs before:mr-2 before:text-orange-high;
+}
+
+p[data-markdown] {
+   @apply text-base;
+}
+
+ul[data-markdown] {
+   @apply list-disc ml-4 marker:text-orange-high;
+}
+
+ol[data-markdown] {
+   @apply list-decimal ml-4 marker:text-orange-high;
+}
+
+li[data-markdown] {
+   @apply mb-1;
+}
+
+pre[data-markdown] {
+   @apply bg-gray-100 p-2 rounded-md;
+}
+
+code[data-markdown] {
+   @apply bg-gray-100 p-1 rounded-md;
+}
+
+a[data-markdown] {
+   @apply text-orange-high underline;
+}
+
+table[data-markdown] {
+   @apply w-full border-collapse;
+}
+
+input[data-markdown] {
+   @apply mb-0;
+}
+
+th[data-markdown] {
+   @apply border-b border-gray-300 p-2;
+}
+
+td[data-markdown] {
+   @apply border-gray-300 p-2 text-center;
+}
+
+tr[data-markdown]:nth-child(even) {
+   @apply bg-gray-100;
+}
+
+del[data-markdown] {
+   @apply line-through text-gray-500;
+}
+
+img[data-markdown] {
+   @apply max-h-[16rem] mx-auto rounded-outside before:content-[attr(title)] before:block before:text-center before:font-[0.75rem];
+}
+
+[data-markdown]:nth-child(1) {
+   @apply mt-0;
+}
+
+[data-markdown] li:nth-child(1) {
+   @apply mt-4;
+}
+
+[data-markdown] {
+   @apply my-[1.25rem];
+}
