@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
-import { ChallengesModule } from './challenges/challenges.module';
-import { ActionsModule } from './actions/actions.module';
-import { NotificationsModule } from './notifications/notifications.module';
-import { SubmissionsModule } from './submissions/submissions.module';
+import { UsersModule } from './modules/users/users.module';
+import { ChallengesModule } from './modules/challenges/challenges.module';
+import { ActionsModule } from './modules/actions/actions.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { SubmissionsModule } from './modules/submissions/submissions.module';
 
 @Module({
   imports: [
