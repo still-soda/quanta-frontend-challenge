@@ -5,8 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 describe('UsersService', () => {
   let service: UsersService;
+  let userId: string;
+  let result: any;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot('mongodb://localhost/quanta-frontend-challenge'),
@@ -15,15 +17,8 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-  });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  let userId: string;
-
-  it('should create a user', async () => {
+    // 初始化用户
     const createUserDto: CreateUserDto = {
       username: 'test_user',
       email: 'test_user@email.com',
@@ -31,15 +26,27 @@ describe('UsersService', () => {
       password: 'password',
       phone: '13400011111',
     };
-    const result = await service.create(createUserDto);
+    result = await service.create(createUserDto);
+    userId = result._id as string;
+  });
+
+  afterAll(async () => {
+    // 删除测试用户，清理环境
+    await service.remove(userId);
+  });
+
+  it('should create a user', async () => {
     expect(result).toBeDefined();
     expect(result.username).toBe('test_user');
     expect(result.email).toBe('test_user@email.com');
     expect(result.number).toBe('20231003059');
     expect(result.password).toBe('password');
     expect(result.phone).toBe('13400011111');
+    expect(result.role).toBe(0);
+  });
 
-    userId = result._id as string;
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 
   it('should return all users', async () => {
