@@ -5,37 +5,41 @@ import {
   IsString,
   IsEmail,
   IsNumber,
-  IsArray,
-  ArrayNotEmpty,
+  Length,
+  IsEnum,
+  Min,
 } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
-  @IsString()
+  @Length(1, 20, { message: '用户名长度必须在1到20之间' })
   username?: string;
 
   @IsOptional()
-  @IsString()
+  @Length(11, 11, { message: '学号长度必须是11' })
   number?: string;
 
   @IsOptional()
-  @IsEmail()
+  @IsEmail({}, { message: '邮箱格式不正确' })
   email?: string;
 
   @IsOptional()
   @IsString()
+  @Min(6, { message: '密码长度不能小于6' })
   password?: string;
 
   @IsOptional()
-  @IsString()
+  @Length(11, 11, { message: '手机号长度必须是11' })
   phone?: string;
 
   @IsOptional()
   @IsNumber()
+  @Min(0, { message: '挑战总分不能小于0' })
   totalScore?: number;
 
   @IsOptional()
   @IsNumber()
+  @Min(0, { message: '总提交次数不能小于0' })
   totalSubmissions?: number;
 
   @IsOptional()
@@ -44,9 +48,10 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsString()
+  @Length(0, 100, { message: '个性签名长度不能超过100' })
   signature?: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsEnum([0, 1], { message: '角色只能是0或1' })
   role?: number;
 }
