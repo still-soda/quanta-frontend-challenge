@@ -5,6 +5,7 @@ import { ActionsModule } from './modules/actions/actions.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SubmissionsModule } from './modules/submissions/submissions.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TaskExecutionModule } from './modules/task_execution/task_execution.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     NotificationsModule,
     SubmissionsModule,
     MongooseModule.forRoot('mongodb://localhost/quanta-frontend-challenge'),
+    TaskExecutionModule,
   ],
   controllers: [],
   providers: [],

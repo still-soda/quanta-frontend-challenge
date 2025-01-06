@@ -3,19 +3,21 @@ import { UsersService } from '../../users/users.service';
 import { CreateUserDto } from '../../users/dto/create-user.dto';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from '../users.module';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
 
 describe('UsersService', () => {
   let service: UsersService;
   let userId: string;
   let result: any;
-  let module: TestingModule;
+  let mongodb: MongoMemoryServer;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        UsersModule,
-        MongooseModule.forRoot('mongodb://localhost/quanta-frontend-challenge'),
-      ],
+    mongodb = await MongoMemoryServer.create();
+    const uri = mongodb.getUri();
+
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [UsersModule, MongooseModule.forRoot(uri)],
       providers: [UsersService, UsersModule],
     }).compile();
 
@@ -33,8 +35,8 @@ describe('UsersService', () => {
   });
 
   afterAll(async () => {
-    await service.remove(userId);
-    await module.close();
+    await mongoose.disconnect();
+    await mongodb.stop();
   });
 
   it('should create a user', async () => {
@@ -45,10 +47,6 @@ describe('UsersService', () => {
     expect(result.password).toBe('password');
     expect(result.phone).toBe('13400011111');
     expect(result.role).toBe(0);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
   });
 
   it('should return all users', async () => {
@@ -230,6 +228,51 @@ describe('UsersService', () => {
       });
     } catch (error) {
       expect(error.message).toBe('邮箱格式不正确');
+    }
+  });
+
+  it('should throw error when username is less than 1 character', async () => {
+    try {
+      await service.create({
+        username: '',
+        email: 'test_user@email.com',
+        number: '20231003059',
+        password: 'password',
+        phone: '13400011111',
+      });
+    } catch (error) {
+      expect(error.message).toBe('用户名长度必须在1到20之间');
+    }
+
+    try {
+      await service.update(userId, {
+        username: '',
+      });
+    } catch (error) {
+      expect(error.message).toBe('用户名长度必须在1到20之间');
+    }
+  });
+
+  it('should throw error when role is not 0 or 1', async () => {
+    try {
+      await service.create({
+        username: 'test_user',
+        email: 'test_user@email.com',
+        number: '20231003059',
+        password: 'password',
+        phone: '13400011111',
+        role: 2,
+      });
+    } catch (error) {
+      expect(error.message).toBe('角色只能是0或1');
+    }
+
+    try {
+      await service.update(userId, {
+        role: 2,
+      });
+    } catch (error) {
+      expect(error.message).toBe('角色只能是0或1');
     }
   });
 });
