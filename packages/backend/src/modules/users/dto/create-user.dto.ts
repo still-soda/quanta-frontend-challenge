@@ -35,18 +35,18 @@ export class CreateUserDto {
     example: 'https://www.gravatar.com/avatar/',
     description: '头像URL',
   })
-  avatarUrl: string;
+  avatarUrl?: string;
 
   @ApiProperty({
     example: 'signature',
     description: '个性签名',
   })
-  signature: string;
+  signature?: string;
 
   @ApiProperty({
     example: 0,
     enum: [0, 1, 2],
     description: '角色：0-用户，1-管理员',
   })
-  role: number;
+  role?: number;
 }

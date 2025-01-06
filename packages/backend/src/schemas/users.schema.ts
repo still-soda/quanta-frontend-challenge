@@ -43,21 +43,24 @@ export class Users extends Document {
   phone: string;
 
   @ApiProperty({
-    example: '13400000000',
-    description: '手机号',
+    example: 0,
+    default: 0,
+    description: '挑战总分',
   })
   @Prop()
   totalScore: number;
 
   @ApiProperty({
     example: 0,
-    description: '挑战总分',
+    default: 0,
+    description: '总提交次数',
   })
   @Prop()
   totalSubmissions: number;
 
   @ApiProperty({
     example: 'https://www.gravatar.com/avatar/',
+    default: '',
     description: '头像URL',
   })
   @Prop()
@@ -65,6 +68,7 @@ export class Users extends Document {
 
   @ApiProperty({
     example: 'signature',
+    default: '',
     description: '个性签名',
   })
   @Prop()

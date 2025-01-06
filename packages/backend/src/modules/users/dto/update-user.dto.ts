@@ -49,19 +49,4 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsNumber()
   role?: number;
-
-  @IsOptional()
-  @IsArray()
-  @ArrayNotEmpty()
-  solvedTasks?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @ArrayNotEmpty()
-  failedTasks?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @ArrayNotEmpty()
-  tryingTasks?: string[];
 }

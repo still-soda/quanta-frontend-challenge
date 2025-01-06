@@ -18,17 +18,56 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.userModel.findById(id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: string, updateUserDto: UpdateUserDto) {
     return this.userModel.findByIdAndUpdate({ _id: id }, updateUserDto, {
       new: true,
     });
   }
 
-  remove(id: number): Promise<any> {
+  remove(id: string): Promise<any> {
     return this.userModel.deleteOne({ _id: id });
+  }
+
+  increaseUserScore(id: string, score: number) {
+    return this.userModel.findByIdAndUpdate(
+      { _id: id },
+      { $inc: { totalScore: score } },
+      { new: true },
+    );
+  }
+
+  submitChallenge(
+    id: string,
+    taskId: string,
+    options: {
+      status: 'failed' | 'trying' | 'success';
+      score?: number;
+    },
+  ) {
+    const $push = {};
+    const $pull = {};
+    const $inc = { totalSubmissions: 1 };
+
+    if (options.status === 'failed') {
+      $push['failedTasks'] = taskId;
+      $pull['tryingTasks'] = taskId;
+    } else if (options.status === 'trying') {
+      $push['tryingTasks'] = taskId;
+      $pull['failedTasks'] = taskId;
+    } else {
+      $pull['tryingTasks'] = taskId;
+      $pull['failedTasks'] = taskId;
+      $inc['totalScore'] = options.score ?? 0;
+    }
+
+    return this.userModel.findByIdAndUpdate(
+      { _id: id },
+      { $inc, $push, $pull },
+      { new: true },
+    );
   }
 }
