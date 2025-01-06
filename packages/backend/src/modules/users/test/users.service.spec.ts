@@ -2,18 +2,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../../users/users.service';
 import { CreateUserDto } from '../../users/dto/create-user.dto';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UsersModule } from '../users.module';
 
 describe('UsersService', () => {
   let service: UsersService;
   let userId: string;
   let result: any;
+  let module: TestingModule;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
+        UsersModule,
         MongooseModule.forRoot('mongodb://localhost/quanta-frontend-challenge'),
       ],
-      providers: [UsersService],
+      providers: [UsersService, UsersModule],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
@@ -27,12 +30,13 @@ describe('UsersService', () => {
       phone: '13400011111',
     };
     result = await service.create(createUserDto);
-    userId = result._id as string;
+    userId = result._id.toString();
   });
 
   afterAll(async () => {
     // 删除测试用户，清理环境
     await service.remove(userId);
+    await module.close();
   });
 
   it('should create a user', async () => {
@@ -59,7 +63,7 @@ describe('UsersService', () => {
     expect(result).toBeDefined();
     expect(result.username).toBe('test_user');
     expect(result.number).toBe('20231003059');
-    expect(result._id).toBe(userId);
+    expect(result._id.toString()).toBe(userId);
   });
 
   it('should update a user', async () => {
@@ -85,7 +89,7 @@ describe('UsersService', () => {
       status: 'failed',
     });
     expect(result).toBeDefined();
-    expect(result.totalSubmissions).toBe(2);
+    expect(result.totalSubmissions).toBe(1);
     expect(result.failedTasks).toContain('task_id');
   });
 
@@ -94,7 +98,7 @@ describe('UsersService', () => {
       status: 'trying',
     });
     expect(result).toBeDefined();
-    expect(result.totalSubmissions).toBe(3);
+    expect(result.totalSubmissions).toBe(2);
     expect(result.tryingTasks).toContain('task_id');
     expect(result.failedTasks).not.toContain('task_id');
   });
@@ -105,7 +109,7 @@ describe('UsersService', () => {
       score: 10,
     });
     expect(result).toBeDefined();
-    expect(result.totalSubmissions).toBe(1);
+    expect(result.totalSubmissions).toBe(3);
     expect(result.totalScore).toBe(20);
     expect(result.solvedTasks).toContain('task_id');
     expect(result.failedTasks).not.toContain('task_id');

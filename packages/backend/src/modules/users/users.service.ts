@@ -3,11 +3,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UsersDocument } from 'src/schemas/users.schema';
+import { Users, UsersDocument } from '../../schemas/users.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel('Users') private userModel: Model<UsersDocument>) {}
+  constructor(
+    @InjectModel(Users.name) private userModel: Model<UsersDocument>,
+  ) {}
 
   create(createUserDto: CreateUserDto) {
     const createdUser = new this.userModel(createUserDto);
@@ -61,6 +63,7 @@ export class UsersService {
     } else {
       $pull['tryingTasks'] = taskId;
       $pull['failedTasks'] = taskId;
+      $push['solvedTasks'] = taskId;
       $inc['totalScore'] = options.score ?? 0;
     }
 

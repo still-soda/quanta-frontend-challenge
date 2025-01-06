@@ -19,7 +19,7 @@ export class Challenges extends Document {
     default: 0,
     description: '总提交次数',
   })
-  @Prop()
+  @Prop({ default: 0 })
   totalSubmissions: number;
 
   @ApiProperty({
@@ -27,7 +27,7 @@ export class Challenges extends Document {
     default: 0,
     description: '总通过次数',
   })
-  @Prop()
+  @Prop({ default: 0 })
   totalPass: number;
 
   @ApiProperty({
@@ -56,7 +56,7 @@ export class Challenges extends Document {
     default: [],
     description: '标签',
   })
-  @Prop()
+  @Prop({ default: [] })
   tags: string[];
 
   @ApiProperty({
@@ -64,7 +64,7 @@ export class Challenges extends Document {
     default: [],
     description: '最快的前3个解决者',
   })
-  @Prop()
+  @Prop({ default: [] })
   fastestSolver: string[];
 
   @ApiProperty({

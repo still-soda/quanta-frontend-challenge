@@ -47,7 +47,7 @@ export class Users extends Document {
     default: 0,
     description: '挑战总分',
   })
-  @Prop()
+  @Prop({ default: 0 })
   totalScore: number;
 
   @ApiProperty({
@@ -55,7 +55,7 @@ export class Users extends Document {
     default: 0,
     description: '总提交次数',
   })
-  @Prop()
+  @Prop({ default: 0 })
   totalSubmissions: number;
 
   @ApiProperty({
@@ -63,7 +63,7 @@ export class Users extends Document {
     default: '',
     description: '头像URL',
   })
-  @Prop()
+  @Prop({ default: '' })
   avatarUrl: string;
 
   @ApiProperty({
@@ -71,7 +71,7 @@ export class Users extends Document {
     default: '',
     description: '个性签名',
   })
-  @Prop()
+  @Prop({ default: '' })
   signature: string;
 
   @ApiProperty({
@@ -79,7 +79,7 @@ export class Users extends Document {
     enum: [0, 1, 2],
     description: '角色：0-用户，1-管理员',
   })
-  @Prop()
+  @Prop({ default: 0 })
   role: number;
 
   @ApiProperty({

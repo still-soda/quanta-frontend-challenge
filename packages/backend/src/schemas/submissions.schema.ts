@@ -26,7 +26,7 @@ export class Submissions extends Document {
     default: -1,
     description: '得分，-1表示未评分',
   })
-  @Prop()
+  @Prop({ default: -1 })
   score: number;
 
   @ApiProperty({
@@ -34,7 +34,7 @@ export class Submissions extends Document {
     default: -1,
     description: '正确率，-1表示未评分',
   })
-  @Prop()
+  @Prop({ default: -1 })
   correctRate: number;
 
   @ApiProperty({
@@ -42,7 +42,7 @@ export class Submissions extends Document {
     default: false,
     description: '是否通过',
   })
-  @Prop()
+  @Prop({ default: false })
   isPassed: boolean;
 
   @ApiProperty({
