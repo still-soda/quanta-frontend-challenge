@@ -1,12 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { convertNameToUuid } from '../../utils/rename.utils';
-
-const FILE_ROOT = './assets/uploads';
-const STATIC_ROOT = './assets/static';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AssetsService {
+  private readonly FILE_ROOT: string;
+  private readonly STATIC_ROOT: string;
+
+  constructor(private readonly configService: ConfigService) {
+    this.FILE_ROOT = this.configService.get('FILE_ROOT');
+    this.STATIC_ROOT = this.configService.get('STATIC_ROOT');
+
+    console.log('FILE_ROOT:', this.FILE_ROOT);
+    console.log('STATIC_ROOT:', this.STATIC_ROOT);
+  }
+
   async createDirectoryIfNotExists(dir: string) {
     if (!fs.existsSync(dir)) {
       await fs.promises.mkdir(dir, { recursive: true });
@@ -17,8 +26,8 @@ export class AssetsService {
     const fileName = convertNameToUuid(name);
     const buffer = new Uint8Array(await file.arrayBuffer());
     try {
-      await this.createDirectoryIfNotExists(FILE_ROOT);
-      fs.writeFileSync(`${FILE_ROOT}/${fileName}`, buffer);
+      await this.createDirectoryIfNotExists(this.FILE_ROOT);
+      fs.writeFileSync(`${this.FILE_ROOT}/${fileName}`, buffer);
       return { ok: true, fileName };
     } catch (error) {
       console.log(error);
@@ -30,8 +39,8 @@ export class AssetsService {
     const fileName = convertNameToUuid(name);
     const buffer = new Uint8Array(await file.arrayBuffer());
     try {
-      await this.createDirectoryIfNotExists(STATIC_ROOT);
-      fs.writeFileSync(`${STATIC_ROOT}/${fileName}`, buffer);
+      await this.createDirectoryIfNotExists(this.STATIC_ROOT);
+      fs.writeFileSync(`${this.STATIC_ROOT}/${fileName}`, buffer);
       return { ok: true, fileName };
     } catch (error) {
       console.log(error);
@@ -40,12 +49,12 @@ export class AssetsService {
   }
 
   getFile(fileName: string) {
-    if (!fs.existsSync(`${FILE_ROOT}/${fileName}`)) {
+    if (!fs.existsSync(`${this.FILE_ROOT}/${fileName}`)) {
       return null;
     }
 
     try {
-      const buffer = fs.readFileSync(`${FILE_ROOT}/${fileName}`);
+      const buffer = fs.readFileSync(`${this.FILE_ROOT}/${fileName}`);
       return buffer;
     } catch (error) {
       console.log(error);
@@ -54,12 +63,12 @@ export class AssetsService {
   }
 
   getStaticFile(fileName: string) {
-    if (!fs.existsSync(`${STATIC_ROOT}/${fileName}`)) {
+    if (!fs.existsSync(`${this.STATIC_ROOT}/${fileName}`)) {
       return null;
     }
 
     try {
-      const buffer = fs.readFileSync(`${STATIC_ROOT}/${fileName}`);
+      const buffer = fs.readFileSync(`${this.STATIC_ROOT}/${fileName}`);
       return buffer;
     } catch (error) {
       console.log(error);
@@ -68,12 +77,12 @@ export class AssetsService {
   }
 
   deleteFile(fileName: string) {
-    if (!fs.existsSync(`${FILE_ROOT}/${fileName}`)) {
+    if (!fs.existsSync(`${this.FILE_ROOT}/${fileName}`)) {
       return true;
     }
 
     try {
-      fs.unlinkSync(`${FILE_ROOT}/${fileName}`);
+      fs.unlinkSync(`${this.FILE_ROOT}/${fileName}`);
       return true;
     } catch (error) {
       console.log(error);
@@ -82,12 +91,12 @@ export class AssetsService {
   }
 
   deleteStaticFile(fileName: string) {
-    if (!fs.existsSync(`${STATIC_ROOT}/${fileName}`)) {
+    if (!fs.existsSync(`${this.STATIC_ROOT}/${fileName}`)) {
       return true;
     }
 
     try {
-      fs.unlinkSync(`${STATIC_ROOT}/${fileName}`);
+      fs.unlinkSync(`${this.STATIC_ROOT}/${fileName}`);
       return true;
     } catch (error) {
       console.log(error);
@@ -99,9 +108,9 @@ export class AssetsService {
     let exists = false;
     let isStatic = false;
 
-    if (fs.existsSync(`${FILE_ROOT}/${fileName}`)) {
+    if (fs.existsSync(`${this.FILE_ROOT}/${fileName}`)) {
       exists = true;
-    } else if (fs.existsSync(`${STATIC_ROOT}/${fileName}`)) {
+    } else if (fs.existsSync(`${this.STATIC_ROOT}/${fileName}`)) {
       exists = true;
       isStatic = true;
     }

@@ -8,15 +8,20 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { AssetsModule } from './modules/assets/assets.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    MongooseModule.forRoot('mongodb://localhost/quanta-frontend-challenge'),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
+    }),
     UsersModule,
     ChallengesModule,
     ActionsModule,
     NotificationsModule,
     SubmissionsModule,
-    MongooseModule.forRoot('mongodb://localhost/quanta-frontend-challenge'),
     TasksModule,
     AssetsModule,
     AuthModule,

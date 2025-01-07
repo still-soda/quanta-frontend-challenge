@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AssetsService } from '../assets.service';
+import { ConfigModule } from '@nestjs/config';
 
 describe('AssetsService', () => {
   let service: AssetsService;
@@ -10,6 +11,12 @@ describe('AssetsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
+        }),
+      ],
       providers: [AssetsService],
     }).compile();
 
