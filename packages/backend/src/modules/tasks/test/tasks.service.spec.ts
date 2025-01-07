@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TasksService } from './tasks.service';
-import { AssetsService } from '../assets/assets.service';
-import { convertNameToUuid } from '../../utils/rename.utils';
+import { TasksService } from '../tasks.service';
+import { AssetsService } from '../../assets/assets.service';
+import { convertNameToUuid } from '../../../utils/rename.utils';
 import { ConfigModule } from '@nestjs/config';
 
 describe('TasksService', () => {
