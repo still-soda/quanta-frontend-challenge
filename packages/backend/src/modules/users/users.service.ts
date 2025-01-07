@@ -4,14 +4,18 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Users, UsersDocument } from '../../schemas/users.schema';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(Users.name) private userModel: Model<UsersDocument>,
+    @InjectModel(Users.name) private readonly userModel: Model<UsersDocument>,
   ) {}
 
   create(createUserDto: CreateUserDto) {
+    createUserDto = plainToInstance(CreateUserDto, createUserDto, {
+      excludeExtraneousValues: true,
+    });
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
@@ -25,6 +29,9 @@ export class UsersService {
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
+    updateUserDto = plainToInstance(UpdateUserDto, updateUserDto, {
+      excludeExtraneousValues: true,
+    });
     return this.userModel.findByIdAndUpdate({ _id: id }, updateUserDto, {
       new: true,
     });

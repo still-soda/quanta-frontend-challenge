@@ -1,3 +1,3 @@
 export class FlowDataDto {
-  flowData: any;
+  data: any;
 }

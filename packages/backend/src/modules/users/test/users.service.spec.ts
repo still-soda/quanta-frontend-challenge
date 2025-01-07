@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '../../users/users.service';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
+import { UsersService } from '../users.service';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from '../users.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -274,5 +274,41 @@ describe('UsersService', () => {
     } catch (error) {
       expect(error.message).toBe('角色只能是0或1');
     }
+  });
+
+  // 更新不在UpdateUserDto中的字段不应该成功
+  it('should not update a user with fields not in UpdateUserDto', async () => {
+    const created = await service.create({
+      username: 'test_user',
+      email: 'test_user@email.com',
+      number: '20231003059',
+      password: 'password',
+      phone: '13400011111',
+    } as any);
+    const updated = await service.update(created._id.toString(), {
+      tryingTasks: ['task_id'],
+      failedTasks: ['task_id'],
+      solvedTasks: ['task_id'],
+    } as any);
+    expect(updated.tryingTasks).toHaveLength(0);
+    expect(updated.failedTasks).toHaveLength(0);
+    expect(updated.solvedTasks).toHaveLength(0);
+  });
+
+  // 创建用户时不能初始化不在CreateUserDto中的字段
+  it('should not initialize fields not in CreateUserDto when creating a user', async () => {
+    const result = await service.create({
+      username: 'test_user',
+      email: 'test_user@email.com',
+      number: '20231003059',
+      password: 'password',
+      phone: '13400011111',
+      tryingTasks: ['task_id'],
+      failedTasks: ['task_id'],
+      solvedTasks: ['task_id'],
+    } as any);
+    expect(result.tryingTasks).toHaveLength(0);
+    expect(result.failedTasks).toHaveLength(0);
+    expect(result.solvedTasks).toHaveLength(0);
   });
 });

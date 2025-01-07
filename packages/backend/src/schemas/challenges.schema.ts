@@ -35,7 +35,7 @@ export class Challenges extends Document {
     description: '难度',
   })
   @Prop()
-  difficulty: number;
+  difficulty: string;
 
   @ApiProperty({
     example: 40,
@@ -50,6 +50,14 @@ export class Challenges extends Document {
   })
   @Prop()
   type: string;
+
+  @ApiProperty({
+    example: ['1.html', '2.html', '3.html'],
+    default: [],
+    description: '标准答案文件名列表',
+  })
+  @Prop({ default: [] })
+  standardAnswer: string[];
 
   @ApiProperty({
     example: ['css', 'html', 'javascript'],
