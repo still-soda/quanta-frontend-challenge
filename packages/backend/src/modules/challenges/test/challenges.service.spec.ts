@@ -106,4 +106,29 @@ describe('ChallengesService', () => {
     const found = await service.findOne(created._id.toString());
     expect(found).toBeNull();
   });
+
+  // 应该正确设置标准答案
+  it('should set standard answer correctly', async () => {
+    // 正常设置
+    const created1 = await createOne();
+    const updated1 = await service.setStandardAnswer(created1._id.toString(), [
+      '1.html',
+      '2.html',
+    ]);
+    expect(updated1.standardAnswer).toHaveLength(2);
+    // 无内容
+    const created2 = await createOne();
+    const updated2 = await service.setStandardAnswer(
+      created2._id.toString(),
+      [],
+    );
+    expect(updated2).toBeNull();
+    // null
+    const created3 = await createOne();
+    const updated3 = await service.setStandardAnswer(
+      created3._id.toString(),
+      null,
+    );
+    expect(updated3).toBeNull();
+  });
 });

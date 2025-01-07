@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Param } from '@nestjs/common';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import {
@@ -44,5 +44,16 @@ export class ChallengesService {
 
   remove(id: string): Promise<any> {
     return this.challengeModel.deleteOne({ _id: id });
+  }
+
+  setStandardAnswer(challengeId: string, standardAnswer: string[]) {
+    if (!standardAnswer || !standardAnswer.length) {
+      return null;
+    }
+    return this.challengeModel.findByIdAndUpdate(
+      challengeId,
+      { standardAnswer },
+      { new: true },
+    );
   }
 }
