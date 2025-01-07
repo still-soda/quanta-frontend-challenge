@@ -3,5 +3,6 @@ import { AssetsService } from './assets.service';
 
 @Module({
   providers: [AssetsService],
+  exports: [AssetsService],
 })
 export class AssetsModule {}

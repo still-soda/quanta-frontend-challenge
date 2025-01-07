@@ -75,6 +75,74 @@ describe('AssetsService', () => {
     staticFileNames.push(txtResult.fileName, jpgResult.fileName);
   });
 
+  // 应该正确保存文本文件
+  it('should save text file correctly', async () => {
+    const text = 'Hello, World!';
+    const result = await service.saveTextFile(text, 'test.txt');
+    expect(result.ok).toBe(true);
+    expect(result.fileName).toMatch(
+      /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.txt$/,
+    );
+
+    fileNames.push(result.fileName);
+  });
+
+  // 不应该保存空文本文件
+  it('should not save empty text file', async () => {
+    const result = await service.saveTextFile('', 'test.txt');
+    expect(result.ok).toBe(false);
+  });
+
+  // 应该正确保存静态文本文件
+  it('should save static text file correctly', async () => {
+    const text = 'Hello, World!';
+    const result = await service.saveTextFileAsStatic(text, 'test.txt');
+    expect(result.ok).toBe(true);
+    expect(result.fileName).toMatch(
+      /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.txt$/,
+    );
+
+    staticFileNames.push(result.fileName);
+  });
+
+  // 不应该保存空静态文本文件
+  it('should not save empty static text file', async () => {
+    const result = await service.saveTextFileAsStatic('', 'test.txt');
+    expect(result.ok).toBe(false);
+  });
+
+  // 应该正确获取文本文件内容
+  it('should get text file content correctly', async () => {
+    const text = 'Hello, World!';
+    const { fileName } = await service.saveTextFile(text, 'test.txt');
+    const result = service.readTextFile(fileName);
+    expect(result).toBe(text);
+
+    fileNames.push(fileName);
+  });
+
+  // 应该正确获取静态文本文件内容
+  it('should get static text file content correctly', async () => {
+    const text = 'Hello, World!';
+    const { fileName } = await service.saveTextFileAsStatic(text, 'test.txt');
+    const result = service.readStaticTextFile(fileName);
+    expect(result).toBe(text);
+
+    staticFileNames.push(fileName);
+  });
+
+  // 不存在文本文件时应该返回空字符串
+  it('should return empty string when text file not exists', async () => {
+    const result = service.readTextFile('non-exists');
+    expect(result).toBe('');
+  });
+
+  // 不存在静态文本文件时应该返回空字符串
+  it('should return empty string when static text file not exists', async () => {
+    const result = service.readStaticTextFile('non-exists');
+    expect(result).toBe('');
+  });
+
   // 应该正确获取文件
   it('should get file correctly', async () => {
     // txt
