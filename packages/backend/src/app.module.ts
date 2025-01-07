@@ -5,8 +5,8 @@ import { ActionsModule } from './modules/actions/actions.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SubmissionsModule } from './modules/submissions/submissions.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TaskExecutionModule } from './modules/task-execution/task-execution.module';
-import { StaticAssetsModule } from './modules/static-assets/static-assets.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { AssetsModule } from './modules/assets/assets.module';
 import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
@@ -17,8 +17,8 @@ import { AuthModule } from './modules/auth/auth.module';
     NotificationsModule,
     SubmissionsModule,
     MongooseModule.forRoot('mongodb://localhost/quanta-frontend-challenge'),
-    TaskExecutionModule,
-    StaticAssetsModule,
+    TasksModule,
+    AssetsModule,
     AuthModule,
   ],
   controllers: [],

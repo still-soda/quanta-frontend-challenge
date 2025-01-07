@@ -28,6 +28,7 @@
     "@nestjs/swagger": "^8.1.0",
     "bull": "^4.16.5",
     "class-validator": "^0.14.1",
+    "fs": "0.0.1-security",
     "ioredis": "^5.4.2",
     "ioredis-mock": "^8.9.0",
     "mongoose": "^8.9.3",
