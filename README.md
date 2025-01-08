@@ -133,4 +133,4 @@ quanta-frontend-challenge
 
 ## License
 
-GNU Affero General Public License 3.0 © 2025 still-soda
+AGPL-3.0 © 2025 still-soda
