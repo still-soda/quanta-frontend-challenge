@@ -55,6 +55,19 @@ describe('ChallengesService', () => {
     expect(created.standardAnswer).toHaveLength(0);
   });
 
+  // 创建时尝试初始化不在CreateChallengeDto中的字段不应该成功
+  it('should not create a challenge with fields not in CreateChallengeDto', async () => {
+    const created = await service.create({
+      title: 'test challenge',
+      type: 'test type',
+      difficulty: 'test difficulty',
+      authorId: 'test author id',
+      score: 100,
+      fastestSolver: ['test user id'],
+    } as any);
+    expect(created.standardAnswer).toHaveLength(0);
+  });
+
   // 查询所有
   it('should find all challenges', async () => {
     const oldChallenges = await service.findAll();
@@ -130,5 +143,48 @@ describe('ChallengesService', () => {
       null,
     );
     expect(updated3).toBeNull();
+  });
+
+  it('should add fastest solver correctly when solving challenge', async () => {
+    const created = await createOne();
+    const updated = await service.solveChallenge(
+      created._id.toString(),
+      'teset_user_id',
+    );
+    expect(updated.fastestSolvers.includes('teset_user_id')).toBeTruthy();
+  });
+
+  // 在已有3个最快解决者的情况下，不应该再添加
+  it('should not add fastest solver when there are already 3 fastest solvers', async () => {
+    const created = await createOne();
+    await Promise.all([
+      service.solveChallenge(created._id.toString(), 'user1'),
+      service.solveChallenge(created._id.toString(), 'user2'),
+      service.solveChallenge(created._id.toString(), 'user3'),
+    ]);
+    const updated = await service.solveChallenge(
+      created._id.toString(),
+      'user4',
+    );
+    expect(updated).toBeNull();
+
+    const found = await service.findOne(created._id.toString());
+    expect(found.fastestSolvers.includes('user4')).toBeFalsy();
+    expect(found.fastestSolvers).toHaveLength(3);
+  });
+
+  // 在已经是最快解决者的情况下，不应该再添加
+  it('should not add fastest solver when the user is already the fastest solver', async () => {
+    const created = await createOne();
+    await service.solveChallenge(created._id.toString(), 'user1');
+    const updated = await service.solveChallenge(
+      created._id.toString(),
+      'user1',
+    );
+    expect(updated).toBeNull();
+
+    const found = await service.findOne(created._id.toString());
+    expect(found.fastestSolvers).toHaveLength(1);
+    expect(found.fastestSolvers.includes('user1')).toBeTruthy();
   });
 });

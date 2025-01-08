@@ -30,7 +30,7 @@ export class AssetsService {
       fs.writeFileSync(`${this.FILE_ROOT}/${fileName}`, content);
       return { ok: true, fileName };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return { ok: false, fileName: '' };
     }
   }
@@ -46,7 +46,7 @@ export class AssetsService {
       fs.writeFileSync(`${this.STATIC_ROOT}/${fileName}`, content);
       return { ok: true, fileName };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return { ok: false, fileName: '' };
     }
   }
@@ -59,7 +59,7 @@ export class AssetsService {
       fs.writeFileSync(`${this.FILE_ROOT}/${fileName}`, buffer);
       return { ok: true, fileName };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return { ok: false, fileName: '' };
     }
   }
@@ -72,7 +72,7 @@ export class AssetsService {
       fs.writeFileSync(`${this.STATIC_ROOT}/${fileName}`, buffer);
       return { ok: true, fileName };
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return { ok: false, fileName: '' };
     }
   }
@@ -86,7 +86,7 @@ export class AssetsService {
       const buffer = fs.readFileSync(`${this.FILE_ROOT}/${fileName}`);
       return buffer;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return null;
     }
   }
@@ -100,7 +100,7 @@ export class AssetsService {
       const buffer = fs.readFileSync(`${this.STATIC_ROOT}/${fileName}`);
       return buffer;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return null;
     }
   }
@@ -114,7 +114,7 @@ export class AssetsService {
       const content = fs.readFileSync(`${this.FILE_ROOT}/${fileName}`, 'utf-8');
       return content;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return '';
     }
   }
@@ -131,7 +131,7 @@ export class AssetsService {
       );
       return content;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return '';
     }
   }
@@ -145,7 +145,7 @@ export class AssetsService {
       fs.unlinkSync(`${this.FILE_ROOT}/${fileName}`);
       return true;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return false;
     }
   }
@@ -159,7 +159,7 @@ export class AssetsService {
       fs.unlinkSync(`${this.STATIC_ROOT}/${fileName}`);
       return true;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return false;
     }
   }
