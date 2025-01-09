@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 import { IsString, IsOptional, IsNumber, IsArray } from 'class-validator';
 
 export class UpdateChallengeDto {
@@ -9,21 +10,25 @@ export class UpdateChallengeDto {
   })
   @IsOptional()
   @IsString()
+  @Expose()
   title?: string;
 
   @ApiProperty({ example: 'hard', description: '难度', required: false })
   @IsOptional()
   @IsString()
+  @Expose()
   difficulty?: string;
 
   @ApiProperty({ example: 40, description: '分数', required: false })
   @IsOptional()
   @IsNumber()
+  @Expose()
   score?: number;
 
   @ApiProperty({ example: 'css', description: '类型', required: false })
   @IsOptional()
   @IsString()
+  @Expose()
   type?: string;
 
   @ApiProperty({
@@ -33,10 +38,12 @@ export class UpdateChallengeDto {
   })
   @IsOptional()
   @IsArray()
+  @Expose()
   tags?: string[];
 
   @ApiProperty({ example: '1234567', description: '作者ID', required: false })
   @IsOptional()
   @IsString()
+  @Expose()
   authorId?: string;
 }

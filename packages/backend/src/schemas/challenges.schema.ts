@@ -73,7 +73,7 @@ export class Challenges extends Document {
     description: '最快的前3个解决者',
   })
   @Prop({ default: [] })
-  fastestSolver: string[];
+  fastestSolvers: string[];
 
   @ApiProperty({
     example: '1234567',

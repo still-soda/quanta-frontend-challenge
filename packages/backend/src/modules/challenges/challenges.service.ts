@@ -17,6 +17,11 @@ export class ChallengesService {
   ) {}
 
   create(createChallengeDto: CreateChallengeDto) {
+    createChallengeDto = plainToInstance(
+      CreateChallengeDto,
+      createChallengeDto,
+      { excludeExtraneousValues: true },
+    );
     const createdChallenge = new this.challengeModel(createChallengeDto);
     return createdChallenge.save();
   }
@@ -53,6 +58,20 @@ export class ChallengesService {
     return this.challengeModel.findByIdAndUpdate(
       challengeId,
       { standardAnswer },
+      { new: true },
+    );
+  }
+
+  async solveChallenge(challengeId: string, userId: string) {
+    const { fastestSolvers } = await this.findOne(challengeId);
+
+    if (fastestSolvers.includes(userId) || fastestSolvers.length >= 3) {
+      return null;
+    }
+
+    return this.challengeModel.findByIdAndUpdate(
+      challengeId,
+      { $push: { fastestSolvers: userId } },
       { new: true },
     );
   }
