@@ -39,14 +39,13 @@ describe('TasksService', () => {
     await mongodb.stop();
   });
 
-  it('should be defined', () => {
+  it('应该正确获取 service', () => {
     expect(tasksService).toBeDefined();
   });
 
   /////////////// serializeFlowData ///////////////
 
-  // 应该正确序列化流程文件
-  it('should serialize flow data and save correctly', async () => {
+  it('应该正确序列化流程文件', async () => {
     const challenge = await challengeService.create({
       title: 'test',
       type: 'test',
@@ -56,7 +55,7 @@ describe('TasksService', () => {
     });
     const challengeId = challenge._id.toString();
     const flowDataDto = {
-      flowData: [
+      data: [
         { type: 'testpoint', detail: { name: '测试', score: 20 } },
         { type: 'testpoint', detail: { name: '测试', score: 20 } },
         { type: 'testpoint', detail: { name: '测试', score: 20 } },
@@ -65,14 +64,18 @@ describe('TasksService', () => {
     };
     const flowDataName = `${challengeId}.json`;
 
-    await tasksService.serializeFlowData(challengeId, flowDataDto as any);
-    const result = assetsService.isFileExists(flowDataName);
-    expect(result).toHaveProperty('exists', true);
+    const serializeResult = await tasksService.serializeFlowData(
+      challengeId,
+      flowDataDto as any,
+    );
+    expect(serializeResult).toHaveProperty('ok', true);
+    expect(serializeResult).toHaveProperty('fileName', flowDataName);
+    const existResult = assetsService.isFileExists(flowDataName);
+    expect(existResult).toHaveProperty('exists', true);
     expect(flowDataName).toBe(`${challengeId}.json`);
   });
 
-  // 测试流程不合法时，应该抛出错误
-  it('should throw error when flow data is invalid', async () => {
+  it('测试流程不合法时，应该抛出错误', async () => {
     const challenge = await challengeService.create({
       title: 'test',
       type: 'test',
@@ -83,7 +86,7 @@ describe('TasksService', () => {
     const challengeId = challenge._id.toString();
     // 没有type字段
     const flowDataDto = {
-      flowData: [
+      data: [
         { detail: { name: '测试', score: 20 } },
         { detail: { name: '测试', score: 20 } },
         { detail: { name: '测试', score: 20 } },
@@ -95,11 +98,10 @@ describe('TasksService', () => {
     ).rejects.toThrow('Invalid flow data');
   });
 
-  // chellengeId对应的挑战不存在时，应该抛出错误
-  it('should throw error when challenge not found', async () => {
+  it('chellengeId对应的挑战不存在时，应该抛出错误', async () => {
     const challengeId = 'test_challenge_id';
     const flowDataDto = {
-      flowData: [
+      data: [
         { type: 'testpoint', detail: { name: '测试', score: 20 } },
         { type: 'testpoint', detail: { name: '测试', score: 20 } },
         { type: 'testpoint', detail: { name: '测试', score: 20 } },
@@ -114,8 +116,7 @@ describe('TasksService', () => {
 
   ///////////// uploadStandardAnswer /////////////
 
-  // 应该正确设置标准答案
-  it('should set standard answer correctly', async () => {
+  it('应该正确设置标准答案', async () => {
     const challenge = await challengeService.create({
       title: 'test',
       type: 'test',
@@ -148,11 +149,10 @@ describe('TasksService', () => {
     fileNames.push(fileName);
   });
 
-  // 不存在challengeId对应的挑战时，应该抛出错误
-  it('should throw error when challenge not found', async () => {
+  it('不存在challengeId对应的挑战时，应该抛出错误', async () => {
     const challengeId = 'test_challenge_id';
     const flowDataDto = {
-      flowData: [
+      data: [
         { type: 'testpoint', detail: { name: '测试', score: 20 } },
         { type: 'testpoint', detail: { name: '测试', score: 20 } },
         { type: 'testpoint', detail: { name: '测试', score: 20 } },
@@ -165,8 +165,7 @@ describe('TasksService', () => {
     ).rejects.toThrow('Challenge not found');
   });
 
-  // 文件为空时，应该抛出错误
-  it('should throw error when file is empty', async () => {
+  it('文件为空时，应该抛出错误', async () => {
     const challenge = await challengeService.create({
       title: 'test',
       type: 'test',

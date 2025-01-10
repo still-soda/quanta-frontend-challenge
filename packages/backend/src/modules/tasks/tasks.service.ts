@@ -14,8 +14,12 @@ export class TasksService {
     const flowDataName = `${challengeId}.json`;
     try {
       const jsonContent = JSON.stringify(flowDataDto.data);
-      await this.assetsService.saveTextFile(jsonContent, flowDataName);
-      return flowDataName;
+      const reuslt = await this.assetsService.saveTextFile(
+        jsonContent,
+        flowDataName,
+        true,
+      );
+      return reuslt;
     } catch (error) {
       throw new Error('Failed to serialize flow data');
     }
