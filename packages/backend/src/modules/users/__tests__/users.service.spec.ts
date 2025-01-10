@@ -39,7 +39,7 @@ describe('UsersService', () => {
     await mongodb.stop();
   });
 
-  it('should create a user', async () => {
+  it('应该创建一个用户', async () => {
     expect(result).toBeDefined();
     expect(result.username).toBe('test_user');
     expect(result.email).toBe('test_user@email.com');
@@ -49,12 +49,12 @@ describe('UsersService', () => {
     expect(result.role).toBe(0);
   });
 
-  it('should return all users', async () => {
+  it('应该返回所有用户', async () => {
     const result = await service.findAll();
     expect(Array.isArray(result)).toBe(true);
   });
 
-  it('should return a user', async () => {
+  it('应该返回一个用户', async () => {
     const result = await service.findOne(userId);
     expect(result).toBeDefined();
     expect(result.username).toBe('test_user');
@@ -62,7 +62,7 @@ describe('UsersService', () => {
     expect(result._id.toString()).toBe(userId);
   });
 
-  it('should update a user', async () => {
+  it('应该更新一个用户', async () => {
     const result = await service.update(userId, {
       username: 'test_user_updated',
       email: 'test_user_updated@email.com',
@@ -74,13 +74,13 @@ describe('UsersService', () => {
     expect(result.avatarUrl).toBe('https://test.com/avatar.jpg');
   });
 
-  it('should increase user score', async () => {
+  it('应该增加用户积分', async () => {
     const result = await service.increaseUserScore(userId, 10);
     expect(result).toBeDefined();
     expect(result.totalScore).toBe(10);
   });
 
-  it('should fail a challenge', async () => {
+  it('应该失败一个挑战', async () => {
     const result = await service.submitChallenge(userId, 'task_id', {
       status: 'failed',
     });
@@ -89,7 +89,7 @@ describe('UsersService', () => {
     expect(result.failedTasks).toContain('task_id');
   });
 
-  it('should try a challenge', async () => {
+  it('应该尝试一个挑战', async () => {
     const result = await service.submitChallenge(userId, 'task_id', {
       status: 'trying',
     });
@@ -99,7 +99,7 @@ describe('UsersService', () => {
     expect(result.failedTasks).not.toContain('task_id');
   });
 
-  it('should solve a challenge', async () => {
+  it('应该解决一个挑战', async () => {
     const result = await service.submitChallenge(userId, 'task_id', {
       status: 'success',
       score: 10,
@@ -112,7 +112,7 @@ describe('UsersService', () => {
     expect(result.tryingTasks).not.toContain('task_id');
   });
 
-  it('should remove a user', async () => {
+  it('应该删除一个用户', async () => {
     const result = await service.remove(userId);
     expect(result).toBeDefined();
 
@@ -120,7 +120,7 @@ describe('UsersService', () => {
     expect(user).toBeNull();
   });
 
-  it('should throw error when password is less than 6 characters', async () => {
+  it('密码长度小于6字符时应该抛出错误', async () => {
     try {
       await service.create({
         username: 'test_user',
@@ -142,7 +142,7 @@ describe('UsersService', () => {
     }
   });
 
-  it('should throw error when signature is more than 100 characters', async () => {
+  it('个性签名长度超过100字符时应该抛出错误', async () => {
     try {
       await service.create({
         username: 'test_user',
@@ -165,7 +165,7 @@ describe('UsersService', () => {
     }
   });
 
-  it('should throw error when phone is not 11 characters', async () => {
+  it('手机号长度不是11字符时应该抛出错误', async () => {
     try {
       await service.create({
         username: 'test_user',
@@ -187,7 +187,7 @@ describe('UsersService', () => {
     }
   });
 
-  it('should throw error when number is not 11 characters', async () => {
+  it('学号长度不是11字符时应该抛出错误', async () => {
     try {
       await service.create({
         username: 'test_user',
@@ -209,7 +209,7 @@ describe('UsersService', () => {
     }
   });
 
-  it('should throw error when email is invalid', async () => {
+  it('邮箱格式不正确时应该抛出错误', async () => {
     try {
       await service.create({
         username: 'test_user',
@@ -231,7 +231,7 @@ describe('UsersService', () => {
     }
   });
 
-  it('should throw error when username is less than 1 character', async () => {
+  it('用户名长度小于1字符时应该抛出错误', async () => {
     try {
       await service.create({
         username: '',
@@ -253,7 +253,7 @@ describe('UsersService', () => {
     }
   });
 
-  it('should throw error when role is not 0 or 1', async () => {
+  it('角色不是0或1时应该抛出错误', async () => {
     try {
       await service.create({
         username: 'test_user',
@@ -276,8 +276,7 @@ describe('UsersService', () => {
     }
   });
 
-  // 更新不在UpdateUserDto中的字段不应该成功
-  it('should not update a user with fields not in UpdateUserDto', async () => {
+  it('不应该更新不在UpdateUserDto中的字段', async () => {
     const created = await service.create({
       username: 'test_user',
       email: 'test_user@email.com',
@@ -295,8 +294,7 @@ describe('UsersService', () => {
     expect(updated.solvedTasks).toHaveLength(0);
   });
 
-  // 创建用户时不能初始化不在CreateUserDto中的字段
-  it('should not initialize fields not in CreateUserDto when creating a user', async () => {
+  it('创建用户时不应该初始化不在CreateUserDto中的字段', async () => {
     const result = await service.create({
       username: 'test_user',
       email: 'test_user@email.com',
