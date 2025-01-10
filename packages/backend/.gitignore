@@ -19,6 +19,9 @@ lerna-debug.log*
 /coverage
 /.nyc_output
 
+# File
+/assets
+
 # IDEs and editors
 /.idea
 .project

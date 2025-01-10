@@ -35,12 +35,11 @@ describe('AssetsService', () => {
     });
   });
 
-  it('should be defined', async () => {
+  it('应该正确获取 service', async () => {
     expect(service).toBeDefined();
   });
 
-  // 应该正确保存文件
-  it('should save file correctly', async () => {
+  it('应该正确保存文件', async () => {
     // txt
     const txtResult = await service.saveFile(txtFile, 'test.txt');
     expect(txtResult.ok).toBe(true);
@@ -57,8 +56,7 @@ describe('AssetsService', () => {
     fileNames.push(txtResult.fileName, jpgResult.fileName);
   });
 
-  // 应该正确保存静态文件
-  it('should save static file correctly', async () => {
+  it('应该正确保存静态文件', async () => {
     // txt
     const txtResult = await service.saveFileAsStatic(txtFile, 'test.txt');
     expect(txtResult.ok).toBe(true);
@@ -75,8 +73,7 @@ describe('AssetsService', () => {
     staticFileNames.push(txtResult.fileName, jpgResult.fileName);
   });
 
-  // 应该正确保存文本文件
-  it('should save text file correctly', async () => {
+  it('应该正确保存文本文件', async () => {
     const text = 'Hello, World!';
     const result = await service.saveTextFile(text, 'test.txt');
     expect(result.ok).toBe(true);
@@ -87,14 +84,23 @@ describe('AssetsService', () => {
     fileNames.push(result.fileName);
   });
 
-  // 不应该保存空文本文件
-  it('should not save empty text file', async () => {
+  it('不应该保存空文本文件', async () => {
     const result = await service.saveTextFile('', 'test.txt');
     expect(result.ok).toBe(false);
   });
 
-  // 应该正确保存静态文本文件
-  it('should save static text file correctly', async () => {
+  it('应该在文本文件为 undefined 或 null 的时候保存失败', async () => {
+    expect(await service.saveTextFile(undefined, 'test.txt')).toHaveProperty(
+      'ok',
+      false,
+    );
+    expect(await service.saveTextFile(null, 'test.txt')).toHaveProperty(
+      'ok',
+      false,
+    );
+  });
+
+  it('应该正确保存静态文本文件', async () => {
     const text = 'Hello, World!';
     const result = await service.saveTextFileAsStatic(text, 'test.txt');
     expect(result.ok).toBe(true);
@@ -105,14 +111,22 @@ describe('AssetsService', () => {
     staticFileNames.push(result.fileName);
   });
 
-  // 不应该保存空静态文本文件
-  it('should not save empty static text file', async () => {
+  it('应该在文本文件为 undefined 或 null 的时候保存失败（静态版）', async () => {
+    expect(
+      await service.saveTextFileAsStatic(undefined, 'test.txt'),
+    ).toHaveProperty('ok', false);
+    expect(await service.saveTextFileAsStatic(null, 'test.txt')).toHaveProperty(
+      'ok',
+      false,
+    );
+  });
+
+  it('不应该保存空静态文本文件', async () => {
     const result = await service.saveTextFileAsStatic('', 'test.txt');
     expect(result.ok).toBe(false);
   });
 
-  // 应该正确获取文本文件内容
-  it('should get text file content correctly', async () => {
+  it('应该正确获取文本文件内容', async () => {
     const text = 'Hello, World!';
     const { fileName } = await service.saveTextFile(text, 'test.txt');
     const result = service.readTextFile(fileName);
@@ -121,8 +135,7 @@ describe('AssetsService', () => {
     fileNames.push(fileName);
   });
 
-  // 应该正确获取静态文本文件内容
-  it('should get static text file content correctly', async () => {
+  it('应该正确获取静态文本文件内容', async () => {
     const text = 'Hello, World!';
     const { fileName } = await service.saveTextFileAsStatic(text, 'test.txt');
     const result = service.readStaticTextFile(fileName);
@@ -131,20 +144,17 @@ describe('AssetsService', () => {
     staticFileNames.push(fileName);
   });
 
-  // 不存在文本文件时应该返回空字符串
-  it('should return empty string when text file not exists', async () => {
+  it('不存在文本文件时应该返回空字符串', async () => {
     const result = service.readTextFile('non-exists');
     expect(result).toBe('');
   });
 
-  // 不存在静态文本文件时应该返回空字符串
-  it('should return empty string when static text file not exists', async () => {
+  it('不存在静态文本文件时应该返回空字符串', async () => {
     const result = service.readStaticTextFile('non-exists');
     expect(result).toBe('');
   });
 
-  // 应该正确获取文件
-  it('should get file correctly', async () => {
+  it('应该正确获取文件', async () => {
     // txt
     const { fileName: txtFileName } = await service.saveFile(
       txtFile,
@@ -166,8 +176,7 @@ describe('AssetsService', () => {
     fileNames.push(txtFileName, jpgFileName);
   });
 
-  // 应该正确获取静态文件
-  it('should get static file correctly', async () => {
+  it('应该正确获取静态文件', async () => {
     // txt
     const { fileName: txtFileName } = await service.saveFileAsStatic(
       txtFile,
@@ -189,8 +198,7 @@ describe('AssetsService', () => {
     staticFileNames.push(txtFileName, jpgFileName);
   });
 
-  // 应该正确删除文件
-  it('should delete file correctly', async () => {
+  it('应该正确删除文件', async () => {
     // txt
     const { fileName: txtFileName } = await service.saveFile(
       txtFile,
@@ -210,8 +218,7 @@ describe('AssetsService', () => {
     expect(nonExistsResult).toBe(true);
   });
 
-  // 应该正确删除静态文件
-  it('should delete static file correctly', async () => {
+  it('应该正确删除静态文件', async () => {
     // txt
     const { fileName: txtFileName } = await service.saveFileAsStatic(
       txtFile,
@@ -231,8 +238,7 @@ describe('AssetsService', () => {
     expect(nonExistsResult).toBe(true);
   });
 
-  // 应该正确判断文件是否存在
-  it('should check file exists correctly', async () => {
+  it('应该正确判断文件是否存在', async () => {
     // txt
     const { fileName: txtFileName } = await service.saveFile(
       txtFile,
@@ -258,8 +264,7 @@ describe('AssetsService', () => {
     staticFileNames.push(jpgFileName);
   });
 
-  // 不能通过非静态访问获取静态文件
-  it('should not get static file by non-static access', async () => {
+  it('不能通过非静态访问获取静态文件', async () => {
     const { fileName } = await service.saveFileAsStatic(jpgFile, 'test.jpg');
     const result = service.getFile(fileName);
     expect(result).toBeNull();
@@ -267,12 +272,51 @@ describe('AssetsService', () => {
     staticFileNames.push(fileName);
   });
 
-  // 不能通过静态访问获取非静态文件
-  it('should not get non-static file by static access', async () => {
+  it('不能通过静态访问获取非静态文件', async () => {
     const { fileName } = await service.saveFile(jpgFile, 'test.jpg');
     const result = service.getStaticFile(fileName);
     expect(result).toBeNull();
 
     fileNames.push(fileName);
+  });
+
+  it('在指定以原名保存文件时应该正确保存', async () => {
+    const { fileName } = await service.saveFile(txtFile, 'test.txt', true);
+    expect(fileName).toBe('test.txt');
+
+    fileNames.push(fileName);
+  });
+
+  it('在指定以原名保存静态文件时应该正确保存', async () => {
+    const { fileName } = await service.saveFileAsStatic(
+      txtFile,
+      'test.txt',
+      true,
+    );
+    expect(fileName).toBe('test.txt');
+
+    staticFileNames.push(fileName);
+  });
+
+  it('在指定以原名保存文本文件时应该正确保存', async () => {
+    const { fileName } = await service.saveTextFile(
+      'Hello, World!',
+      'test.txt',
+      true,
+    );
+    expect(fileName).toBe('test.txt');
+
+    fileNames.push(fileName);
+  });
+
+  it('在指定以原名保存静态文本文件时应该正确保存', async () => {
+    const { fileName } = await service.saveTextFileAsStatic(
+      'Hello, World!',
+      'test.txt',
+      true,
+    );
+    expect(fileName).toBe('test.txt');
+
+    staticFileNames.push(fileName);
   });
 });

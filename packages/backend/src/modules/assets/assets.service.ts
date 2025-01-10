@@ -19,28 +19,32 @@ export class AssetsService {
     }
   }
 
-  async saveTextFile(content: string, name: string) {
-    if (content === '') {
+  async saveTextFile(content: string, name: string, dontRename = false) {
+    if (content === '' || !content) {
       return { ok: false, fileName: '' };
     }
 
-    const fileName = convertNameToUuid(name);
+    const fileName = dontRename ? name : convertNameToUuid(name);
     try {
       await this.createDirectoryIfNotExists(this.FILE_ROOT);
       fs.writeFileSync(`${this.FILE_ROOT}/${fileName}`, content);
       return { ok: true, fileName };
     } catch (error) {
-      console.error(error);
+      console.error(error, content);
       return { ok: false, fileName: '' };
     }
   }
 
-  async saveTextFileAsStatic(content: string, name: string) {
-    if (content === '') {
+  async saveTextFileAsStatic(
+    content: string,
+    name: string,
+    dontRename = false,
+  ) {
+    if (content === '' || !content) {
       return { ok: false, fileName: '' };
     }
 
-    const fileName = convertNameToUuid(name);
+    const fileName = dontRename ? name : convertNameToUuid(name);
     try {
       await this.createDirectoryIfNotExists(this.STATIC_ROOT);
       fs.writeFileSync(`${this.STATIC_ROOT}/${fileName}`, content);
@@ -51,8 +55,8 @@ export class AssetsService {
     }
   }
 
-  async saveFile(file: File, name: string) {
-    const fileName = convertNameToUuid(name);
+  async saveFile(file: File, name: string, dontRename = false) {
+    const fileName = dontRename ? name : convertNameToUuid(name);
     const buffer = new Uint8Array(await file.arrayBuffer());
     try {
       await this.createDirectoryIfNotExists(this.FILE_ROOT);
@@ -64,8 +68,8 @@ export class AssetsService {
     }
   }
 
-  async saveFileAsStatic(file: File, name: string) {
-    const fileName = convertNameToUuid(name);
+  async saveFileAsStatic(file: File, name: string, dontRename = false) {
+    const fileName = dontRename ? name : convertNameToUuid(name);
     const buffer = new Uint8Array(await file.arrayBuffer());
     try {
       await this.createDirectoryIfNotExists(this.STATIC_ROOT);
