@@ -98,7 +98,7 @@ describe('TasksService', () => {
     ).rejects.toThrow('Invalid flow data');
   });
 
-  it('chellengeId对应的挑战不存在时，应该抛出错误', async () => {
+  it('chellengeId 对应的挑战不存在时，应该抛出错误', async () => {
     const challengeId = 'test_challenge_id';
     const flowDataDto = {
       data: [
@@ -149,7 +149,7 @@ describe('TasksService', () => {
     fileNames.push(fileName);
   });
 
-  it('不存在challengeId对应的挑战时，应该抛出错误', async () => {
+  it('不存在 challengeId 对应的挑战时，应该抛出错误', async () => {
     const challengeId = 'test_challenge_id';
     const flowDataDto = {
       data: [
