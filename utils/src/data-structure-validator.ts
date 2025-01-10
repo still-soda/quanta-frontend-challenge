@@ -25,13 +25,26 @@ const BASIC_TYPES = [
 ] as const;
 const BASIC_TYPES_SET = new Set(BASIC_TYPES);
 
+export function Optional(val: any) {
+   return {
+      __optional__: true,
+      value: val,
+   };
+}
+
 export function fit(
    obj: Record<string, any>,
    dataStructure: Record<string, typeof BASIC_TYPES | any>
 ): { msg: string; ok: boolean } {
    const entries = Object.entries(dataStructure);
-   for (const [key, val] of entries) {
+   for (let [key, val] of entries) {
+      let optional = false;
+      if (val.__optional__) {
+         optional = true;
+         val = val.value;
+      }
       if (val !== 'undefined' && obj[key] === undefined) {
+         if (optional) continue;
          return { msg: `不存在${key}`, ok: false };
       } else if (BASIC_TYPES_SET.has(val)) {
          if (typeof obj[key] !== val) {

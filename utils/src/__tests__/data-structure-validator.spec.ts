@@ -1,4 +1,4 @@
-import { contain, fit } from '../data-structure-validator';
+import { contain, fit, Optional } from '../data-structure-validator';
 
 describe('数据验证器 - fn[container]', () => {
    it('应该正确验证包含关系', () => {
@@ -82,5 +82,25 @@ describe('数据验证器 - fn[fit]', () => {
          c: { a: 'numebr', b: 'string' },
       });
       expect(fitResult.ok).toBe(false);
+   });
+
+   it('应该正确验证可选属性（第 1 层）', () => {
+      const obj = { a: 12, b: 20 };
+      const fitResult = fit(obj, {
+         a: 'number',
+         b: 'number',
+         c: Optional('number'),
+      });
+      expect(fitResult.ok).toBe(true);
+   });
+
+   it('应该正确验证可选属性（第 n 层）', () => {
+      const obj = { a: 12, b: 20, c: { a: 20 } };
+      const fitResult = fit(obj, {
+         a: 'number',
+         b: 'number',
+         c: { a: 'number', b: Optional('string') },
+      });
+      expect(fitResult.ok).toBe(true);
    });
 });
