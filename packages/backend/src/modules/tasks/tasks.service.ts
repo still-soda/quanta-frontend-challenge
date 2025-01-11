@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FlowDataDto } from './dto/flow-data.dto';
 import { AssetsService } from '../assets/assets.service';
-import { dataValidators, Validator } from './core/flow-data/index.validator';
+import { dataValidators, Validator } from './core/flow-data';
 import { ChallengesService } from '../challenges/challenges.service';
 
 @Injectable()

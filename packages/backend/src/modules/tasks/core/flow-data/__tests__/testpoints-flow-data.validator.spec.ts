@@ -1,11 +1,8 @@
-import {
-  ExpectTestpointFlowData,
-  ScreenShotTestpointFlowData,
-} from '../index.type';
+import { ExpectTestpointFlowData, ScreenShotTestpointFlowData } from '../index';
 import {
   validateExpectTestpointFlowData,
   validateScreenShotTestpointFlowData,
-} from '../index.validator';
+} from '..';
 
 describe('TestpointFlowDataValidator - ScreenShot', () => {
   it('应该正确验证流程数据', () => {

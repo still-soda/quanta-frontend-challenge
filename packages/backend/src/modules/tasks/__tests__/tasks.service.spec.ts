@@ -7,7 +7,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
-import { MoveMouseFlowData } from '../core/flow-data/index.type';
+import { MoveMouseFlowData } from '../core/flow-data/index';
 
 describe('TasksService', () => {
   let tasksService: TasksService;

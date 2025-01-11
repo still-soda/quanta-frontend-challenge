@@ -1,8 +1,5 @@
-import { ClickMouseFlowData, MoveMouseFlowData } from '../index.type';
-import {
-  validateClickMouseFlowData,
-  validateMoveMouseFlowData,
-} from '../index.validator';
+import { ClickMouseFlowData, MoveMouseFlowData } from '../index';
+import { validateClickMouseFlowData, validateMoveMouseFlowData } from '..';
 
 describe('MouseFlowDataValidator - Move', () => {
   it('应该正确验证流程数据（无缺省）', () => {
