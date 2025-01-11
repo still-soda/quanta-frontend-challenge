@@ -34,6 +34,10 @@ export function validateClickMouseFlowData(
       type: 'mouse',
       detail: {
         type: ['click', 'dbclick'],
+        button: Optional(['left', 'right', 'middle']),
+        x: Optional('number'),
+        y: Optional('number'),
+        selector: Optional('string'),
       },
     },
     shouldThrow,

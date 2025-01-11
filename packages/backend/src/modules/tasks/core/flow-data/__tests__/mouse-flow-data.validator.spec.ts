@@ -59,21 +59,51 @@ describe('MouseFlowDataValidator', () => {
   });
 
   describe('Click', () => {
-    it('应该正确验证流程数据', () => {
+    it('应该正确验证流程数据（无缺省）', () => {
       const data: ClickMouseFlowData = {
         type: 'mouse',
         detail: {
           type: 'click',
+          button: 'left',
+          x: 1,
+          y: 1,
+          selector: 'selector',
         },
       };
       expect(validateClickMouseFlowData(data)).toHaveProperty('ok', true);
     });
 
-    it('在字段不合法时应该返回 ok:false', () => {
+    it('应该正确验证流程数据（有缺省）', () => {
+      const data: ClickMouseFlowData = {
+        type: 'mouse',
+        detail: {
+          type: 'click',
+          button: 'left',
+        },
+      };
+      expect(validateClickMouseFlowData(data)).toHaveProperty('ok', true);
+    });
+
+    it('在字段不合法时应该返回 ok:false（非缺省字段）', () => {
       const data: any = {
         type: 'mouse',
         detail: {
           type: 'click2',
+          button: 'left',
+          x: 1,
+          y: 1,
+        },
+      };
+      expect(validateClickMouseFlowData(data)).toHaveProperty('ok', false);
+    });
+
+    it('在字段不合法时应该返回 ok:false（缺省字段）', () => {
+      const data: any = {
+        type: 'mouse',
+        detail: {
+          type: 'click',
+          button: 'left',
+          x: '1',
         },
       };
       expect(validateClickMouseFlowData(data)).toHaveProperty('ok', false);

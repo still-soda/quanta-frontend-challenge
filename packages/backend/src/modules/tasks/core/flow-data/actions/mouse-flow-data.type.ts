@@ -21,6 +21,10 @@ export interface ClickMouseFlowData extends MouseFlowData {
   type: 'mouse';
   detail: {
     type: 'click' | 'dbclick';
+    button?: 'left' | 'right' | 'middle';
+    x?: number;
+    y?: number;
+    selector?: string;
   };
 }
 
