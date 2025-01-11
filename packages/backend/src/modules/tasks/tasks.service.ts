@@ -11,6 +11,8 @@ export class TasksService {
   async preExecute(challengeId: string) {}
 
   async serializeFlowData(challengeId: string, flowDataDto: FlowDataDto) {
+    // 验证流程数据合法性
+
     const flowDataName = `${challengeId}.json`;
     try {
       const jsonContent = JSON.stringify(flowDataDto.data);
