@@ -34,9 +34,13 @@ export function Optional(val: any) {
 
 export function fit(
    obj: Record<string, any>,
-   dataStructure: Record<string, typeof BASIC_TYPES | any>
+   dataStructure: Record<string, typeof BASIC_TYPES | any>,
+   shouldThrow = false
 ): { msg: string; ok: boolean } {
    const entries = Object.entries(dataStructure);
+   let result = { msg: 'ok', ok: true };
+   let catched = false;
+
    for (let [key, val] of entries) {
       let optional = false;
       if (val.__optional__) {
@@ -45,35 +49,51 @@ export function fit(
       }
       if (val !== 'undefined' && obj[key] === undefined) {
          if (optional) continue;
-         return { msg: `不存在${key}`, ok: false };
+         result = { msg: `不存在 ${key}`, ok: false };
+         catched = true;
+         break;
       } else if (BASIC_TYPES_SET.has(val)) {
          if (typeof obj[key] !== val) {
-            return { msg: `${key} 类型错误`, ok: false };
+            result = { msg: `${key} 类型错误`, ok: false };
+            catched = true;
+            break;
          }
       } else if (typeof val === 'function') {
          if (!val(obj[key])) {
-            return { msg: `对于 ${key} 的函数验证不通过`, ok: false };
+            result = { msg: `对于 ${key} 的函数验证不通过`, ok: false };
+            catched = true;
+            break;
          }
       } else if (Array.isArray(val)) {
          if (!val.includes(obj[key])) {
-            return {
+            result = {
                msg: `k[${key}]:v[${obj[key]}] 不在可行列表中, li[${val}]`,
                ok: false,
             };
+            catched = true;
+            break;
          }
       } else if (typeof val === 'string') {
          if (obj[key] !== val) {
-            return {
+            result = {
                msg: `字符串 k[${key}]:v[${obj[key]}] !== ${val}`,
                ok: false,
             };
+            catched = true;
+            break;
          }
       } else if (typeof val === 'object') {
-         const result = fit(obj[key], val);
-         if (!result.ok) {
-            return result;
+         const validationResult = fit(obj[key], val);
+         if (!validationResult.ok) {
+            result = validationResult;
+            catched = true;
+            break;
          }
       }
    }
-   return { msg: 'ok', ok: true };
+
+   if (catched && shouldThrow) {
+      throw new Error(result.msg);
+   }
+   return result;
 }

@@ -18,29 +18,41 @@ export function validateTestpointFlowData(data: TestpointFlowData) {
 
 export function validateScreenShotTestpointFlowData(
   data: ScreenShotTestpointFlowData,
+  shouldThrow = false,
 ) {
-  return fit(data, {
-    type: 'testpoint',
-    detail: {
-      name: 'string',
-      score: 'number',
-      type: 'screenshot',
-      root: 'string',
-      threshold: 'number',
+  return fit(
+    data,
+    {
+      type: 'testpoint',
+      detail: {
+        name: 'string',
+        score: 'number',
+        type: 'screenshot',
+        root: 'string',
+        threshold: 'number',
+      },
     },
-  });
+    shouldThrow,
+  );
 }
 
-export function validateExpectTestpointFlowData(data: ExpectTestpointFlowData) {
-  return fit(data, {
-    type: 'testpoint',
-    detail: {
-      name: 'string',
-      score: 'number',
-      type: 'expect',
-      expect: 'string',
-      selector: 'string',
-      text: 'string',
+export function validateExpectTestpointFlowData(
+  data: ExpectTestpointFlowData,
+  shouldThrow = false,
+) {
+  return fit(
+    data,
+    {
+      type: 'testpoint',
+      detail: {
+        name: 'string',
+        score: 'number',
+        type: 'expect',
+        expect: 'string',
+        selector: 'string',
+        text: 'string',
+      },
     },
-  });
+    shouldThrow,
+  );
 }

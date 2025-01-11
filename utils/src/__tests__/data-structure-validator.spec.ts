@@ -1,6 +1,6 @@
 import { contain, fit, Optional } from '../data-structure-validator';
 
-describe('数据验证器 - fn[container]', () => {
+describe('数据验证器 - container', () => {
    it('应该正确验证包含关系', () => {
       const obj = { hello: 12, world: 20 };
       expect(contain(obj, ['hello', 'world'])).toBe(true);
@@ -17,7 +17,7 @@ describe('数据验证器 - fn[container]', () => {
    });
 });
 
-describe('数据验证器 - fn[fit]', () => {
+describe('数据验证器 - fit', () => {
    it('应该正确验证正确的类型', () => {
       const obj = {
          a: 12,
@@ -102,5 +102,20 @@ describe('数据验证器 - fn[fit]', () => {
          c: { a: 'number', b: Optional('string') },
       });
       expect(fitResult.ok).toBe(true);
+   });
+
+   it('能够正常抛出异常', () => {
+      const obj = { a: 12, b: 20 };
+      const dataStructure = {
+         a: 'number',
+         b: 'string',
+      };
+      try {
+         fit(obj, dataStructure, true);
+      } catch (error) {
+         expect(error).toBeInstanceOf(Error);
+         return;
+      }
+      expect(true).toBe(false);
    });
 });

@@ -38,12 +38,11 @@ describe('ChallengesService', () => {
     await mongodb.stop();
   });
 
-  it('should be defined', () => {
+  it('应该被定义', () => {
     expect(service).toBeDefined();
   });
 
-  // 创建
-  it('should create a challenge', async () => {
+  it('应该创建一个挑战', async () => {
     const created = await createOne();
     expect(created).toHaveProperty('_id');
     expect(created.title).toBe('test challenge');
@@ -55,8 +54,7 @@ describe('ChallengesService', () => {
     expect(created.standardAnswer).toHaveLength(0);
   });
 
-  // 创建时尝试初始化不在CreateChallengeDto中的字段不应该成功
-  it('should not create a challenge with fields not in CreateChallengeDto', async () => {
+  it('不应该创建包含CreateChallengeDto中不存在字段的挑战', async () => {
     const created = await service.create({
       title: 'test challenge',
       type: 'test type',
@@ -68,8 +66,7 @@ describe('ChallengesService', () => {
     expect(created.standardAnswer).toHaveLength(0);
   });
 
-  // 查询所有
-  it('should find all challenges', async () => {
+  it('应该查询所有挑战', async () => {
     const oldChallenges = await service.findAll();
     await createOne();
     await createOne();
@@ -77,8 +74,7 @@ describe('ChallengesService', () => {
     expect(newChallenges.length - oldChallenges.length).toBe(2);
   });
 
-  // 查询一个
-  it('should find one challenge', async () => {
+  it('应该查询一个挑战', async () => {
     const created = await createOne();
     const found = await service.findOne(created._id.toString());
     expect(found).toHaveProperty('_id');
@@ -91,8 +87,7 @@ describe('ChallengesService', () => {
     expect(found.standardAnswer).toHaveLength(0);
   });
 
-  // 更新
-  it('should update a challenge', async () => {
+  it('应该更新一个挑战', async () => {
     const created = await createOne();
     expect(created.title).toBe('test challenge');
     const updated = await service.update(created._id.toString(), {
@@ -102,8 +97,7 @@ describe('ChallengesService', () => {
     expect(updated.title).toBe('updated challenge');
   });
 
-  // 更新不在UpdatedDto中的字段不应该成功
-  it('should not update a challenge with fields not in UpdateChallengeDto', async () => {
+  it('不应该更新包含UpdateChallengeDto中不存在字段的挑战', async () => {
     const created = await createOne();
     const updated = await service.update(created._id.toString(), {
       standardAnswer: ['1.html'],
@@ -111,8 +105,7 @@ describe('ChallengesService', () => {
     expect(updated.standardAnswer).toHaveLength(0);
   });
 
-  // 删除
-  it('should remove a challenge', async () => {
+  it('应该删除一个挑战', async () => {
     const created = await createOne();
     await service.remove(created._id.toString());
 
@@ -120,8 +113,7 @@ describe('ChallengesService', () => {
     expect(found).toBeNull();
   });
 
-  // 应该正确设置标准答案
-  it('should set standard answer correctly', async () => {
+  it('应该正确设置标准答案', async () => {
     // 正常设置
     const created1 = await createOne();
     const updated1 = await service.setStandardAnswer(created1._id.toString(), [
@@ -129,6 +121,9 @@ describe('ChallengesService', () => {
       '2.html',
     ]);
     expect(updated1.standardAnswer).toHaveLength(2);
+    const found1 = await service.findOne(created1._id.toString());
+    expect(found1.standardAnswer.includes('1.html')).toBe(true);
+    expect(found1.standardAnswer.includes('2.html')).toBe(true);
     // 无内容
     const created2 = await createOne();
     const updated2 = await service.setStandardAnswer(
@@ -136,6 +131,8 @@ describe('ChallengesService', () => {
       [],
     );
     expect(updated2).toBeNull();
+    const found2 = await service.findOne(created2._id.toString());
+    expect(found2.standardAnswer).toHaveLength(0);
     // null
     const created3 = await createOne();
     const updated3 = await service.setStandardAnswer(
@@ -143,9 +140,11 @@ describe('ChallengesService', () => {
       null,
     );
     expect(updated3).toBeNull();
+    const found3 = await service.findOne(created3._id.toString());
+    expect(found3.standardAnswer).toHaveLength(0);
   });
 
-  it('should add fastest solver correctly when solving challenge', async () => {
+  it('解决挑战时应该正确添加最快解决者', async () => {
     const created = await createOne();
     const updated = await service.solveChallenge(
       created._id.toString(),
@@ -154,8 +153,7 @@ describe('ChallengesService', () => {
     expect(updated.fastestSolvers.includes('teset_user_id')).toBeTruthy();
   });
 
-  // 在已有3个最快解决者的情况下，不应该再添加
-  it('should not add fastest solver when there are already 3 fastest solvers', async () => {
+  it('在已有3个最快解决者的情况下，不应该再添加', async () => {
     const created = await createOne();
     await Promise.all([
       service.solveChallenge(created._id.toString(), 'user1'),
@@ -173,8 +171,7 @@ describe('ChallengesService', () => {
     expect(found.fastestSolvers).toHaveLength(3);
   });
 
-  // 在已经是最快解决者的情况下，不应该再添加
-  it('should not add fastest solver when the user is already the fastest solver', async () => {
+  it('在已经是最快解决者的情况下，不应该再添加', async () => {
     const created = await createOne();
     await service.solveChallenge(created._id.toString(), 'user1');
     const updated = await service.solveChallenge(

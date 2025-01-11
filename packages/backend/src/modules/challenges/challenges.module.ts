@@ -12,6 +12,6 @@ import { Challenges, ChallengesSchema } from '../../schemas/challenges.schema';
   ],
   controllers: [ChallengesController],
   providers: [ChallengesService],
-  exports: [MongooseModule],
+  exports: [MongooseModule, ChallengesService],
 })
 export class ChallengesModule {}

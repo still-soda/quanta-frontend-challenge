@@ -46,7 +46,7 @@ export function createEventEmitter() {
 /**
  * 注入事件发射器
  */
-export function useEventEmitter(key: Symbol = INJECT_KEY) {
+export function useEventEmitter(key: symbol = INJECT_KEY) {
    const emitter = inject(key) as EventEmitter | undefined;
    if (!emitter) {
       throw new Error('EventEmitter not provided');

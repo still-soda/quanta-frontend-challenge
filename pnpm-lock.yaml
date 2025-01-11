@@ -201,6 +201,10 @@ importers:
         version: 2.2.0(typescript@5.6.3)
 
   utils:
+    dependencies:
+      vue:
+        specifier: ^3.5.13
+        version: 3.5.13(typescript@5.6.3)
     devDependencies:
       '@types/jest':
         specifier: ^29.5.2
@@ -4982,7 +4986,7 @@ snapshots:
 
   '@types/ioredis-mock@8.2.5':
     dependencies:
-      '@types/node': 22.10.5
+      '@types/node': 20.17.11
       ioredis: 5.4.2
     transitivePeerDependencies:
       - supports-color

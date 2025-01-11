@@ -1,0 +1,84 @@
+import {
+  ExpectTestpointFlowData,
+  ScreenShotTestpointFlowData,
+} from '../index.type';
+import {
+  validateExpectTestpointFlowData,
+  validateScreenShotTestpointFlowData,
+} from '../index.validator';
+
+describe('TestpointFlowDataValidator - ScreenShot', () => {
+  it('应该正确验证流程数据', () => {
+    const flowdata: ScreenShotTestpointFlowData = {
+      type: 'testpoint',
+      detail: {
+        name: 'test',
+        score: 100,
+        type: 'screenshot',
+        root: 'root',
+        threshold: 0.1,
+      },
+    };
+
+    expect(validateScreenShotTestpointFlowData(flowdata)).toHaveProperty(
+      'ok',
+      true,
+    );
+  });
+
+  it('应该返回 false，因为缺少root字段', () => {
+    const flowdata: any = {
+      type: 'testpoint',
+      detail: {
+        name: 'test',
+        score: 100,
+        type: 'screenshot',
+        threshold: 0.1,
+      },
+    };
+
+    expect(validateScreenShotTestpointFlowData(flowdata)).toHaveProperty(
+      'ok',
+      false,
+    );
+  });
+});
+
+describe('TestpointFlowDataValidator - Expect', () => {
+  it('应该正确验证流程数据', () => {
+    const flowdata: ExpectTestpointFlowData = {
+      type: 'testpoint',
+      detail: {
+        name: 'test',
+        score: 100,
+        type: 'expect',
+        expect: 'expect',
+        selector: 'selector',
+        text: 'text',
+      },
+    };
+
+    expect(validateExpectTestpointFlowData(flowdata)).toHaveProperty(
+      'ok',
+      true,
+    );
+  });
+
+  it('应该返回 false，因为缺少expect字段', () => {
+    const flowdata: any = {
+      type: 'testpoint',
+      detail: {
+        name: 'test',
+        score: 100,
+        type: 'expect',
+        selector: 'selector',
+        text: 'text',
+      },
+    };
+
+    expect(validateExpectTestpointFlowData(flowdata)).toHaveProperty(
+      'ok',
+      false,
+    );
+  });
+});

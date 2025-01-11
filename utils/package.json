@@ -27,5 +27,8 @@
       ],
       "coverageDirectory": "../coverage",
       "testEnvironment": "node"
+   },
+   "dependencies": {
+      "vue": "^3.5.13"
    }
 }
