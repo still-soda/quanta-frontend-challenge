@@ -1,4 +1,8 @@
-import { MoveMouseFlowData, ClickMouseFlowData } from './mouse-flow-data.type';
+import {
+  MoveMouseFlowData,
+  ClickMouseFlowData,
+  ScrollMouseFlowData,
+} from './mouse-flow-data.type';
 import { fit, Optional } from '@challenge/utils';
 
 export function validateMoveMouseFlowData(
@@ -29,7 +33,25 @@ export function validateClickMouseFlowData(
     {
       type: 'mouse',
       detail: {
-        type: 'click',
+        type: ['click', 'dbclick'],
+      },
+    },
+    shouldThrow,
+  );
+}
+
+export function validateScrollMouseFlowData(
+  data: ScrollMouseFlowData,
+  shouldThrow = false,
+) {
+  return fit(
+    data,
+    {
+      type: 'mouse',
+      detail: {
+        type: 'scroll',
+        x: Optional('number'),
+        y: Optional('number'),
       },
     },
     shouldThrow,

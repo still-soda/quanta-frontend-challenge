@@ -6,6 +6,7 @@ import * as TestpointsFlowDataValidators from './testpoints/testpoints-flow-data
 export const dataValidators = [
   MouseFlowDataValidators.validateClickMouseFlowData,
   MouseFlowDataValidators.validateMoveMouseFlowData,
+  MouseFlowDataValidators.validateScrollMouseFlowData,
   TestpointsFlowDataValidators.validateExpectTestpointFlowData,
   TestpointsFlowDataValidators.validateScreenShotTestpointFlowData,
 ];
