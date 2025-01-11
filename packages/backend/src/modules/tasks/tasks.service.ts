@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FlowDataDto } from './dto/flow-data.dto';
 import { AssetsService } from '../assets/assets.service';
-import {
-  dataValidators,
-  Validator,
-} from './core/flow-data-types/index.validator';
+import { dataValidators, Validator } from './core/flow-data/index.validator';
 import { ChallengesService } from '../challenges/challenges.service';
 
 @Injectable()
@@ -47,7 +44,7 @@ export class TasksService {
       );
       return reuslt;
     } catch (error) {
-      throw new Error('Failed to serialize flow data');
+      throw new Error(`Failed to serialize flow data: ${error}`);
     }
   }
 
