@@ -52,6 +52,13 @@ describe('AssetsService', () => {
     expect(jpgResult.fileName).toMatch(
       /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.jpg$/,
     );
+    // buffer
+    const buffer = Buffer.from('test');
+    const bufferResult = await service.saveFile(buffer, 'test.bin');
+    expect(bufferResult.ok).toBe(true);
+    expect(bufferResult.fileName).toMatch(
+      /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.bin$/,
+    );
 
     fileNames.push(txtResult.fileName, jpgResult.fileName);
   });
@@ -68,6 +75,13 @@ describe('AssetsService', () => {
     expect(jpgResult.ok).toBe(true);
     expect(jpgResult.fileName).toMatch(
       /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.jpg$/,
+    );
+    // buffer
+    const buffer = Buffer.from('test');
+    const bufferResult = await service.saveFileAsStatic(buffer, 'test.bin');
+    expect(bufferResult.ok).toBe(true);
+    expect(bufferResult.fileName).toMatch(
+      /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.bin$/,
     );
 
     staticFileNames.push(txtResult.fileName, jpgResult.fileName);

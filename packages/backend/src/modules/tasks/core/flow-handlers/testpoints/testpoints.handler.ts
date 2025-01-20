@@ -5,6 +5,7 @@ import {
 } from '../../flow-data';
 import { AssetsService } from 'src/modules/assets/assets.service';
 import { compareValue } from '../../utils/compare.util';
+import { Jimp, diff } from 'jimp';
 
 interface TestpointActionResult {
   msg: string;
@@ -127,17 +128,56 @@ export async function handleExpectTestpointAction(options: {
   return { msg: '', score: 0 };
 }
 
-/** @todo */
+/**
+ * 处理截图测试点的前置操作，生成对应根元素的截图并保存
+ * @param options
+ * - `page`: 页面
+ * - `detail`: 流程数据
+ * - `assetsService`: 资源服务
+ * @returns 测试点结果
+ * - `msg`: 消息
+ * - `testImageName`: 测试图片名称
+ * - `score`: 分数
+ */
 export async function handleScreenShotTestpointPreAction(options: {
   page: Page;
   detail: ScreenShotTestpointFlowData['detail'];
   assetsService: AssetsService;
 }): Promise<TestpointPreActionResult> {
   const { page, detail, assetsService } = options;
-  return { msg: '', testImageName: '', score: 0 };
+
+  const rootElement = page.locator(detail.root);
+  if ((await rootElement.count()) === 0) {
+    return {
+      msg: `期望选择器 ${detail.root} 存在，实际值不存在`,
+      testImageName: '',
+      score: 0,
+    };
+  }
+
+  const screenshot = await rootElement.screenshot();
+
+  const { ok, fileName } = await assetsService.saveFile(screenshot, '.png');
+
+  return {
+    msg: ok ? 'ok' : 'fail',
+    testImageName: fileName,
+    score: ok ? detail.score : 0,
+  };
 }
 
-/** @todo */
+/**
+ * 处理截图测试点。将会对比当前页面与预期图片的相似度。
+ * @param options
+ * - `page`: 页面
+ * - `detail`: 流程数据
+ * - `testImageName`: 测试图片名称
+ * - `assetsService`: 资源服务
+ * - `threshold`: 相似度阈值
+ * @returns 测试点结果
+ * - `msg`: 消息
+ * - `score`: 分数
+ */
 export async function handleScreenShotTestpointAction(options: {
   page: Page;
   detail: ScreenShotTestpointFlowData['detail'];
@@ -145,5 +185,32 @@ export async function handleScreenShotTestpointAction(options: {
   assetsService: AssetsService;
 }): Promise<TestpointActionResult> {
   const { page, detail, testImageName, assetsService } = options;
+  const { threshold, root, score } = detail;
+
+  const rootElement = page.locator(root);
+  if ((await rootElement.count()) === 0) {
+    return { msg: `期望选择器 ${root} 存在，实际值不存在`, score: 0 };
+  }
+
+  if (!assetsService.isFileExists(testImageName).exists) {
+    return { msg: `参考图片 ${testImageName} 不存在`, score: 0 };
+  }
+
+  const screenshot = await rootElement.screenshot();
+  const userImg = await Jimp.read(screenshot);
+  const testImg = await Jimp.read(assetsService.getFile(testImageName));
+  const { percent } = diff(userImg, testImg);
+
+  const similarity = 1 - percent;
+
+  if (similarity >= threshold) {
+    return { msg: 'ok', score };
+  } else {
+    return {
+      msg: `相似度 ${similarity * 100}% 低于阈值 ${threshold * 100}%`,
+      score: 0,
+    };
+  }
+
   return { msg: '', score: 0 };
 }

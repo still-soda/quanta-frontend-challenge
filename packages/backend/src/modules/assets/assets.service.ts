@@ -55,9 +55,12 @@ export class AssetsService {
     }
   }
 
-  async saveFile(file: File, name: string, dontRename = false) {
+  async saveFile(file: File | Buffer, name: string, dontRename = false) {
     const fileName = dontRename ? name : convertNameToUuid(name);
-    const buffer = new Uint8Array(await file.arrayBuffer());
+    const buffer =
+      file instanceof Buffer
+        ? file
+        : new Uint8Array(await (file as File).arrayBuffer());
     try {
       await this.createDirectoryIfNotExists(this.FILE_ROOT);
       fs.writeFileSync(`${this.FILE_ROOT}/${fileName}`, buffer);
@@ -68,9 +71,16 @@ export class AssetsService {
     }
   }
 
-  async saveFileAsStatic(file: File, name: string, dontRename = false) {
+  async saveFileAsStatic(
+    file: File | Buffer,
+    name: string,
+    dontRename = false,
+  ) {
     const fileName = dontRename ? name : convertNameToUuid(name);
-    const buffer = new Uint8Array(await file.arrayBuffer());
+    const buffer =
+      file instanceof Buffer
+        ? file
+        : new Uint8Array(await (file as File).arrayBuffer());
     try {
       await this.createDirectoryIfNotExists(this.STATIC_ROOT);
       fs.writeFileSync(`${this.STATIC_ROOT}/${fileName}`, buffer);

@@ -10,7 +10,7 @@ import { Browser, chromium } from 'playwright';
 import { createEnvConfModule } from '../../../../../utils/create-env-conf.utils';
 
 describe('Testpoints Handler', () => {
-  let assetsServiceSpy: jest.Mocked<AssetsService>;
+  let assetsService: AssetsService;
   let browser: Browser;
 
   beforeAll(async () => {
@@ -18,8 +18,7 @@ describe('Testpoints Handler', () => {
       imports: [AssetsModule, createEnvConfModule()],
     }).compile();
 
-    const assetsService = module.get<AssetsService>(AssetsService);
-    assetsServiceSpy = jest.mocked(assetsService);
+    assetsService = module.get<AssetsService>(AssetsService);
 
     browser = await chromium.launch({ headless: true });
   });
@@ -491,7 +490,204 @@ describe('Testpoints Handler', () => {
     });
   });
 
-  describe('handleScreenShotTestpointPreAction', () => {});
+  describe('handleScreenShotTestpointPreAction', () => {
+    it('应该能够正确产生截图（返回结果正确）', async () => {
+      const page = await browser.newPage();
+      await page.setContent('<div id="test">123</div>');
 
-  describe('handleScreenShotTestpointAction', () => {});
+      const { msg, score, testImageName } =
+        await handleScreenShotTestpointPreAction({
+          page,
+          detail: {
+            name: 'test',
+            score: 20,
+            type: 'screenshot',
+            root: '#test',
+            threshold: 0.9,
+          },
+          assetsService,
+        });
+      expect(msg).toBe('ok');
+      expect(testImageName).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}.png$/,
+      );
+      expect(score).toBe(20);
+      await page.close();
+    });
+
+    it('应该能够正确产生截图（存在截图）', async () => {
+      const page = await browser.newPage();
+      await page.setContent('<div id="test">123</div>');
+
+      const { testImageName } = await handleScreenShotTestpointPreAction({
+        page,
+        detail: {
+          name: 'test',
+          score: 20,
+          type: 'screenshot',
+          root: '#test',
+          threshold: 0.9,
+        },
+        assetsService,
+      });
+      expect(testImageName).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}.png$/,
+      );
+
+      const { exists } = assetsService.isFileExists(testImageName);
+      expect(exists).toBe(true);
+
+      await page.close();
+    });
+
+    it('不存在元素时不能产生截图（返回结果正确）', async () => {
+      const page = await browser.newPage();
+      await page.setContent('<div id="test">123</div>');
+
+      const { msg, score, testImageName } =
+        await handleScreenShotTestpointPreAction({
+          page,
+          detail: {
+            name: 'test',
+            score: 20,
+            type: 'screenshot',
+            root: '#test1',
+            threshold: 0.9,
+          },
+          assetsService,
+        });
+      expect(msg).toBe('期望选择器 #test1 存在，实际值不存在');
+      expect(testImageName).toBe('');
+      expect(score).toBe(0);
+      await page.close();
+    });
+  });
+
+  describe('handleScreenShotTestpointAction', () => {
+    it('应该能够正确判断截图是否正确（正确）', async () => {
+      const page = await browser.newPage();
+      await page.setContent('<div id="test">123</div>');
+
+      const { testImageName } = await handleScreenShotTestpointPreAction({
+        page,
+        detail: {
+          name: 'test',
+          score: 20,
+          type: 'screenshot',
+          root: '#test',
+          threshold: 0.9,
+        },
+        assetsService,
+      });
+      expect(testImageName).not.toBe('');
+
+      const { msg, score } = await handleScreenShotTestpointAction({
+        page,
+        detail: {
+          name: 'test',
+          score: 20,
+          type: 'screenshot',
+          threshold: 1,
+          root: '#test',
+        },
+        testImageName,
+        assetsService,
+      });
+      expect(msg).toBe('ok');
+      expect(score).toBe(20);
+      await page.close();
+    });
+
+    it('应该能够正确判断截图是否正确（错误）', async () => {
+      const page = await browser.newPage();
+      await page.setContent('<div id="test">123</div>');
+
+      const { testImageName } = await handleScreenShotTestpointPreAction({
+        page,
+        detail: {
+          name: 'test',
+          score: 20,
+          type: 'screenshot',
+          root: '#test',
+          threshold: 0.9,
+        },
+        assetsService,
+      });
+      expect(testImageName).not.toBe('');
+
+      await page.setContent(
+        '<div id="test" style="background: red">1234</div>',
+      );
+
+      const { msg, score } = await handleScreenShotTestpointAction({
+        page,
+        detail: {
+          name: 'test',
+          score: 20,
+          type: 'screenshot',
+          threshold: 0.9,
+          root: '#test',
+        },
+        testImageName,
+        assetsService,
+      });
+      expect(msg).toMatch(/相似度 \d+\.?\d*% 低于阈值 90%/);
+      expect(score).toBe(0);
+      await page.close();
+    });
+
+    it('不存在元素时不能产生截图应该返回 0 分', async () => {
+      const page = await browser.newPage();
+      await page.setContent('<div id="test">123</div>');
+
+      const { testImageName } = await handleScreenShotTestpointPreAction({
+        page,
+        detail: {
+          name: 'test',
+          score: 20,
+          type: 'screenshot',
+          root: '#test',
+          threshold: 0.9,
+        },
+        assetsService,
+      });
+
+      const { msg, score } = await handleScreenShotTestpointAction({
+        page,
+        detail: {
+          name: 'test',
+          score: 20,
+          type: 'screenshot',
+          threshold: 0.9,
+          root: '#test1',
+        },
+        testImageName,
+        assetsService,
+      });
+      expect(msg).toBe('期望选择器 #test1 存在，实际值不存在');
+      expect(score).toBe(0);
+      await page.close();
+    });
+
+    it('找不到参考图片时应该抛出异常并返回 0 分', async () => {
+      const page = await browser.newPage();
+      await page.setContent('<div id="test">123</div>');
+
+      const { msg, score } = await handleScreenShotTestpointAction({
+        page,
+        detail: {
+          name: 'test',
+          score: 20,
+          type: 'screenshot',
+          threshold: 0.9,
+          root: '#test',
+        },
+        testImageName: 'not-exists.png',
+        assetsService,
+      });
+      expect(msg).toBe('参考图片 not-exists.png 不存在');
+      expect(score).toBe(0);
+      await page.close();
+    });
+  });
 });
