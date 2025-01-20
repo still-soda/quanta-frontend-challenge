@@ -211,6 +211,4 @@ export async function handleScreenShotTestpointAction(options: {
       score: 0,
     };
   }
-
-  return { msg: '', score: 0 };
 }

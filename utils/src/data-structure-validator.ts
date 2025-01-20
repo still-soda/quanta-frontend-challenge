@@ -25,7 +25,12 @@ const BASIC_TYPES = [
 ] as const;
 const BASIC_TYPES_SET = new Set(BASIC_TYPES);
 
-export function Optional(val: any) {
+type OptionalValue<T> = {
+   __optional__: true;
+   value: T;
+};
+
+export function Optional<T>(val: T): OptionalValue<T> {
    return {
       __optional__: true,
       value: val,
