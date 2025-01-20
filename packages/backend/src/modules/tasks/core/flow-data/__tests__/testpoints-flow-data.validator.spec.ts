@@ -49,9 +49,8 @@ describe('TestpointFlowDataValidator - Expect', () => {
         name: 'test',
         score: 100,
         type: 'expect',
-        expect: 'expect',
+        exist: true,
         selector: 'selector',
-        text: 'text',
       },
     };
 
@@ -61,13 +60,12 @@ describe('TestpointFlowDataValidator - Expect', () => {
     );
   });
 
-  it('应该返回 false，因为缺少expect字段', () => {
+  it('应该返回 false，因为缺少type字段', () => {
     const flowdata: any = {
       type: 'testpoint',
       detail: {
         name: 'test',
         score: 100,
-        type: 'expect',
         selector: 'selector',
         text: 'text',
       },

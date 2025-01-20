@@ -1,4 +1,4 @@
-import { fit } from '@challenge/utils';
+import { fit, Optional } from '@challenge/utils';
 import {
   ExpectTestpointFlowData,
   ScreenShotTestpointFlowData,
@@ -48,9 +48,11 @@ export function validateExpectTestpointFlowData(
         name: 'string',
         score: 'number',
         type: 'expect',
-        expect: 'string',
-        selector: 'string',
-        text: 'string',
+        exsit: Optional('boolean'),
+        selector: Optional('string'),
+        text: Optional('string'),
+        attr: Optional('string'),
+        typeParser: Optional(['text', 'number', 'boolean']),
       },
     },
     shouldThrow,

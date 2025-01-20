@@ -26,8 +26,12 @@ export interface ExpectTestpointFlowData extends TestpointFlowData {
     name: string;
     score: number;
     type: 'expect';
-    expect: string;
-    selector: string;
-    text: string;
+    exist?: boolean;
+    selector?: string;
+    text?: string;
+    attr?: string;
+    value?: string;
+    typeParser?: 'text' | 'number' | 'boolean';
+    compare?: 'eq' | 'ne' | 'gt' | 'lt' | 'gte' | 'lte';
   };
 }
