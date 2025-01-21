@@ -70,7 +70,9 @@ export async function handleExpectTestpointAction(options: {
     const exist = !!(await page.$(detail.selector));
     if (exist !== detail.exist) {
       return {
-        msg: `期望选择器 ${detail.selector} ${detail.exist ? '存在' : '不存在'}，但实际${exist ? '存在' : '不存在'}`,
+        msg: `期望选择器 ${detail.selector} ${
+          detail.exist ? '存在' : '不存在'
+        }，但实际${exist ? '存在' : '不存在'}`,
         score: 0,
       };
     }

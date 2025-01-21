@@ -1,17 +1,11 @@
 import { Page } from 'playwright';
 import {
-  MouseFlowData,
-  TestpointFlowData,
-  TriggerFlowData,
-} from '../flow-data';
-import {
   handleMouseActions,
   handleTriggerAction,
 } from './actions/actions.handler';
+import { ActionData } from './index.type';
 
-type Data = TestpointFlowData | MouseFlowData | TriggerFlowData | any;
-
-export function handleActions(page: Page, data: Data) {
+export function handleActions(page: Page, data: ActionData) {
   if (data.type === 'mouse') {
     return handleMouseActions(page, data.detail);
   }
