@@ -1,9 +1,16 @@
+/// 这个文件导出所有与流程数据 (FlowData) 相关的内容。
+/// 包括数据验证器 (Validators) 和数据类型 (Types)。
+/// @author: still-soda
+
 // VALIDATORS
 import * as MouseFlowDataValidators from './actions/mouse-flow-data.validator';
 import * as TriggerFlowDataValidators from './actions/trigger-flow-data.validator';
 import { FlowData } from './flow-data.type';
 import * as TestpointsFlowDataValidators from './testpoints/testpoints-flow-data.validator';
 
+/**
+ * 所有数据验证器。
+ */
 export const dataValidators = [
   MouseFlowDataValidators.validateClickMouseFlowData,
   MouseFlowDataValidators.validateMoveMouseFlowData,
