@@ -3,20 +3,20 @@ import {
   handleMouseActions,
   handleTriggerAction,
 } from './actions/actions.handler';
-import { ActionData, ActionResult } from './index.type';
+import { HandlerOptions, HandleResult } from './index.type';
 import {
   handleExpectTestpointAction,
   handleScreenShotTestpointAction,
 } from './testpoints/testpoints.handler';
 
 /**
- * 构造测试结果，返回 ActionResult 对象。
+ * 构造测试结果，返回 HandleResult 对象。
  * @param success 是否成功
  * @param msg 测试结果消息
  * @param score 测试结果分数
  * @returns 测试结果对象
  */
-function res(success: boolean, msg: string, score: number): ActionResult {
+function res(success: boolean, msg: string, score: number): HandleResult {
   return { success, msg, score };
 }
 
@@ -39,8 +39,8 @@ function res(success: boolean, msg: string, score: number): ActionResult {
  */
 export default async function handleOneFlowData(
   page: Page,
-  data: ActionData,
-): Promise<ActionResult> {
+  data: HandlerOptions,
+): Promise<HandleResult> {
   if (data.type === 'mouse') {
     try {
       await handleMouseActions(page, data.detail);
