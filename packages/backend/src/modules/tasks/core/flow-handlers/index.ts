@@ -1,6 +1,6 @@
 import { Page } from 'playwright';
 import {
-  handleMouseActions,
+  handleMouseAction,
   handleTriggerAction,
 } from './actions/actions.handler';
 import { HandlerOptions, HandlingResult } from './index.type';
@@ -29,16 +29,19 @@ function res(success: boolean, msg: string, score: number): HandlingResult {
  * （一般只有在抛出异常时才会失败，正常测试得分为 0 不算失败）
  * - `score`: 测试结果分数
  *
+ * 当 `success` 为 `false` 的时候，意味着抛出了异常，此时 `score` 为 0，
+ * `msg` 为异常消息。需要在外部处理异常。
+ *
  * @param page 页面
  * @param data 流程数据
  */
-export default async function handleOneFlowData(
+export async function handleOneFlowData(
   page: Page,
   data: HandlerOptions,
 ): Promise<HandlingResult> {
   if (data.type === 'mouse') {
     try {
-      await handleMouseActions(page, data.detail);
+      await handleMouseAction({ page, detail: data.detail });
     } catch (error) {
       return res(false, error.message, 0);
     }
@@ -47,7 +50,7 @@ export default async function handleOneFlowData(
 
   if (data.type === 'trigger') {
     try {
-      await handleTriggerAction(page, data.detail);
+      await handleTriggerAction({ page, detail: data.detail });
     } catch (error) {
       return res(false, error.message, 0);
     }

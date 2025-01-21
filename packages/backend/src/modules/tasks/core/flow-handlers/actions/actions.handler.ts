@@ -41,10 +41,12 @@ export async function ensureSelectorExists(page: Page, selector: string) {
   }
 }
 
-export async function handleMouseActions(
-  page: Page,
-  detail: MouseActionsDetail,
-) {
+export async function handleMouseAction(options: {
+  page: Page;
+  detail: MouseActionsDetail;
+}) {
+  const { page, detail } = options;
+
   // 移动
   if (detail.type === 'move') {
     await page.mouse.move(detail.x ?? 0, detail.y ?? 0);
@@ -80,10 +82,12 @@ export async function handleMouseActions(
   throw new Error('未知的鼠标事件');
 }
 
-export async function handleTriggerAction(
-  page: Page,
-  detail: TriggerActionsDetail,
-) {
+export async function handleTriggerAction(options: {
+  page: Page;
+  detail: TriggerActionsDetail;
+}) {
+  const { page, detail } = options;
+
   if (detail.type === 'hover') {
     await ensureSelectorExists(page, detail.selector);
     await page.hover(detail.selector);
