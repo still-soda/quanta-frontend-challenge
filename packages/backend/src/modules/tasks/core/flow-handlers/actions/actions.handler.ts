@@ -34,6 +34,13 @@ const click = async (
   count > 1 && (await click(page, button, count - 1));
 };
 
+export async function ensureSelectorExists(page: Page, selector: string) {
+  const el = page.locator(selector);
+  if ((await el.count()) === 0) {
+    throw new Error(`选择器 ${selector} 不存在`);
+  }
+}
+
 export async function handleMouseActions(
   page: Page,
   detail: MouseActionsDetail,
@@ -47,14 +54,20 @@ export async function handleMouseActions(
   // 点击
   if (detail.type === 'click' || detail.type === 'dbclick') {
     const isDbClick = detail.type === 'dbclick';
+
     if (detail.x || detail.y) {
       await page.mouse.move(detail.x, detail.y);
       await click(page, detail.button, isDbClick ? 2 : 1);
-    } else if (detail.selector) {
+      return;
+    }
+
+    if (detail.selector) {
+      await ensureSelectorExists(page, detail.selector);
       const options = { button: detail.button };
       await page.click(detail.selector, options);
       isDbClick && (await page.click(detail.selector, options));
     }
+
     return;
   }
 
@@ -72,26 +85,32 @@ export async function handleTriggerAction(
   detail: TriggerActionsDetail,
 ) {
   if (detail.type === 'hover') {
+    await ensureSelectorExists(page, detail.selector);
     await page.hover(detail.selector);
     return;
   }
 
   if (detail.type === 'focus') {
+    await ensureSelectorExists(page, detail.selector);
     await page.focus(detail.selector);
     return;
   }
 
   if (detail.type === 'blur') {
+    await ensureSelectorExists(page, detail.selector);
     await page.$eval(detail.selector, (el: any) => el.blur());
     return;
   }
 
   if (detail.type === 'drag') {
+    await ensureSelectorExists(page, detail.from);
+    await ensureSelectorExists(page, detail.to);
     await page.dragAndDrop(detail.from, detail.to);
     return;
   }
 
   if (detail.type === 'input') {
+    await ensureSelectorExists(page, detail.selector);
     await page.fill(detail.selector, detail.value);
     return;
   }

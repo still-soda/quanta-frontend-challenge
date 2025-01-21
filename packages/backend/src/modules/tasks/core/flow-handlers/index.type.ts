@@ -17,10 +17,13 @@ import {
 
 /**
  * 测试点 action-data
+ *
+ * 当 `detail` 为 `ScreenShotTestpointFlowData['detail']` 时，
+ * 需要携带 `testImgBuffer` 作为测试图片
  */
 export interface TestpointActionData extends TestpointFlowData {
   detail:
-    | ScreenShotTestpointFlowData['detail']
+    | (ScreenShotTestpointFlowData['detail'] & { testImgBuffer: Buffer })
     | ExpectTestpointFlowData['detail'];
 }
 
@@ -45,3 +48,15 @@ export type ActionData =
   | TestpointActionData
   | MouseActionData
   | TriggerActionData;
+
+/**
+ * 鼠标事件和触发事件等操作的结果
+ * - `msg`: 操作结果消息
+ * - `success`: 操作是否成功
+ * - `score`: 操作结果分数，非测试点操作一般为 0
+ */
+export interface ActionResult {
+  msg: string;
+  success: boolean;
+  score: number;
+}

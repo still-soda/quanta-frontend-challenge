@@ -6,12 +6,12 @@ import {
 import { compareValue } from '../../utils/compare.util';
 import { Jimp, diff } from 'jimp';
 
-interface TestpointActionResult {
+export interface TestpointActionResult {
   msg: string;
   score: number;
 }
 
-interface TestpointPreActionResult {
+export interface TestpointPreActionResult {
   msg: string;
   generatedImgBuffer?: Buffer;
   score: number;
