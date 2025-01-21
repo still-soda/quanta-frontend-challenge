@@ -3,7 +3,6 @@ import {
   ExpectTestpointFlowData,
   ScreenShotTestpointFlowData,
 } from '../../flow-data';
-import { AssetsService } from 'src/modules/assets/assets.service';
 import { compareValue } from '../../utils/compare.util';
 import { Jimp, diff } from 'jimp';
 
@@ -14,7 +13,7 @@ interface TestpointActionResult {
 
 interface TestpointPreActionResult {
   msg: string;
-  testImageName?: string;
+  generatedImgBuffer?: Buffer;
   score: number;
 }
 
@@ -131,40 +130,36 @@ export async function handleExpectTestpointAction(options: {
 }
 
 /**
- * 处理截图测试点的前置操作，生成对应根元素的截图并保存
+ * 处理截图测试点的前置操作，生成对应根元素的截图并返回
  * @param options
  * - `page`: 页面
  * - `detail`: 流程数据
- * - `assetsService`: 资源服务
  * @returns 测试点结果
  * - `msg`: 消息
- * - `testImageName`: 测试图片名称
+ * - `generatedImgBuffer`: 生成的图片缓冲区
  * - `score`: 分数
  */
 export async function handleScreenShotTestpointPreAction(options: {
   page: Page;
   detail: ScreenShotTestpointFlowData['detail'];
-  assetsService: AssetsService;
 }): Promise<TestpointPreActionResult> {
-  const { page, detail, assetsService } = options;
+  const { page, detail } = options;
 
   const rootElement = page.locator(detail.root);
   if ((await rootElement.count()) === 0) {
     return {
       msg: `期望选择器 ${detail.root} 存在，实际值不存在`,
-      testImageName: '',
+      generatedImgBuffer: null,
       score: 0,
     };
   }
 
   const screenshot = await rootElement.screenshot();
 
-  const { ok, fileName } = await assetsService.saveFile(screenshot, '.png');
-
   return {
-    msg: ok ? 'ok' : 'fail',
-    testImageName: fileName,
-    score: ok ? detail.score : 0,
+    msg: 'ok',
+    generatedImgBuffer: screenshot,
+    score: detail.score,
   };
 }
 
@@ -173,8 +168,7 @@ export async function handleScreenShotTestpointPreAction(options: {
  * @param options
  * - `page`: 页面
  * - `detail`: 流程数据
- * - `testImageName`: 测试图片名称
- * - `assetsService`: 资源服务
+ * - `testImgBuffer`: 预期图片缓冲区
  * - `threshold`: 相似度阈值
  * @returns 测试点结果
  * - `msg`: 消息
@@ -183,10 +177,9 @@ export async function handleScreenShotTestpointPreAction(options: {
 export async function handleScreenShotTestpointAction(options: {
   page: Page;
   detail: ScreenShotTestpointFlowData['detail'];
-  testImageName: string;
-  assetsService: AssetsService;
+  testImgBuffer: Buffer;
 }): Promise<TestpointActionResult> {
-  const { page, detail, testImageName, assetsService } = options;
+  const { page, detail, testImgBuffer } = options;
   const { threshold, root, score } = detail;
 
   const rootElement = page.locator(root);
@@ -194,13 +187,9 @@ export async function handleScreenShotTestpointAction(options: {
     return { msg: `期望选择器 ${root} 存在，实际值不存在`, score: 0 };
   }
 
-  if (!assetsService.isFileExists(testImageName).exists) {
-    return { msg: `参考图片 ${testImageName} 不存在`, score: 0 };
-  }
-
   const screenshot = await rootElement.screenshot();
   const userImg = await Jimp.read(screenshot);
-  const testImg = await Jimp.read(assetsService.getFile(testImageName));
+  const testImg = await Jimp.read(testImgBuffer);
   const { percent } = diff(userImg, testImg);
 
   const similarity = 1 - percent;

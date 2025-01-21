@@ -4,27 +4,24 @@ import {
   handleScreenShotTestpointAction,
   handleScreenShotTestpointPreAction,
 } from '../testpoints/testpoints.handler';
-import { AssetsModule } from '../../../../assets/assets.module';
-import { AssetsService } from '../../../../assets/assets.service';
 import { Browser, chromium } from 'playwright';
 import { createEnvConfModule } from '../../../../../utils/create-env-conf.utils';
 
 describe('Testpoints Handler', () => {
-  let assetsService: AssetsService;
+  let module: TestingModule;
   let browser: Browser;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [AssetsModule, createEnvConfModule()],
+    module = await Test.createTestingModule({
+      imports: [createEnvConfModule()],
     }).compile();
-
-    assetsService = module.get<AssetsService>(AssetsService);
 
     browser = await chromium.launch({ headless: true });
   });
 
   afterAll(() => {
     browser.close();
+    module.close();
   });
 
   describe('handleExpectTestpointAction', () => {
@@ -495,7 +492,7 @@ describe('Testpoints Handler', () => {
       const page = await browser.newPage();
       await page.setContent('<div id="test">123</div>');
 
-      const { msg, score, testImageName } =
+      const { msg, score, generatedImgBuffer } =
         await handleScreenShotTestpointPreAction({
           page,
           detail: {
@@ -505,38 +502,10 @@ describe('Testpoints Handler', () => {
             root: '#test',
             threshold: 0.9,
           },
-          assetsService,
         });
       expect(msg).toBe('ok');
-      expect(testImageName).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}.png$/,
-      );
+      expect(generatedImgBuffer instanceof Buffer).toBe(true);
       expect(score).toBe(20);
-      await page.close();
-    });
-
-    it('应该能够正确产生截图（存在截图）', async () => {
-      const page = await browser.newPage();
-      await page.setContent('<div id="test">123</div>');
-
-      const { testImageName } = await handleScreenShotTestpointPreAction({
-        page,
-        detail: {
-          name: 'test',
-          score: 20,
-          type: 'screenshot',
-          root: '#test',
-          threshold: 0.9,
-        },
-        assetsService,
-      });
-      expect(testImageName).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}.png$/,
-      );
-
-      const { exists } = assetsService.isFileExists(testImageName);
-      expect(exists).toBe(true);
-
       await page.close();
     });
 
@@ -544,7 +513,7 @@ describe('Testpoints Handler', () => {
       const page = await browser.newPage();
       await page.setContent('<div id="test">123</div>');
 
-      const { msg, score, testImageName } =
+      const { msg, score, generatedImgBuffer } =
         await handleScreenShotTestpointPreAction({
           page,
           detail: {
@@ -554,10 +523,9 @@ describe('Testpoints Handler', () => {
             root: '#test1',
             threshold: 0.9,
           },
-          assetsService,
         });
       expect(msg).toBe('期望选择器 #test1 存在，实际值不存在');
-      expect(testImageName).toBe('');
+      expect(generatedImgBuffer).toBe(null);
       expect(score).toBe(0);
       await page.close();
     });
@@ -568,7 +536,7 @@ describe('Testpoints Handler', () => {
       const page = await browser.newPage();
       await page.setContent('<div id="test">123</div>');
 
-      const { testImageName } = await handleScreenShotTestpointPreAction({
+      const { generatedImgBuffer } = await handleScreenShotTestpointPreAction({
         page,
         detail: {
           name: 'test',
@@ -577,9 +545,8 @@ describe('Testpoints Handler', () => {
           root: '#test',
           threshold: 0.9,
         },
-        assetsService,
       });
-      expect(testImageName).not.toBe('');
+      expect(generatedImgBuffer instanceof Buffer).toBe(true);
 
       const { msg, score } = await handleScreenShotTestpointAction({
         page,
@@ -590,8 +557,7 @@ describe('Testpoints Handler', () => {
           threshold: 1,
           root: '#test',
         },
-        testImageName,
-        assetsService,
+        testImgBuffer: generatedImgBuffer,
       });
       expect(msg).toBe('ok');
       expect(score).toBe(20);
@@ -602,7 +568,7 @@ describe('Testpoints Handler', () => {
       const page = await browser.newPage();
       await page.setContent('<div id="test">123</div>');
 
-      const { testImageName } = await handleScreenShotTestpointPreAction({
+      const { generatedImgBuffer } = await handleScreenShotTestpointPreAction({
         page,
         detail: {
           name: 'test',
@@ -611,9 +577,8 @@ describe('Testpoints Handler', () => {
           root: '#test',
           threshold: 0.9,
         },
-        assetsService,
       });
-      expect(testImageName).not.toBe('');
+      expect(generatedImgBuffer instanceof Buffer).toBe(true);
 
       await page.setContent(
         '<div id="test" style="background: red">1234</div>',
@@ -628,8 +593,7 @@ describe('Testpoints Handler', () => {
           threshold: 0.9,
           root: '#test',
         },
-        testImageName,
-        assetsService,
+        testImgBuffer: generatedImgBuffer,
       });
       expect(msg).toMatch(/相似度 \d+\.?\d*% 低于阈值 90%/);
       expect(score).toBe(0);
@@ -640,7 +604,7 @@ describe('Testpoints Handler', () => {
       const page = await browser.newPage();
       await page.setContent('<div id="test">123</div>');
 
-      const { testImageName } = await handleScreenShotTestpointPreAction({
+      const { generatedImgBuffer } = await handleScreenShotTestpointPreAction({
         page,
         detail: {
           name: 'test',
@@ -649,8 +613,8 @@ describe('Testpoints Handler', () => {
           root: '#test',
           threshold: 0.9,
         },
-        assetsService,
       });
+      expect(generatedImgBuffer instanceof Buffer).toBe(true);
 
       const { msg, score } = await handleScreenShotTestpointAction({
         page,
@@ -661,31 +625,9 @@ describe('Testpoints Handler', () => {
           threshold: 0.9,
           root: '#test1',
         },
-        testImageName,
-        assetsService,
+        testImgBuffer: generatedImgBuffer,
       });
       expect(msg).toBe('期望选择器 #test1 存在，实际值不存在');
-      expect(score).toBe(0);
-      await page.close();
-    });
-
-    it('找不到参考图片时应该抛出异常并返回 0 分', async () => {
-      const page = await browser.newPage();
-      await page.setContent('<div id="test">123</div>');
-
-      const { msg, score } = await handleScreenShotTestpointAction({
-        page,
-        detail: {
-          name: 'test',
-          score: 20,
-          type: 'screenshot',
-          threshold: 0.9,
-          root: '#test',
-        },
-        testImageName: 'not-exists.png',
-        assetsService,
-      });
-      expect(msg).toBe('参考图片 not-exists.png 不存在');
       expect(score).toBe(0);
       await page.close();
     });
