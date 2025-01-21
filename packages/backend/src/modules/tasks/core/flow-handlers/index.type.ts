@@ -55,7 +55,7 @@ export type HandlerOptions =
  * - `success`: 操作是否成功
  * - `score`: 操作结果分数，非测试点操作一般为 0
  */
-export interface HandleResult {
+export interface HandlingResult {
   msg: string;
   success: boolean;
   score: number;
