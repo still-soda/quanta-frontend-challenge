@@ -1,4 +1,4 @@
-import { convertNameToUuid } from './rename.utils';
+import { convertNameToUuid } from '../rename.utils';
 
 describe('Rename Utils', () => {
   it('应该将名称中的文件名转换为uuid', () => {
