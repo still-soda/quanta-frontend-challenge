@@ -7,7 +7,7 @@ import {
 } from '../../schemas/challenges.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import validateDto from '../../utils/validate-dto.utils';
+import validateData from '../../utils/validate-data.utils';
 
 @Injectable()
 export class ChallengesService {
@@ -17,7 +17,7 @@ export class ChallengesService {
   ) {}
 
   async create(createChallengeDto: CreateChallengeDto) {
-    createChallengeDto = await validateDto(
+    createChallengeDto = await validateData(
       CreateChallengeDto,
       createChallengeDto,
     );
@@ -34,7 +34,7 @@ export class ChallengesService {
   }
 
   async update(id: string, updateChallengeDto: UpdateChallengeDto) {
-    updateChallengeDto = await validateDto(
+    updateChallengeDto = await validateData(
       UpdateChallengeDto,
       updateChallengeDto,
     );

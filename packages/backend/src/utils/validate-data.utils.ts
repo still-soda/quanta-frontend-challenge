@@ -17,7 +17,7 @@ import { validate } from 'class-validator';
  * @param dto 对象
  * @returns 类的实例
  */
-export default async function validateDto<Class extends object>(
+export default async function validateData<Class extends object>(
   constructor: ClassConstructor<Class>,
   dto: Class,
 ): Promise<Class> {

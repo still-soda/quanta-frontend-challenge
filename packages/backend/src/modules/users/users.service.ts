@@ -4,7 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Users, UsersDocument } from '../../schemas/users.schema';
-import validateDto from '../../utils/validate-dto.utils';
+import validateData from '../../utils/validate-data.utils';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +13,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    createUserDto = await validateDto(CreateUserDto, createUserDto);
+    createUserDto = await validateData(CreateUserDto, createUserDto);
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
@@ -27,7 +27,7 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    updateUserDto = await validateDto(UpdateUserDto, updateUserDto);
+    updateUserDto = await validateData(UpdateUserDto, updateUserDto);
     return this.userModel.findByIdAndUpdate({ _id: id }, updateUserDto, {
       new: true,
     });
