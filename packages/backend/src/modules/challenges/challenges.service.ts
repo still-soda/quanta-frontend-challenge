@@ -1,4 +1,4 @@
-import { Injectable, Param } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import {
@@ -7,7 +7,7 @@ import {
 } from '../../schemas/challenges.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { plainToInstance } from 'class-transformer';
+import validateDto from '../../utils/validate-dto.utils';
 
 @Injectable()
 export class ChallengesService {
@@ -16,11 +16,10 @@ export class ChallengesService {
     private readonly challengeModel: Model<ChallengesDocument>,
   ) {}
 
-  create(createChallengeDto: CreateChallengeDto) {
-    createChallengeDto = plainToInstance(
+  async create(createChallengeDto: CreateChallengeDto) {
+    createChallengeDto = await validateDto(
       CreateChallengeDto,
       createChallengeDto,
-      { excludeExtraneousValues: true },
     );
     const createdChallenge = new this.challengeModel(createChallengeDto);
     return createdChallenge.save();
@@ -34,11 +33,10 @@ export class ChallengesService {
     return this.challengeModel.findById(id);
   }
 
-  update(id: string, updateChallengeDto: UpdateChallengeDto) {
-    updateChallengeDto = plainToInstance(
+  async update(id: string, updateChallengeDto: UpdateChallengeDto) {
+    updateChallengeDto = await validateDto(
       UpdateChallengeDto,
       updateChallengeDto,
-      { excludeExtraneousValues: true },
     );
     return this.challengeModel.findByIdAndUpdate(
       { _id: id },
