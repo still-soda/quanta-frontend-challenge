@@ -42,6 +42,8 @@ describe('TasksService', () => {
 
   it('应该正确获取 service', () => {
     expect(tasksService).toBeDefined();
+    expect(assetsService).toBeDefined();
+    expect(challengeService).toBeDefined();
   });
 
   describe('serializeFlowData', () => {

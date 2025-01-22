@@ -5,6 +5,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Users, UsersDocument } from '../../schemas/users.schema';
 import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+
+async function validateDto(dto: any) {
+  const errors = await validate(dto);
+  if (errors.length > 0) {
+    const msg = Object.values(errors[0].constraints)?.[0];
+    throw new Error(msg ?? 'Invalid value');
+  }
+}
 
 @Injectable()
 export class UsersService {
@@ -12,10 +21,11 @@ export class UsersService {
     @InjectModel(Users.name) private readonly userModel: Model<UsersDocument>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
     createUserDto = plainToInstance(CreateUserDto, createUserDto, {
       excludeExtraneousValues: true,
     });
+    await validateDto(createUserDto);
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
@@ -28,10 +38,11 @@ export class UsersService {
     return this.userModel.findById(id);
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     updateUserDto = plainToInstance(UpdateUserDto, updateUserDto, {
       excludeExtraneousValues: true,
     });
+    await validateDto(updateUserDto);
     return this.userModel.findByIdAndUpdate({ _id: id }, updateUserDto, {
       new: true,
     });

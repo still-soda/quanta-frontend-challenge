@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEmail, IsEnum, IsString, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  Length,
+  MinLength,
+} from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -34,6 +41,7 @@ export class CreateUserDto {
     description: '密码',
   })
   @IsString()
+  @MinLength(6, { message: '密码长度不能小于6' })
   @Expose()
   password: string;
 
@@ -50,6 +58,7 @@ export class CreateUserDto {
     example: 'https://www.gravatar.com/avatar/',
     description: '头像URL',
   })
+  @IsOptional()
   @IsString()
   @Expose()
   avatarUrl?: string;
@@ -58,6 +67,7 @@ export class CreateUserDto {
     example: 'signature',
     description: '个性签名',
   })
+  @IsOptional()
   @IsString()
   @Length(0, 100, { message: '个性签名长度不能超过100' })
   @Expose()
@@ -68,6 +78,7 @@ export class CreateUserDto {
     enum: [0, 1],
     description: '角色：0-用户，1-管理员',
   })
+  @IsOptional()
   @IsEnum([0, 1], { message: '角色只能是0或1' })
   @Expose()
   role?: number;

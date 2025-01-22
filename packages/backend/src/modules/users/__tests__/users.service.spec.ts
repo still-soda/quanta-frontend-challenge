@@ -120,160 +120,146 @@ describe('UsersService', () => {
     expect(user).toBeNull();
   });
 
-  it('密码长度小于6字符时应该抛出错误', async () => {
-    try {
-      await service.create({
+  it('密码长度小于6字符时应该抛出错误（create）', async () => {
+    await expect(
+      service.create({
         username: 'test_user',
         email: 'test_user@email.com',
         number: '20231003059',
         password: 'pass',
         phone: '13400011111',
-      });
-    } catch (error) {
-      expect(error.message).toBe('密码长度不能小于6');
-    }
-
-    try {
-      await service.update(userId, {
-        password: 'pass',
-      });
-    } catch (error) {
-      expect(error.message).toBe('密码长度不能小于6');
-    }
+      }),
+    ).rejects.toThrow('密码长度不能小于6');
   });
 
-  it('个性签名长度超过100字符时应该抛出错误', async () => {
-    try {
-      await service.create({
+  it('密码长度小于6字符时应该抛出错误（update）', async () => {
+    await expect(
+      service.update(userId, {
+        password: 'pass',
+      }),
+    ).rejects.toThrow('密码长度不能小于6');
+  });
+
+  it('个性签名长度超过100字符时应该抛出错误（create）', async () => {
+    await expect(
+      service.create({
         username: 'test_user',
         email: 'test_user@email.com',
         number: '20231003059',
         password: 'password',
         phone: '13400011111',
         signature: 'a'.repeat(101),
-      });
-    } catch (error) {
-      expect(error.message).toBe('个性签名长度不能超过100');
-    }
+      }),
+    ).rejects.toThrow('个性签名长度不能超过100');
+  });
 
-    try {
-      await service.update(userId, {
+  it('个性签名长度超过100字符时应该抛出错误（update）', async () => {
+    await expect(
+      service.update(userId, {
         signature: 'a'.repeat(101),
-      });
-    } catch (error) {
-      expect(error.message).toBe('个性签名长度不能超过100');
-    }
+      }),
+    ).rejects.toThrow('个性签名长度不能超过100');
   });
 
-  it('手机号长度不是11字符时应该抛出错误', async () => {
-    try {
-      await service.create({
+  it('手机号长度不是11字符时应该抛出错误（create）', async () => {
+    await expect(
+      service.create({
         username: 'test_user',
         email: 'test_user@email.com',
         number: '20231003059',
         password: 'password',
         phone: '1340001111',
-      });
-    } catch (error) {
-      expect(error.message).toBe('手机号长度必须是11');
-    }
+      }),
+    ).rejects.toThrow('手机号长度必须是11');
+  });
 
-    try {
-      await service.update(userId, {
+  it('手机号长度不是11字符时应该抛出错误（update）', async () => {
+    await expect(
+      service.update(userId, {
         phone: '1340001111',
-      });
-    } catch (error) {
-      expect(error.message).toBe('手机号长度必须是11');
-    }
+      }),
+    ).rejects.toThrow('手机号长度必须是11');
   });
 
-  it('学号长度不是11字符时应该抛出错误', async () => {
-    try {
-      await service.create({
+  it('学号长度不是11字符时应该抛出错误（create）', async () => {
+    expect(
+      service.create({
         username: 'test_user',
         email: 'test_user@email.com',
         number: '2023100305',
         password: 'password',
         phone: '13400011111',
-      });
-    } catch (error) {
-      expect(error.message).toBe('学号长度必须是11');
-    }
-
-    try {
-      await service.update(userId, {
-        number: '2023100305',
-      });
-    } catch (error) {
-      expect(error.message).toBe('学号长度必须是11');
-    }
+      }),
+    ).rejects.toThrow('学号长度必须是11');
   });
 
-  it('邮箱格式不正确时应该抛出错误', async () => {
-    try {
-      await service.create({
+  it('学号长度不是11字符时应该抛出错误（update）', async () => {
+    await expect(
+      service.update(userId, {
+        number: '2023100305',
+      }),
+    ).rejects.toThrow('学号长度必须是11');
+  });
+
+  it('邮箱格式不正确时应该抛出错误（create）', async () => {
+    await expect(
+      service.create({
         username: 'test_user',
         email: 'test_user',
         number: '20231003059',
         password: 'password',
         phone: '13400011111',
-      });
-    } catch (error) {
-      expect(error.message).toBe('邮箱格式不正确');
-    }
-
-    try {
-      await service.update(userId, {
-        email: 'test_user',
-      });
-    } catch (error) {
-      expect(error.message).toBe('邮箱格式不正确');
-    }
+      }),
+    ).rejects.toThrow('邮箱格式不正确');
   });
 
-  it('用户名长度小于1字符时应该抛出错误', async () => {
-    try {
-      await service.create({
+  it('邮箱格式不正确时应该抛出错误（update）', async () => {
+    await expect(
+      service.update(userId, {
+        email: 'test_user',
+      }),
+    ).rejects.toThrow('邮箱格式不正确');
+  });
+
+  it('用户名长度小于1字符时应该抛出错误（create）', async () => {
+    await expect(
+      service.create({
         username: '',
         email: 'test_user@email.com',
         number: '20231003059',
         password: 'password',
         phone: '13400011111',
-      });
-    } catch (error) {
-      expect(error.message).toBe('用户名长度必须在1到20之间');
-    }
-
-    try {
-      await service.update(userId, {
-        username: '',
-      });
-    } catch (error) {
-      expect(error.message).toBe('用户名长度必须在1到20之间');
-    }
+      }),
+    ).rejects.toThrow('用户名长度必须在1到20之间');
   });
 
-  it('角色不是0或1时应该抛出错误', async () => {
-    try {
-      await service.create({
+  it('用户名长度小于1字符时应该抛出错误（update）', async () => {
+    await expect(
+      service.update(userId, {
+        username: '',
+      }),
+    ).rejects.toThrow('用户名长度必须在1到20之间');
+  });
+
+  it('角色不是0或1时应该抛出错误（create）', async () => {
+    await expect(
+      service.create({
         username: 'test_user',
         email: 'test_user@email.com',
         number: '20231003059',
         password: 'password',
         phone: '13400011111',
         role: 2,
-      });
-    } catch (error) {
-      expect(error.message).toBe('角色只能是0或1');
-    }
+      }),
+    ).rejects.toThrow('角色只能是0或1');
+  });
 
-    try {
-      await service.update(userId, {
+  it('角色不是0或1时应该抛出错误（update）', async () => {
+    await expect(
+      service.update(userId, {
         role: 2,
-      });
-    } catch (error) {
-      expect(error.message).toBe('角色只能是0或1');
-    }
+      }),
+    ).rejects.toThrow('角色只能是0或1');
   });
 
   it('不应该更新不在UpdateUserDto中的字段', async () => {
