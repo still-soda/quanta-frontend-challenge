@@ -33,13 +33,13 @@ export class AssetsService {
 
   /**
    * 获取指定 mimeType 的文件元数据列表，可以通过 filter 参数进行过滤：
-   * - only: 只获取静态文件或非静态文件
-   * - count: 获取的文件数量，默认为 100
-   * - skip: 跳过的文件数量，默认为 0
+   * - `only`: 只获取静态文件或非静态文件的元数据
+   * - `count`: 获取的元数据数量，默认为 100
+   * - `skip`: 跳过的元数据数量，默认为 0
    *
    * @param mimeType 文件类型
    * @param filter 过滤参数
-   * @returns 文件名列表
+   * @returns 文件元数据列表
    */
   async getFileMatadataListByMimeType(
     mimeType: MimeType,
@@ -50,120 +50,109 @@ export class AssetsService {
     },
   ) {
     const { only, count = 100, skip = 0 } = filter ?? {};
-    const assets = await this.assetsModel
-      .find({
-        mimeType,
-        isStatic: only === undefined ? undefined : only === 'static',
-      })
-      .skip(skip)
-      .limit(count);
-    return assets.map((asset) => asset.name);
+    const query = only
+      ? { mimeType, isStatic: only === 'static' }
+      : { mimeType };
+    const assets = await this.assetsModel.find(query).skip(skip).limit(count);
+    return assets;
   }
 
   /**
    * 保存文本为非静态文件。内部会将文件名转换为 UUID
-   * （可以通过设置 `dontRename` 为 `true` 阻止）
-   *
    * @param options
-   * - content: 文件内容
-   * - name: 文件名
-   * - mimeType: 文件类型
-   * - dontRename: 是否重命名文件，默认为 false
+   * - `content`: 文件内容
+   * - `name`: 文件名
+   * - `mimeType`: 文件类型
    * @returns 保存结果
-   * - ok: 是否保存成功
-   * - fileName: 保存后的文件名
+   * - `ok`: 是否保存成功
+   * - `fileName`: 保存后的文件名
+   * - `id`: 文件元数据 Id
    */
   async saveTextFile(options: {
     content: string;
     name: string;
-    dontRename?: boolean;
     mimeType: MimeType;
   }) {
-    const { content, name, mimeType, dontRename = false } = options;
+    const { content, name, mimeType } = options;
 
     if (content === '' || !content) {
       return { ok: false, fileName: '' };
     }
 
-    const fileName = dontRename ? name : convertNameToUuid(name);
+    const fileName = convertNameToUuid(name);
     try {
       await this.createDirectoryIfNotExists(this.FILE_ROOT);
       fs.writeFileSync(`${this.FILE_ROOT}/${fileName}`, content);
-      await this.assetsModel.create({
-        name: fileName,
+      const { id } = await this.assetsModel.create({
+        name: name,
+        localName: fileName,
         mimeType: mimeType,
         isStatic: false,
       });
-      return { ok: true, fileName };
+      return { ok: true, fileName, id };
     } catch (error) {
       console.error(error, content);
-      return { ok: false, fileName: '' };
+      return { ok: false, fileName: '', id: '' };
     }
   }
 
   /**
    * 保存文本为静态文件。内部会将文件名转换为 UUID
-   * （可以通过设置 `dontRename` 为 `true` 阻止）
-   *
    * @param options
-   * - content: 文件内容
-   * - name: 文件名
-   * - mimeType: 文件类型
-   * - dontRename: 是否重命名文件，默认为 false
+   * - `content`: 文件内容
+   * - `name`: 文件名
+   * - `mimeType`: 文件类型
    * @returns
-   * - ok: 是否保存成功
-   * - fileName: 保存后的文件名
+   * - `ok`: 是否保存成功
+   * - `fileName`: 保存后的文件名
+   * - `id`: 文件元数据 Id
    */
   async saveTextFileAsStatic(options: {
     content: string;
     name: string;
     mimeType: MimeType;
-    dontRename?: boolean;
   }) {
-    const { content, name, mimeType, dontRename = false } = options;
+    const { content, name, mimeType } = options;
 
     if (content === '' || !content) {
       return { ok: false, fileName: '' };
     }
 
-    const fileName = dontRename ? name : convertNameToUuid(name);
+    const fileName = convertNameToUuid(name);
     try {
       await this.createDirectoryIfNotExists(this.STATIC_ROOT);
       fs.writeFileSync(`${this.STATIC_ROOT}/${fileName}`, content);
-      await this.assetsModel.create({
-        name: fileName,
+      const { id } = await this.assetsModel.create({
+        name: name,
+        localName: fileName,
         mimeType: mimeType,
         isStatic: true,
       });
-      return { ok: true, fileName };
+      return { ok: true, fileName, id };
     } catch (error) {
       console.error(error);
-      return { ok: false, fileName: '' };
+      return { ok: false, fileName: '', id: '' };
     }
   }
 
   /**
    * 保存文件为非静态文件。内部会将文件名转换为 UUID
-   * （可以通过设置 `dontRename` 为 `true` 阻止）
-   *
    * @param options
-   * - file: 文件，可以是 Buffer 或者 File 对象
-   * - name: 文件名
-   * - mimeType: 文件类型
-   * - dontRename: 是否重命名文件，默认为 false
+   * - `file`: 文件，可以是 Buffer 或者 File 对象
+   * - `name`: 文件名
+   * - `mimeType`: 文件类型
    * @returns
-   * - ok: 是否保存成功
-   * - fileName: 保存后的文件名
+   * - `ok`: 是否保存成功
+   * - `fileName`: 保存后的文件名
    */
   async saveFile(options: {
     file: File | Buffer;
     name: string;
     mimeType: MimeType;
-    dontRename?: boolean;
   }) {
-    const { file, name, mimeType, dontRename = false } = options;
+    const { file, name, mimeType } = options;
 
-    const fileName = dontRename ? name : convertNameToUuid(name);
+    const fileName = convertNameToUuid(name);
     const buffer =
       file instanceof Buffer
         ? file
@@ -171,40 +160,38 @@ export class AssetsService {
     try {
       await this.createDirectoryIfNotExists(this.FILE_ROOT);
       fs.writeFileSync(`${this.FILE_ROOT}/${fileName}`, buffer);
-      await this.assetsModel.create({
-        name: fileName,
+      const { id } = await this.assetsModel.create({
+        localName: fileName,
+        name: name,
         mimeType: mimeType,
         isStatic: false,
       });
-      return { ok: true, fileName };
+      return { ok: true, fileName, id };
     } catch (error) {
       console.error(error);
-      return { ok: false, fileName: '' };
+      return { ok: false, fileName: '', id: '' };
     }
   }
 
   /**
    * 保存文件为静态文件。内部会将文件名转换为 UUID
-   * （可以通过设置 `dontRename` 为 `true` 阻止）
-   *
    * @param options
-   * - file: 文件，可以是 Buffer 或者 File 对象
-   * - name: 文件名
-   * - mimeType: 文件类型
-   * - dontRename: 是否重命名文件，默认为 false
+   * - `file`: 文件，可以是 Buffer 或者 File 对象
+   * - `name`: 文件名
+   * - `mimeType`: 文件类型
    * @returns
-   * - ok: 是否保存成功
-   * - fileName: 保存后的文件名
+   * - `ok`: 是否保存成功
+   * - `fileName`: 保存后的文件名
+   * - `id`: 文件元数据 Id
    */
   async saveFileAsStatic(options: {
     file: File | Buffer;
     name: string;
     mimeType: MimeType;
-    dontRename?: boolean;
   }) {
-    const { file, name, mimeType, dontRename = false } = options;
+    const { file, name, mimeType } = options;
 
-    const fileName = dontRename ? name : convertNameToUuid(name);
+    const fileName = convertNameToUuid(name);
     const buffer =
       file instanceof Buffer
         ? file
@@ -212,26 +199,39 @@ export class AssetsService {
     try {
       await this.createDirectoryIfNotExists(this.STATIC_ROOT);
       fs.writeFileSync(`${this.STATIC_ROOT}/${fileName}`, buffer);
-      await this.assetsModel.create({
-        name: fileName,
+      const { id } = await this.assetsModel.create({
+        localName: fileName,
+        name: name,
         mimeType: mimeType,
         isStatic: true,
       });
-      return { ok: true, fileName };
+      return { ok: true, fileName, id };
     } catch (error) {
       console.error(error);
-      return { ok: false, fileName: '' };
+      return { ok: false, fileName: '', id: '' };
     }
   }
 
   /**
-   * 获取文件元数据
+   * 根据文件名获取文件元数据
    * @param fileName 文件名
    * @returns  文件元数据
    */
-  async getFileMetadata(fileName: string) {
-    const asset = await this.assetsModel.findOne({ name: fileName });
+  async getFileMetadataByName(
+    fileName: string,
+  ): Promise<AssetsDocument | null> {
+    const asset = await this.assetsModel.findOne({ localName: fileName });
     return asset;
+  }
+
+  /**
+   * 根据文件元数据 Id 获取文件元数据
+   * @param id 文件元数据 Id
+   * @returns 文件元数据
+   */
+  async getFileMetadataById(id: string): Promise<AssetsDocument | null> {
+    const assets = await this.assetsModel.findOne({ _id: id });
+    return assets;
   }
 
   /**
@@ -239,8 +239,8 @@ export class AssetsService {
    * @param fileName 文件名
    * @returns 文件数据
    */
-  async getFile(fileName: string) {
-    const metadata = await this.getFileMetadata(fileName);
+  async getFileByName(fileName: string) {
+    const metadata = await this.getFileMetadataByName(fileName);
     if (!metadata || metadata.isStatic) {
       return null;
     }
@@ -255,12 +255,32 @@ export class AssetsService {
   }
 
   /**
+   * 获取文件数据（Buffer），如果文件不存在或者是静态文件则返回 null
+   * @param id 文件元数据 Id
+   * @returns 文件数据
+   */
+  async getFileById(id: string) {
+    const metadata = await this.getFileMetadataById(id);
+    if (!metadata || metadata.isStatic) {
+      return null;
+    }
+
+    try {
+      const buffer = fs.readFileSync(`${this.FILE_ROOT}/${metadata.localName}`);
+      return buffer;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  /**
    * 获取静态文件数据（Buffer），如果文件不存在或者不是静态文件则返回 null
    * @param fileName 文件名
    * @returns 文件数据
    */
   async getStaticFile(fileName: string) {
-    const metadata = await this.getFileMetadata(fileName);
+    const metadata = await this.getFileMetadataByName(fileName);
     if (!metadata || !metadata.isStatic) {
       return null;
     }
@@ -275,12 +295,34 @@ export class AssetsService {
   }
 
   /**
+   * 获取静态文件数据（Buffer），如果文件不存在或者不是静态文件则返回 null
+   * @param id 文件元数据 Id
+   * @returns 文件数据
+   */
+  async getStaticFileById(id: string) {
+    const metadata = await this.getFileMetadataById(id);
+    if (!metadata || !metadata.isStatic) {
+      return null;
+    }
+
+    try {
+      const buffer = fs.readFileSync(
+        `${this.STATIC_ROOT}/${metadata.localName}`,
+      );
+      return buffer;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  /**
    * 读取文本文件内容，如果文件不存在或者不是文本文件则返回空字符串
    * @param fileName 文件名
    * @returns 文件内容
    */
   async readTextFile(fileName: string) {
-    const metadata = await this.getFileMetadata(fileName);
+    const metadata = await this.getFileMetadataByName(fileName);
     if (
       !metadata ||
       metadata.isStatic ||
@@ -304,7 +346,7 @@ export class AssetsService {
    * @returns 文件内容
    */
   async readStaticTextFile(fileName: string) {
-    const metadata = await this.getFileMetadata(fileName);
+    const metadata = await this.getFileMetadataByName(fileName);
     if (
       !metadata ||
       !metadata.isStatic ||
@@ -331,7 +373,7 @@ export class AssetsService {
    * @returns  是否删除成功
    */
   async deleteFile(fileName: string) {
-    const metadata = await this.getFileMetadata(fileName);
+    const metadata = await this.getFileMetadataByName(fileName);
     if (!metadata || metadata.isStatic) {
       return true;
     }
@@ -352,7 +394,7 @@ export class AssetsService {
    * @returns 是否删除成功
    */
   async deleteStaticFile(fileName: string) {
-    const metadata = await this.getFileMetadata(fileName);
+    const metadata = await this.getFileMetadataByName(fileName);
     if (!metadata || !metadata.isStatic) {
       return true;
     }
@@ -369,11 +411,19 @@ export class AssetsService {
 
   /**
    * 判断文件是否存在
-   * @param fileName 文件名
+   * @param options
+   * - `fileName`: 文件名
+   * - `id`: 文件元数据 Id
    * @returns 是否存在
    */
-  async isFileExists(fileName: string) {
-    const metadata = await this.getFileMetadata(fileName);
+  async isFileExists(options: { fileName?: string; id?: string }) {
+    const { fileName, id } = options;
+    if (!fileName && !id) {
+      throw new Error('fileName 和 id 不能同时为空');
+    }
+    const metadata = fileName
+      ? await this.getFileMetadataByName(fileName)
+      : await this.getFileMetadataById(id);
     const exists = !!metadata;
     const isStatic = metadata?.isStatic ?? false;
 

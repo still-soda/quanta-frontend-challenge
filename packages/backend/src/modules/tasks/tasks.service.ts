@@ -40,7 +40,6 @@ export class TasksService {
       const reuslt = await this.assetsService.saveTextFile({
         content: jsonContent,
         name: flowDataName,
-        dontRename: true,
         mimeType: 'application/json',
       });
       return reuslt;

@@ -254,7 +254,7 @@ describe('AssetsService', () => {
         name: 'test.txt',
         mimeType: 'text/plain',
       });
-      const txtResult = await service.getFile(txtFileName);
+      const txtResult = await service.getFileByName(txtFileName);
       expect(txtResult).not.toBeNull();
       fileNames.push(txtFileName);
     });
@@ -265,13 +265,13 @@ describe('AssetsService', () => {
         name: 'test.jpg',
         mimeType: 'image/jpeg',
       });
-      const jpgResult = await service.getFile(jpgFileName);
+      const jpgResult = await service.getFileByName(jpgFileName);
       expect(jpgResult).not.toBeNull();
       fileNames.push(jpgFileName);
     });
 
     test('non-exists', async () => {
-      const nonExistsResult = await service.getFile('non-exists');
+      const nonExistsResult = await service.getFileByName('non-exists');
       expect(nonExistsResult).toBeNull();
     });
   });
@@ -366,7 +366,7 @@ describe('AssetsService', () => {
         name: 'test.txt',
         mimeType: 'text/plain',
       });
-      const txtResult = await service.isFileExists(txtFileName);
+      const txtResult = await service.isFileExists({ fileName: txtFileName });
       expect(txtResult.exists).toBe(true);
       expect(txtResult.isStatic).toBe(false);
       fileNames.push(txtFileName);
@@ -378,14 +378,16 @@ describe('AssetsService', () => {
         name: 'test.jpg',
         mimeType: 'image/jpeg',
       });
-      const jpgResult = await service.isFileExists(jpgFileName);
+      const jpgResult = await service.isFileExists({ fileName: jpgFileName });
       expect(jpgResult.exists).toBe(true);
       expect(jpgResult.isStatic).toBe(true);
       staticFileNames.push(jpgFileName);
     });
 
     test('non-exists', async () => {
-      const nonExistsResult = await service.isFileExists('non-exists');
+      const nonExistsResult = await service.isFileExists({
+        fileName: 'non-exists',
+      });
       expect(nonExistsResult.exists).toBe(false);
       expect(nonExistsResult.isStatic).toBe(false);
     });
@@ -397,7 +399,7 @@ describe('AssetsService', () => {
       name: 'test.jpg',
       mimeType: 'image/jpeg',
     });
-    const result = await service.getFile(fileName);
+    const result = await service.getFileByName(fileName);
     expect(result).toBeNull();
     staticFileNames.push(fileName);
   });
@@ -413,47 +415,124 @@ describe('AssetsService', () => {
     fileNames.push(fileName);
   });
 
-  it('在指定以原名保存文件时应该正确保存', async () => {
-    const { fileName } = await service.saveFile({
-      file: txtFile,
-      name: 'test.txt',
-      dontRename: true,
-      mimeType: 'text/plain',
+  describe('应该正确存储元数据到数据库', () => {
+    test('non-static（id）', async () => {
+      const { id } = await service.saveFile({
+        file: jpgFile,
+        name: 'test.jpg',
+        mimeType: 'image/jpeg',
+      });
+      const result = await service.getFileMetadataById(id);
+      expect(result).not.toBeNull();
+      expect(result.id).toBe(id);
+      expect(result.name).toBe('test.jpg');
+      expect(result.mimeType).toBe('image/jpeg');
+      expect(result.isStatic).toBe(false);
+      fileNames.push(result.localName);
     });
-    expect(fileName).toBe('test.txt');
-    fileNames.push(fileName);
+
+    test('non-static（fileName）', async () => {
+      const { fileName } = await service.saveFile({
+        file: jpgFile,
+        name: 'test.jpg',
+        mimeType: 'image/jpeg',
+      });
+      const result = await service.getFileMetadataByName(fileName);
+      expect(result).not.toBeNull();
+      expect(result.localName).toBe(fileName);
+      expect(result.name).toBe('test.jpg');
+      expect(result.mimeType).toBe('image/jpeg');
+      expect(result.isStatic).toBe(false);
+      fileNames.push(fileName);
+    });
+
+    test('static（id）', async () => {
+      const { id } = await service.saveFileAsStatic({
+        file: jpgFile,
+        name: 'test.jpg',
+        mimeType: 'image/jpeg',
+      });
+      const result = await service.getFileMetadataById(id);
+      expect(result).not.toBeNull();
+      expect(result.id).toBe(id);
+      expect(result.name).toBe('test.jpg');
+      expect(result.mimeType).toBe('image/jpeg');
+      expect(result.isStatic).toBe(true);
+      staticFileNames.push(result.localName);
+    });
+
+    test('static（fileName）', async () => {
+      const { fileName } = await service.saveFileAsStatic({
+        file: jpgFile,
+        name: 'test.jpg',
+        mimeType: 'image/jpeg',
+      });
+      const result = await service.getFileMetadataByName(fileName);
+      expect(result).not.toBeNull();
+      expect(result.localName).toBe(fileName);
+      expect(result.name).toBe('test.jpg');
+      expect(result.mimeType).toBe('image/jpeg');
+      expect(result.isStatic).toBe(true);
+      staticFileNames.push(fileName);
+    });
   });
 
-  it('在指定以原名保存静态文件时应该正确保存', async () => {
-    const { fileName } = await service.saveFileAsStatic({
-      file: txtFile,
-      name: 'test.txt',
-      dontRename: true,
-      mimeType: 'text/plain',
+  describe('应该正确获取元数据', () => {
+    beforeAll(async () => {
+      const createdFileNames: string[] = [];
+      const createdStaticFileNames: string[] = [];
+      const promises: Promise<any>[] = [];
+      for (let i = 0; i < 20; i++) {
+        const fn = i < 10 ? service.saveFileAsStatic : service.saveFile;
+        const nameList = i < 10 ? createdStaticFileNames : createdFileNames;
+        const promise = fn
+          .call(service, {
+            file: txtFile,
+            name: 'test.json',
+            mimeType: 'application/json',
+          })
+          .then(({ fileName }) => {
+            nameList.push(fileName);
+          });
+        promises.push(promise);
+      }
+      await Promise.allSettled(promises);
+      staticFileNames.push(...createdStaticFileNames);
+      fileNames.push(...createdFileNames);
     });
-    expect(fileName).toBe('test.txt');
-    staticFileNames.push(fileName);
-  });
 
-  it('在指定以原名保存文本文件时应该正确保存', async () => {
-    const { fileName } = await service.saveTextFile({
-      content: 'Hello, World!',
-      name: 'test.txt',
-      dontRename: true,
-      mimeType: 'text/plain',
+    test('获取全部数据', async () => {
+      const list =
+        await service.getFileMatadataListByMimeType('application/json');
+      expect(list.length).toBe(20);
+      expect(list.filter((i) => i.isStatic).length).toBe(10);
     });
-    expect(fileName).toBe('test.txt');
-    fileNames.push(fileName);
-  });
 
-  it('在指定以原名保存静态文本文件时应该正确保存', async () => {
-    const { fileName } = await service.saveTextFileAsStatic({
-      content: 'Hello, World!',
-      name: 'test.txt',
-      dontRename: true,
-      mimeType: 'text/plain',
+    test('获取静态数据', async () => {
+      const list = await service.getFileMatadataListByMimeType(
+        'application/json',
+        { only: 'static' },
+      );
+      expect(list.length).toBe(10);
     });
-    expect(fileName).toBe('test.txt');
-    staticFileNames.push(fileName);
+
+    test('限制获取 10 条数据', async () => {
+      const list = await service.getFileMatadataListByMimeType(
+        'application/json',
+        { count: 10 },
+      );
+      expect(list.length).toBe(10);
+    });
+
+    test('跳过 10 条数据', async () => {
+      const allList =
+        await service.getFileMatadataListByMimeType('application/json');
+      const skipList = await service.getFileMatadataListByMimeType(
+        'application/json',
+        { skip: 10 },
+      );
+      expect(skipList.length).toBe(10);
+      expect(allList[10]).toEqual(skipList[0]);
+    });
   });
 });

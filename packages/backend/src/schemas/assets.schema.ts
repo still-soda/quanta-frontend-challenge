@@ -9,7 +9,14 @@ export type AssetsDocument = Assets & Document;
 export class Assets extends Document {
   @ApiProperty({
     example: 'xxx.png',
-    description: '文件名',
+    description: '本地文件名',
+  })
+  @Prop()
+  localName: string;
+
+  @ApiProperty({
+    example: 'xxx.png',
+    description: '原始文件名',
   })
   @Prop()
   name: string;
