@@ -102,7 +102,7 @@ describe('TasksService', () => {
 
       await expect(
         tasksService.serializeFlowData(challengeId, flowDataDto as any),
-      ).rejects.toThrow('Invalid flow data');
+      ).rejects.toThrow('非法的流程数据');
     });
 
     it('chellengeId 对应的挑战不存在时，应该抛出错误', async () => {
@@ -118,7 +118,7 @@ describe('TasksService', () => {
 
       await expect(
         tasksService.serializeFlowData(challengeId, flowDataDto as any),
-      ).rejects.toThrow('Challenge not found');
+      ).rejects.toThrow('找不到 Challenge');
     });
   });
 
@@ -160,7 +160,7 @@ describe('TasksService', () => {
 
       await expect(
         tasksService.uploadStandardAnswer(challengeId, standardAnswer),
-      ).rejects.toThrow('Challenge not found');
+      ).rejects.toThrow('找不到 Challenge');
     });
 
     it('文件为空时，应该抛出错误', async () => {
@@ -177,11 +177,19 @@ describe('TasksService', () => {
 
       await expect(
         tasksService.uploadStandardAnswer(challengeId, standardAnswer, '.html'),
-      ).rejects.toThrow('File is empty');
+      ).rejects.toThrow('文件不存在');
     });
   });
 
-  describe('preExecute', () => {});
+  describe('preExecute', () => {
+    it.todo('应该正确预执行正确的流程文件，返回通过和正确信息');
+
+    it.todo('正确预执行正确的流程文件后，应该将结果关联到对应的挑战');
+
+    it.todo('预执行不合法的流程文件时，应该中断并返回不通过和错误信息');
+
+    it.todo('预执行不合法的流程文件后，不应该将结果关联到对应的挑战');
+  });
 
   describe('execute', () => {});
 });
