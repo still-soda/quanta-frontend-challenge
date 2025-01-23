@@ -535,4 +535,9 @@ describe('AssetsService', () => {
       expect(allList[10]).toEqual(skipList[0]);
     });
   });
+
+  test('获取不存在的元数据', async () => {
+    const meta = await service.getFileMetadataByName('non-exist');
+    expect(meta).toBeNull();
+  });
 });

@@ -52,6 +52,14 @@ export class Challenges extends Document {
   type: string;
 
   @ApiProperty({
+    example: '1234567',
+    default: undefined,
+    description: '流程数据ID',
+  })
+  @Prop()
+  flowdataId?: string;
+
+  @ApiProperty({
     example: ['1.html', '2.html', '3.html'],
     default: [],
     description: '标准答案文件名列表',

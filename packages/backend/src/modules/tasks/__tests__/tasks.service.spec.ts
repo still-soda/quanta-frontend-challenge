@@ -8,20 +8,26 @@ import mongoose from 'mongoose';
 import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import { MoveMouseFlowData } from '../core/flow-data/index';
+import { uuidFileNameRegEndWith } from '../../../utils/testing.utils';
+import { AssetsModule } from '../../../modules/assets/assets.module';
 
 describe('TasksService', () => {
   let tasksService: TasksService;
   let assetsService: AssetsService;
   let challengeService: ChallengesService;
   let mongodb: MongoMemoryServer;
-  let fileNames: string[] = [];
 
   beforeAll(async () => {
     const mockDb = await createMockDBModule();
     mongodb = mockDb.mongodb;
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [mockDb.module, createEnvConfModule(), ChallengesModule],
+      imports: [
+        mockDb.module,
+        createEnvConfModule(),
+        ChallengesModule,
+        AssetsModule,
+      ],
       providers: [TasksService, AssetsService, ChallengesService],
     }).compile();
 
@@ -31,11 +37,6 @@ describe('TasksService', () => {
   });
 
   afterAll(async () => {
-    await Promise.all(
-      fileNames.map(async (fileName) => {
-        assetsService.deleteFile(fileName);
-      }),
-    );
     await mongoose.disconnect();
     await mongodb.stop();
   });
@@ -55,7 +56,9 @@ describe('TasksService', () => {
         authorId: 'test',
         score: 100,
       });
-      const challengeId = challenge._id.toString();
+      expect(challenge.flowdataId).toBeUndefined();
+
+      const challengeId = challenge.id;
       const flowDataDto: { data: MoveMouseFlowData[] } = {
         data: [
           { type: 'mouse', detail: { type: 'move' } },
@@ -64,19 +67,19 @@ describe('TasksService', () => {
           { type: 'mouse', detail: { type: 'move' } },
         ],
       };
-      const flowDataName = `${challengeId}.json`;
 
-      const serializeResult = await tasksService.serializeFlowData(
+      const { id, ok, fileName } = await tasksService.serializeFlowData(
         challengeId,
         flowDataDto as any,
       );
-      expect(serializeResult).toHaveProperty('ok', true);
-      expect(serializeResult).toHaveProperty('fileName', flowDataName);
-      const existResult = assetsService.isFileExists({
-        fileName: flowDataName,
-      });
-      expect(existResult).toHaveProperty('exists', true);
-      expect(flowDataName).toBe(`${challengeId}.json`);
+      expect(ok).toBe(true);
+      expect(fileName).toMatch(uuidFileNameRegEndWith('.json'));
+
+      const { exists } = await assetsService.isFileExists({ fileName });
+      expect(exists).toBe(true);
+
+      const { flowdataId } = await challengeService.findOne(challengeId);
+      expect(flowdataId).toBe(id);
     });
 
     it('测试流程不合法时，应该抛出错误', async () => {
@@ -149,8 +152,6 @@ describe('TasksService', () => {
       // 检查文件是否存在
       const { exists } = await assetsService.isFileExists({ fileName });
       expect(exists).toBeTruthy();
-
-      fileNames.push(fileName);
     });
 
     it('不存在 challengeId 对应的挑战时，应该抛出错误', async () => {

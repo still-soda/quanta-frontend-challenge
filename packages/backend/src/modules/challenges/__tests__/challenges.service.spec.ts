@@ -184,4 +184,11 @@ describe('ChallengesService', () => {
     expect(found.fastestSolvers).toHaveLength(1);
     expect(found.fastestSolvers.includes('user1')).toBeTruthy();
   });
+
+  it('应该正确设置流程数据', async () => {
+    const created = await createOne();
+    await service.setFlowData(created._id.toString(), 'test_id');
+    const updated = await service.findOne(created._id.toString());
+    expect(updated.flowdataId).toBe('test_id');
+  });
 });

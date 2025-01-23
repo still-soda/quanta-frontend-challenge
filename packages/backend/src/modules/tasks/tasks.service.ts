@@ -42,6 +42,7 @@ export class TasksService {
         name: flowDataName,
         mimeType: 'application/json',
       });
+      await this.challengesService.setFlowData(challengeId, reuslt.id);
       return reuslt;
     } catch (error) {
       throw new Error(`Failed to serialize flow data: ${error}`);

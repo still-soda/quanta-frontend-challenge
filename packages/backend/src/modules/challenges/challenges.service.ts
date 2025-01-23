@@ -25,12 +25,12 @@ export class ChallengesService {
     return createdChallenge.save();
   }
 
-  findAll() {
-    return this.challengeModel.find().exec();
+  async findAll() {
+    return await this.challengeModel.find().exec();
   }
 
-  findOne(id: string) {
-    return this.challengeModel.findById(id);
+  async findOne(id: string) {
+    return await this.challengeModel.findById(id);
   }
 
   async update(id: string, updateChallengeDto: UpdateChallengeDto) {
@@ -45,15 +45,23 @@ export class ChallengesService {
     );
   }
 
-  remove(id: string): Promise<any> {
-    return this.challengeModel.deleteOne({ _id: id });
+  async remove(id: string): Promise<any> {
+    return await this.challengeModel.deleteOne({ _id: id });
   }
 
-  setStandardAnswer(challengeId: string, standardAnswer: string[]) {
+  async setFlowData(challengeId: string, flowDataId: string) {
+    return await this.challengeModel.findByIdAndUpdate(
+      challengeId,
+      { flowdataId: flowDataId },
+      { new: true },
+    );
+  }
+
+  async setStandardAnswer(challengeId: string, standardAnswer: string[]) {
     if (!standardAnswer || !standardAnswer.length) {
       return null;
     }
-    return this.challengeModel.findByIdAndUpdate(
+    return await this.challengeModel.findByIdAndUpdate(
       challengeId,
       { standardAnswer },
       { new: true },
