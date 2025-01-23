@@ -4,7 +4,7 @@
  * @example
  * ```ts
  * convertNameToUuid('file_name.jpg');          // 'file_name.jpg' -> 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxx.jpg'
- * convertNameToUuid('/file_name.jpg');          // '/file_name.jpg' -> 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxx.jpg'
+ * convertNameToUuid('/file_name.jpg');         // '/file_name.jpg' -> 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxx.jpg'
  * convertNameToUuid('file_name.jpg.png');      // 'file_name.jpg.png' -> 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxx.jpg.png'
  * convertNameToUuid('/path/to/file_name.jpg'); // '/path/to/file_name.jpg' -> '/path/to/xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxx.jpg'
  * convertNameToUuid('');                       // '' -> ''

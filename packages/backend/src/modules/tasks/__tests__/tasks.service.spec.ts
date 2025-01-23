@@ -145,7 +145,7 @@ describe('TasksService', () => {
       expect(foundedChallenge).toHaveProperty('standardAnswer');
       expect(foundedChallenge.standardAnswer.includes(answerName)).toBe(true);
       // 检查文件是否存在
-      const { exists } = assetsService.isFileExists(fileName);
+      const { exists } = await assetsService.isFileExists(fileName);
       expect(exists).toBeTruthy();
 
       fileNames.push(fileName);

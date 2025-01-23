@@ -37,11 +37,12 @@ export class TasksService {
     const flowDataName = `${challengeId}.json`;
     try {
       const jsonContent = JSON.stringify(flowDataDto.data);
-      const reuslt = await this.assetsService.saveTextFile(
-        jsonContent,
-        flowDataName,
-        true,
-      );
+      const reuslt = await this.assetsService.saveTextFile({
+        content: jsonContent,
+        name: flowDataName,
+        dontRename: true,
+        mimeType: 'application/json',
+      });
       return reuslt;
     } catch (error) {
       throw new Error(`Failed to serialize flow data: ${error}`);
@@ -72,6 +73,10 @@ export class TasksService {
 
     const fileName = `${challengeId}${suffix}`;
     await this.challengesService.setStandardAnswer(challengeId, [fileName]);
-    return this.assetsService.saveFile(file, fileName);
+    return this.assetsService.saveFile({
+      file,
+      name: fileName,
+      mimeType: 'text/html',
+    });
   }
 }
