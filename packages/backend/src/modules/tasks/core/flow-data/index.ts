@@ -34,3 +34,29 @@ export * from './actions/mouse-flow-data.type';
 export * from './actions/trigger-flow-data.type';
 export * from './testpoints/testpoints-flow-data.type';
 export * from './flow-data.type';
+
+import * as MouseFlowDataNS from './actions/mouse-flow-data.type';
+import * as AllTriggerFlowDataNS from './actions/trigger-flow-data.type';
+import * as AllTestpointsFlowDataNS from './testpoints/testpoints-flow-data.type';
+
+export type AllMouseFlowData =
+  | MouseFlowDataNS.ClickMouseFlowData
+  | MouseFlowDataNS.MoveMouseFlowData
+  | MouseFlowDataNS.ScrollMouseFlowData;
+
+export type AllTriggerFlowData =
+  | AllTriggerFlowDataNS.BlurTriggerFlowData
+  | AllTriggerFlowDataNS.DragTriggerFlowData
+  | AllTriggerFlowDataNS.FocusTriggerFlowData
+  | AllTriggerFlowDataNS.HoverTriggerFlowData
+  | AllTriggerFlowDataNS.InputTriggerFlowData
+  | AllTriggerFlowDataNS.WaitTriggerFlowData;
+
+export type AllTestpointsFlowData =
+  | AllTestpointsFlowDataNS.ExpectTestpointFlowData
+  | AllTestpointsFlowDataNS.ScreenShotTestpointFlowData;
+
+export type AllFlowData =
+  | AllMouseFlowData
+  | AllTriggerFlowData
+  | AllTestpointsFlowData;
