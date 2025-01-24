@@ -68,6 +68,14 @@ export class Challenges extends Document {
   standardAnswer: string[];
 
   @ApiProperty({
+    example: ['1bxxx1', '2bxxx2', '3bxxx3'],
+    default: [],
+    description: '截图文件 ID 列表',
+  })
+  @Prop({ default: [] })
+  screenshots: string[];
+
+  @ApiProperty({
     example: ['css', 'html', 'javascript'],
     default: [],
     description: '标签',

@@ -1,3 +1,6 @@
+/// 这个文件定义了测试点的处理函数，包括期望测试点和截图测试点。
+/// @author: still-soda
+
 import { Page } from 'playwright';
 import {
   ExpectTestpointFlowData,

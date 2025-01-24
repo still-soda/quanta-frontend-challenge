@@ -7,7 +7,12 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
-import { MoveMouseFlowData } from '../core/flow-data/index';
+import {
+  ClickMouseFlowData,
+  ExpectTestpointFlowData,
+  MoveMouseFlowData,
+  ScreenShotTestpointFlowData,
+} from '../core/flow-data/index';
 import { uuidFileNameRegEndWith } from '../../../utils/testing.utils';
 import { AssetsModule } from '../../../modules/assets/assets.module';
 
@@ -182,7 +187,84 @@ describe('TasksService', () => {
   });
 
   describe('preExecute', () => {
-    it.todo('应该正确预执行正确的流程文件，返回通过和正确信息');
+    it('应该正确预执行正确的流程文件，返回通过和正确信息', async () => {
+      const chllenge = await challengeService.create({
+        title: 'test',
+        type: 'test',
+        difficulty: 'test',
+        authorId: 'test',
+        score: 100,
+      });
+
+      const page = `
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <button id="btn">click me</button>
+            <script>
+              document.getElementById('btn').addEventListener('click', function() {
+                alert('clicked');
+              });
+            </script>
+          </body>
+        </html>
+      `;
+      const standardAnswer = new File([page], 'test.html');
+      const challengeId = chllenge.id;
+      const uploadResult = await tasksService.uploadStandardAnswer(
+        challengeId,
+        standardAnswer,
+      );
+      expect(uploadResult.ok).toBe(true);
+
+      const data = [
+        {
+          type: 'mouse',
+          detail: {
+            type: 'move',
+            selector: 'button',
+          },
+        } as MoveMouseFlowData,
+        {
+          type: 'mouse',
+          detail: {
+            type: 'click',
+            selector: 'button',
+          },
+        } as ClickMouseFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'screenshot',
+            name: 'test',
+            score: 20,
+            threshold: 0.9,
+            selector: 'body',
+            root: 'button',
+          },
+        } as ScreenShotTestpointFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'expect',
+            name: 'test',
+            score: 20,
+            selector: 'button',
+            text: 'clicked',
+          },
+        } as ExpectTestpointFlowData,
+      ];
+
+      const serializeResult = await tasksService.serializeFlowData(
+        chllenge.id,
+        { data },
+      );
+      expect(serializeResult.ok).toBe(true);
+
+      const preExcuteResult = await tasksService.preExecute(chllenge.id);
+    });
 
     it.todo('正确预执行正确的流程文件后，应该将结果关联到对应的挑战');
 
