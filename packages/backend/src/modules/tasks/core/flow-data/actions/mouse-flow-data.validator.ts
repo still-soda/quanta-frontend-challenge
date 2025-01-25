@@ -3,7 +3,15 @@ import {
   ClickMouseFlowData,
   ScrollMouseFlowData,
 } from './mouse-flow-data.type';
-import { fit, Optional } from '@challenge/utils';
+import {
+  $enum,
+  $number,
+  $object,
+  $string,
+  $value,
+  fit,
+  Optional,
+} from '@challenge/utils';
 
 export function validateMoveMouseFlowData(
   data: MoveMouseFlowData,
@@ -12,13 +20,13 @@ export function validateMoveMouseFlowData(
   return fit(
     data,
     {
-      type: 'mouse',
-      detail: {
-        type: 'move',
-        x: Optional('number'),
-        y: Optional('number'),
-        selector: Optional('string'),
-      },
+      type: $value('mouse'),
+      detail: $object({
+        type: $value('move'),
+        x: $number().optional(),
+        y: $number().optional(),
+        selector: $string().optional(),
+      }),
     },
     shouldThrow,
   );
@@ -31,14 +39,14 @@ export function validateClickMouseFlowData(
   return fit(
     data,
     {
-      type: 'mouse',
-      detail: {
-        type: ['click', 'dbclick'],
-        button: Optional(['left', 'right', 'middle']),
-        x: Optional('number'),
-        y: Optional('number'),
-        selector: Optional('string'),
-      },
+      type: $value('mouse'),
+      detail: $object({
+        type: $enum('click', 'dbclick'),
+        button: $enum('left', 'right', 'middle').optional(),
+        x: $number().optional(),
+        y: $number().optional(),
+        selector: $string().optional(),
+      }),
     },
     shouldThrow,
   );
@@ -51,12 +59,12 @@ export function validateScrollMouseFlowData(
   return fit(
     data,
     {
-      type: 'mouse',
-      detail: {
-        type: 'scroll',
-        x: Optional('number'),
-        y: Optional('number'),
-      },
+      type: $value('mouse'),
+      detail: $object({
+        type: $value('scroll'),
+        x: $number().optional(),
+        y: $number().optional(),
+      }),
     },
     shouldThrow,
   );

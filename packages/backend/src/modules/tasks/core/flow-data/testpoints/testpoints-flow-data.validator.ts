@@ -1,18 +1,26 @@
-import { fit, Optional } from '@challenge/utils';
+import { fit } from '@challenge/utils';
 import {
   ExpectTestpointFlowData,
   ScreenShotTestpointFlowData,
   TestpointFlowData,
 } from './testpoints-flow-data.type';
+import {
+  $boolean,
+  $enum,
+  $number,
+  $object,
+  $string,
+  $value,
+} from '@challenge/utils';
 
 export function validateTestpointFlowData(data: TestpointFlowData) {
   return fit(data, {
-    type: 'testpoint',
-    detail: {
-      name: 'string',
-      type: ['screenshot', 'expect'],
-      score: 'number',
-    },
+    type: $value('testpoint'),
+    detail: $object({
+      name: $string(),
+      type: $enum('screenshot', 'expect'),
+      score: $number(),
+    }),
   });
 }
 
@@ -23,14 +31,14 @@ export function validateScreenShotTestpointFlowData(
   return fit(
     data,
     {
-      type: 'testpoint',
-      detail: {
-        name: 'string',
-        score: 'number',
-        type: 'screenshot',
-        root: 'string',
-        threshold: 'number',
-      },
+      type: $value('testpoint'),
+      detail: $object({
+        name: $string(),
+        score: $number(),
+        type: $value('screenshot'),
+        root: $string(),
+        threshold: $number(),
+      }),
     },
     shouldThrow,
   );
@@ -43,17 +51,17 @@ export function validateExpectTestpointFlowData(
   return fit(
     data,
     {
-      type: 'testpoint',
-      detail: {
-        name: 'string',
-        score: 'number',
-        type: 'expect',
-        exsit: Optional('boolean'),
-        selector: Optional('string'),
-        text: Optional('string'),
-        attr: Optional('string'),
-        typeParser: Optional(['text', 'number', 'boolean']),
-      },
+      type: $value('testpoint'),
+      detail: $object({
+        name: $string(),
+        score: $number(),
+        type: $value('expect'),
+        exsit: $boolean().optional(),
+        selector: $string().optional(),
+        text: $string().optional(),
+        attr: $string().optional(),
+        typeParser: $enum('text', 'number', 'boolean').optional(),
+      }),
     },
     shouldThrow,
   );
