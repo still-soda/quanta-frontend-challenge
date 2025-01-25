@@ -202,11 +202,6 @@ describe('TasksService', () => {
           </head>
           <body>
             <button id="btn">click me</button>
-            <script>
-              document.getElementById('btn').addEventListener('click', function() {
-                alert('clicked');
-              });
-            </script>
           </body>
         </html>
       `;

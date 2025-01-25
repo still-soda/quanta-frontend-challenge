@@ -1,4 +1,14 @@
-import { contain, fit, Optional } from '../data-structure-validator';
+import {
+   $boolean,
+   $enum,
+   $fn,
+   $number,
+   $object,
+   $string,
+   $value,
+   contain,
+   fit,
+} from '../data-structure-validator';
 
 describe('数据验证器 - container', () => {
    it('应该正确验证包含关系', () => {
@@ -36,50 +46,64 @@ describe('数据验证器 - fit', () => {
          h: 'str',
       };
       const dataStructure = {
-         a: 'number',
-         b: 'string',
-         c: 'boolean',
-         d: ['click', 'move'],
-         e: (val: string) => val === 'move',
-         f: Array.isArray,
-         g: {
-            a: 'number',
-            b: 'string',
-            c: {
-               a: 'number',
-            },
-         },
-         h: 'str',
+         a: $number(),
+         b: $string(),
+         c: $boolean(),
+         d: $enum('click', 'move'),
+         e: $fn((val: string) => val === 'move'),
+         f: $fn(Array.isArray),
+         g: $object({
+            a: $number(),
+            b: $string(),
+            c: $object({
+               a: $number(),
+            }),
+         }),
+         h: $value('str'),
       };
 
       const result = fit(obj, dataStructure);
-      expect(result.ok).toBe(true);
+      expect(result).toHaveProperty('ok', true);
    });
 
    it('应该正确验证错误的类型（第 1 层）', () => {
       const obj = { a: 123, b: 'hello' };
-      expect(fit(obj, { a: 'string', b: 'number' }).ok).toBe(false);
+      const result = fit(obj, {
+         a: $number(),
+         b: $number(),
+      });
+      expect(result.ok).toBe(false);
    });
 
    it('应该正确验证错误的类型（第 n 层）', () => {
       const obj = { a: { b: 123 } };
-      const result = fit(obj, { a: { b: 'string' } });
+      const result = fit(obj, {
+         a: $object({
+            b: $string(),
+         }),
+      });
       expect(result.ok).toBe(false);
    });
 
    it('应该正确验证缺少相应类型的情况（第 1 层）', () => {
       const obj = { a: 12, b: 20 };
-      expect(fit(obj, { a: 'number', b: 'number', c: 'string' }).ok).toBe(
-         false
-      );
+      const fitResult = fit(obj, {
+         a: $number(),
+         b: $number(),
+         c: $string(),
+      });
+      expect(fitResult.ok).toBe(false);
    });
 
    it('应该正确验证缺少相应类型的情况（第 n 层）', () => {
       const obj = { a: 12, b: 20, c: { a: 20 } };
       const fitResult = fit(obj, {
-         a: 'number',
-         b: 'number',
-         c: { a: 'numebr', b: 'string' },
+         a: $number(),
+         b: $number(),
+         c: $object({
+            a: $number(),
+            b: $string(),
+         }),
       });
       expect(fitResult.ok).toBe(false);
    });
@@ -87,9 +111,9 @@ describe('数据验证器 - fit', () => {
    it('应该正确验证可选属性（第 1 层）', () => {
       const obj = { a: 12, b: 20 };
       const fitResult = fit(obj, {
-         a: 'number',
-         b: 'number',
-         c: Optional('number'),
+         a: $number(),
+         b: $number(),
+         c: $number().optional(),
       });
       expect(fitResult.ok).toBe(true);
    });
@@ -97,9 +121,12 @@ describe('数据验证器 - fit', () => {
    it('应该正确验证可选属性（第 n 层）', () => {
       const obj = { a: 12, b: 20, c: { a: 20 } };
       const fitResult = fit(obj, {
-         a: 'number',
-         b: 'number',
-         c: { a: 'number', b: Optional('string') },
+         a: $number(),
+         b: $number(),
+         c: $object({
+            a: $number(),
+            b: $string().optional(),
+         }),
       });
       expect(fitResult.ok).toBe(true);
    });
@@ -107,8 +134,8 @@ describe('数据验证器 - fit', () => {
    it('能够正常抛出异常', () => {
       const obj = { a: 12, b: 20 };
       const dataStructure = {
-         a: 'number',
-         b: 'string',
+         a: $number(),
+         b: $string(),
       };
       try {
          fit(obj, dataStructure, true);

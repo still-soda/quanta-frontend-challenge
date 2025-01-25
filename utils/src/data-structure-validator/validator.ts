@@ -1,3 +1,5 @@
+import { availableTypes } from './data-types';
+
 export function contain<T extends Record<string, any>>(
    obj: T,
    keys: Array<keyof T>
@@ -13,18 +15,6 @@ export function contain<T extends Record<string, any>>(
    return true;
 }
 
-const BASIC_TYPES = [
-   'string',
-   'object',
-   'number',
-   'function',
-   'bigint',
-   'symbol',
-   'boolean',
-   'undefined',
-] as const;
-const BASIC_TYPES_SET = new Set(BASIC_TYPES);
-
 type OptionalValue<T> = {
    __optional__: true;
    value: T;
@@ -39,7 +29,7 @@ export function Optional<T>(val: T): OptionalValue<T> {
 
 export function fit(
    obj: Record<string, any>,
-   dataStructure: Record<string, typeof BASIC_TYPES | any>,
+   dataStructure: Record<string, availableTypes>,
    shouldThrow = false
 ): { msg: string; ok: boolean } {
    const entries = Object.entries(dataStructure);
@@ -47,48 +37,49 @@ export function fit(
    let catched = false;
 
    for (let [key, val] of entries) {
-      let optional = false;
-      if (val.__optional__) {
-         optional = true;
-         val = val.value;
-      }
-      if (val !== 'undefined' && obj[key] === undefined) {
-         if (optional) continue;
+      if (
+         obj[key] === undefined &&
+         !(val.value === 'undefined' && val.type === 'basic')
+      ) {
+         if (val.isOptional) continue;
          result = { msg: `不存在 ${key}`, ok: false };
          catched = true;
          break;
-      } else if (BASIC_TYPES_SET.has(val)) {
-         if (typeof obj[key] !== val) {
-            result = { msg: `${key} 类型错误`, ok: false };
+      } else if (val.type === 'basic') {
+         if (typeof obj[key] !== val.value) {
+            result = {
+               msg: `${key} 类型错误，应该为 ${typeof val.value} 实际为 ${obj[key]}`,
+               ok: false,
+            };
             catched = true;
             break;
          }
-      } else if (typeof val === 'function') {
-         if (!val(obj[key])) {
+      } else if (val.type === 'function') {
+         if (!val.value(obj[key])) {
             result = { msg: `对于 ${key} 的函数验证不通过`, ok: false };
             catched = true;
             break;
          }
-      } else if (Array.isArray(val)) {
-         if (!val.includes(obj[key])) {
+      } else if (val.type === 'enum') {
+         if (!val.value.includes(obj[key])) {
             result = {
-               msg: `k[${key}]:v[${obj[key]}] 不在可行列表中, li[${val}]`,
+               msg: `k[${key}]:v[${obj[key]}] 不在可行列表中, li[${val.value}]`,
                ok: false,
             };
             catched = true;
             break;
          }
-      } else if (typeof val === 'string') {
-         if (obj[key] !== val) {
+      } else if (val.type === 'value') {
+         if (obj[key] !== val.value) {
             result = {
-               msg: `字符串 k[${key}]:v[${obj[key]}] !== ${val}`,
+               msg: `值 k[${key}]:v[${obj[key]}] !== ${val}`,
                ok: false,
             };
             catched = true;
             break;
          }
-      } else if (typeof val === 'object') {
-         const validationResult = fit(obj[key], val);
+      } else if (val.type === 'object') {
+         const validationResult = fit(obj[key], val.value);
          if (!validationResult.ok) {
             result = validationResult;
             catched = true;

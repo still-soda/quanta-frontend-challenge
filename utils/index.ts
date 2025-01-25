@@ -4,4 +4,4 @@ export * from './src/uuid';
 export * from './src/unit-parse';
 export * from './src/event-emitter';
 export * from './src/range';
-export * from './src/data-structure-validator';
+export * from './src/data-structure-validator/validator';

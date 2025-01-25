@@ -48,16 +48,16 @@ export class TasksService implements OnModuleInit {
   /**
    * 这个函数用来执行挑战。
    *
-   * 这个函数接受一个 `challengeId` 和一个 `submitFileName`，然后将会取出 `challengeId`
-   * 对应的预执行结果数据。然后对 `submitFileName` 对应的提交文件进行执行，生成得分和截图，
-   * 将他们与预执行结果数据进行比对，得到最终得分。
+   * 这个函数接受一个 `challengeId` 和一个 `submitFileName`，然后将会取出
+   * `challengeId` 对应的预执行结果数据。然后对 `submitFileId` 对应的提交文件
+   * 进行执行，生成得分和截图，将他们与预执行结果数据进行比对，得到最终得分。
    *
    * 最后将会把数据存储到 `submittions` 表中。
    *
    * @param challengeId 挑战 ID
    * @param submitFileName 提交文件名
    */
-  async execute(challengeId: string, submitFileName: string) {
+  async execute(challengeId: string, submitFileId: string) {
     // 1. 取出挑战的流程数据，验证是否存在
     // 2. 取出预执行结果数据，验证是否存在
     // 3. 取出提交文件，验证是否存在
@@ -198,9 +198,9 @@ export class TasksService implements OnModuleInit {
   /**
    * 这个函数将会序列化流程数据，并将其保存到数据库中。
    *
-   * 这个函数接受一个 `challengeId` 和一个 `FlowDataDto` 对象，先对 `challengeId` 进行
-   * 验证，然后对 `FlowDataDto` 对象中的数据进行验证，最后将数据序列化为 JSON 字符串
-   * 并保存到数据库中。
+   * 这个函数接受一个 `challengeId` 和一个 `FlowDataDto` 对象，先对 `challengeId`
+   * 进行验证，然后对 `FlowDataDto` 对象中的数据进行验证，最后将数据序列化为
+   * JSON 字符串并保存到数据库中。
    *
    * 最后，函数会返回保存的文件的信息。
    *
