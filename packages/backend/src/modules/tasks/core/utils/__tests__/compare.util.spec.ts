@@ -358,5 +358,37 @@ describe('Compare Value', () => {
         val: false,
       });
     });
+
+    it('应该正确比较两个文本值 - 匹配', () => {
+      const obj = { a: 'hello world' };
+      const obj2 = { a: '^hello' };
+      const result = compareValue({
+        actual: obj.a,
+        expected: obj2.a,
+        type: '文本',
+        selector: '#test',
+        operator: 'match',
+      });
+      expect(result).toEqual({
+        msg: 'ok',
+        val: true,
+      });
+    });
+
+    it('应该正确比较两个文本值 - 匹配但是实际不匹配', () => {
+      const obj = { a: 'hello world' };
+      const obj2 = { a: '^world' };
+      const result = compareValue({
+        actual: obj.a,
+        expected: obj2.a,
+        type: '文本',
+        selector: '#test',
+        operator: 'match',
+      });
+      expect(result).toEqual({
+        msg: '期望选择器 #test 的文本匹配 ^world，实际值为 hello world',
+        val: false,
+      });
+    });
   });
 });
