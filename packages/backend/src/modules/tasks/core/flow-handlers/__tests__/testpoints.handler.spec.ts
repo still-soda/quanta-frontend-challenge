@@ -485,6 +485,84 @@ describe('Testpoints Handler', () => {
         await page.close();
       });
     });
+
+    describe('style', () => {
+      it.each([
+        [
+          '全部正确',
+          20,
+          {
+            color: { value: 'rgb(255, 0, 0)', compare: 'eq' },
+            'background-color': { value: 'rgb(0, 0, 0)', compare: 'eq' },
+          },
+          'ok;;ok',
+        ],
+        [
+          '部分正确',
+          10,
+          {
+            color: { value: 'rgb(255, 0, 0)', compare: 'eq' },
+            'background-color': { value: 'rgb(255, 0, 0)', compare: 'eq' },
+          },
+          'ok;;期望选择器 #test 的样式 background-color 为 rgb(255, 0, 0)，实际值为 rgb(0, 0, 0)',
+        ],
+        [
+          '全部错误',
+          0,
+          {
+            color: { value: 'rgb(0, 0, 0)', compare: 'eq' },
+            'background-color': { value: 'rgb(255, 0, 0)', compare: 'eq' },
+          },
+          '期望选择器 #test 的样式 color 为 rgb(0, 0, 0)，实际值为 rgb(255, 0, 0);;期望选择器 #test 的样式 background-color 为 rgb(255, 0, 0)，实际值为 rgb(0, 0, 0)',
+        ],
+      ])(
+        '应该能够正确判断元素样式是否正确（%s）',
+        async (_, expectScore, style, expectMsg) => {
+          const page = await browser.newPage();
+          await page.setContent(
+            '<div id="test" style="color: red; background-color: black;"></div>',
+          );
+
+          const { msg, score } = await handleExpectTestpointAction({
+            page,
+            detail: {
+              name: 'test',
+              score: 20,
+              type: 'expect',
+              selector: '#test',
+              style: style as any,
+            },
+          });
+          expect(msg).toBe(expectMsg);
+          expect(score).toBe(expectScore);
+          await page.close();
+        },
+      );
+
+      it('应该能够正确判断元素样式是否正确（元素不存在）', async () => {
+        const page = await browser.newPage();
+        await page.setContent(
+          '<div id="test" style="color: red; background-color: black;"></div>',
+        );
+
+        const { msg, score } = await handleExpectTestpointAction({
+          page,
+          detail: {
+            name: 'test',
+            score: 20,
+            type: 'expect',
+            selector: '#test1',
+            style: {
+              color: { value: 'rgb(255, 0, 0)', compare: 'eq' },
+              'background-color': { value: 'rgb(0, 0, 0)', compare: 'eq' },
+            },
+          },
+        });
+        expect(msg).toBe('期望选择器 #test1 存在，实际值不存在');
+        expect(score).toBe(0);
+        await page.close();
+      });
+    });
   });
 
   describe('handleScreenShotTestpointPreAction', () => {

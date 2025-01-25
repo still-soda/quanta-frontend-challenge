@@ -62,9 +62,7 @@ describe('Actions Handler', () => {
         const clickSpy = jest
           .spyOn(page, 'click')
           .mockImplementation(() => ({}) as any);
-        jest
-          .spyOn(page, 'locator')
-          .mockImplementation(() => ({ count: () => 1 }) as any);
+        jest.spyOn(page, '$').mockImplementation(() => ({}) as any);
         await handleMouseAction({
           page,
           detail: {
@@ -102,9 +100,7 @@ describe('Actions Handler', () => {
         const clickSpy = jest
           .spyOn(page, 'click')
           .mockImplementation(() => ({}) as any);
-        jest
-          .spyOn(page, 'locator')
-          .mockImplementation(() => ({ count: () => 1 }) as any);
+        jest.spyOn(page, '$').mockImplementation(() => ({}) as any);
         await handleMouseAction({
           page,
           detail: {
@@ -150,9 +146,7 @@ describe('Actions Handler', () => {
         const evalSpy = jest
           .spyOn(page, '$eval')
           .mockImplementation(() => ({}) as any);
-        jest
-          .spyOn(page, 'locator')
-          .mockImplementation(() => ({ count: () => 1 }) as any);
+        jest.spyOn(page, '$').mockImplementation(() => ({}) as any);
         await handleTriggerAction({
           page,
           detail: {
@@ -168,9 +162,7 @@ describe('Actions Handler', () => {
         const focusSpy = jest
           .spyOn(page, 'focus')
           .mockImplementation(() => ({}) as any);
-        jest
-          .spyOn(page, 'locator')
-          .mockImplementation(() => ({ count: () => 1 }) as any);
+        jest.spyOn(page, '$').mockImplementation(() => ({}) as any);
         await handleTriggerAction({
           page,
           detail: {
@@ -186,9 +178,7 @@ describe('Actions Handler', () => {
         const hoverSpy = jest
           .spyOn(page, 'hover')
           .mockImplementation(() => ({}) as any);
-        jest
-          .spyOn(page, 'locator')
-          .mockImplementation(() => ({ count: () => 1 }) as any);
+        jest.spyOn(page, '$').mockImplementation(() => ({}) as any);
         await handleTriggerAction({
           page,
           detail: {
@@ -204,9 +194,7 @@ describe('Actions Handler', () => {
         const dragAndDropSpy = jest
           .spyOn(page, 'dragAndDrop')
           .mockImplementation(() => ({}) as any);
-        jest
-          .spyOn(page, 'locator')
-          .mockImplementation(() => ({ count: () => 1 }) as any);
+        jest.spyOn(page, '$').mockImplementation(() => ({}) as any);
         await handleTriggerAction({
           page,
           detail: {
@@ -223,9 +211,7 @@ describe('Actions Handler', () => {
         const fillSpy = jest
           .spyOn(page, 'fill')
           .mockImplementation(() => ({}) as any);
-        jest
-          .spyOn(page, 'locator')
-          .mockImplementation(() => ({ count: () => 1 }) as any);
+        jest.spyOn(page, '$').mockImplementation(() => ({}) as any);
         await handleTriggerAction({
           page,
           detail: {

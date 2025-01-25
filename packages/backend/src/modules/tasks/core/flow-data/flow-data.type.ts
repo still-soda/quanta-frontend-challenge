@@ -7,5 +7,6 @@ export interface FlowData {
     | boolean
     | Array<number | string | boolean>
     | Record<string, number | string | boolean>
+    | Record<string, object>
   > & { type: string };
 }

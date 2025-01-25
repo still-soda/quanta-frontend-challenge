@@ -73,6 +73,12 @@ describe('TestpointFlowDataValidator - Expect', () => {
         attr: '20',
         text: 'text',
         typeParser: 'number',
+        style: {
+          color: {
+            value: 'red',
+            compare: 'eq',
+          },
+        },
       },
     };
 

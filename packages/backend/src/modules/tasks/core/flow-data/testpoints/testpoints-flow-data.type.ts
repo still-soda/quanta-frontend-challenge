@@ -32,6 +32,22 @@ export interface ExpectTestpointFlowData extends TestpointFlowData {
     attr?: string;
     value?: string;
     typeParser?: 'text' | 'number' | 'boolean';
-    compare?: 'eq' | 'ne' | 'gt' | 'lt' | 'gte' | 'lte';
+    compare?:
+      | 'eq'
+      | 'ne'
+      | 'gt'
+      | 'lt'
+      | 'gte'
+      | 'lte'
+      | 'contains'
+      | 'notContains'
+      | 'match';
+    style?: Record<
+      string,
+      {
+        value: string;
+        compare: 'eq' | 'ne';
+      }
+    >;
   };
 }

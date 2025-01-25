@@ -61,6 +61,8 @@ function typeParse<T extends string | number>(
  * - `page`: 页面
  * - `detail`: 流程数据
  * @returns 测试点结果
+ * - `msg`: 消息，如果测试对象是样式，则返回多个消息，以 `;;` 分隔
+ * - `score`: 分数，如果测试对象是样式，则按照测试通过的样式数的百分比计算分数
  */
 export async function handleExpectTestpointAction(options: {
   page: Page;
@@ -80,6 +82,40 @@ export async function handleExpectTestpointAction(options: {
       };
     }
     return { msg: 'ok', score: detail.score };
+  }
+
+  if (detail.style) {
+    const entries = Object.entries(detail.style);
+    let result: string[] = [];
+    let passCount = 0;
+    const element = await page.$(detail.selector);
+    if (!element) {
+      return {
+        msg: `期望选择器 ${detail.selector} 存在，实际值不存在`,
+        score: 0,
+      };
+    }
+    for (const [prop, value] of entries) {
+      const actual = await element.evaluate(
+        (el, prop) => getComputedStyle(el)[prop],
+        prop,
+      );
+      const [expected, actualValue] = typeParse([value.value, actual], 'text');
+      const cmpResult = compareValue({
+        expected,
+        actual: actualValue,
+        key: prop,
+        selector: detail.selector,
+        operator: value.compare,
+        type: '样式',
+      });
+      result.push(cmpResult.msg);
+      cmpResult.val && passCount++;
+    }
+    return {
+      msg: result.join(';;'),
+      score: (passCount / entries.length) * detail.score,
+    };
   }
 
   if (detail.text !== undefined) {
@@ -149,8 +185,8 @@ export async function handleScreenShotTestpointPreAction(options: {
 }): Promise<TestpointPreActionResult> {
   const { page, detail } = options;
 
-  const rootElement = page.locator(detail.root);
-  if ((await rootElement.count()) === 0) {
+  const rootElement = await page.$(detail.root);
+  if (!rootElement) {
     return {
       msg: `期望选择器 ${detail.root} 存在，实际值不存在`,
       generatedImgBuffer: null,
@@ -187,8 +223,8 @@ export async function handleScreenShotTestpointAction(options: {
   const { page, detail, testImgBuffer } = options;
   const { threshold, root, score } = detail;
 
-  const rootElement = page.locator(root);
-  if ((await rootElement.count()) === 0) {
+  const rootElement = await page.$(root);
+  if (!rootElement) {
     return {
       msg: `期望选择器 ${root} 存在，实际值不存在`,
       score: 0,

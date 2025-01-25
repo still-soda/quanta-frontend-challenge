@@ -1,10 +1,6 @@
-import { fit } from '@challenge/utils';
 import {
-  ExpectTestpointFlowData,
-  ScreenShotTestpointFlowData,
-  TestpointFlowData,
-} from './testpoints-flow-data.type';
-import {
+  $record,
+  fit,
   $boolean,
   $enum,
   $number,
@@ -12,6 +8,11 @@ import {
   $string,
   $value,
 } from '@challenge/utils';
+import {
+  ExpectTestpointFlowData,
+  ScreenShotTestpointFlowData,
+  TestpointFlowData,
+} from './testpoints-flow-data.type';
 
 export function validateTestpointFlowData(data: TestpointFlowData) {
   return fit(data, {
@@ -61,7 +62,24 @@ export function validateExpectTestpointFlowData(
         text: $string().optional(),
         attr: $string().optional(),
         typeParser: $enum('text', 'number', 'boolean').optional(),
-        compare: $enum('eq', 'ne', 'gt', 'lt', 'gte', 'lte').optional(),
+        compare: $enum(
+          'eq',
+          'ne',
+          'gt',
+          'lt',
+          'gte',
+          'lte',
+          'contains',
+          'notContains',
+          'match',
+        ).optional(),
+        style: $record(
+          $string(),
+          $object({
+            value: $string(),
+            compare: $enum('eq', 'ne'),
+          }),
+        ).optional(),
       }),
     },
     shouldThrow,

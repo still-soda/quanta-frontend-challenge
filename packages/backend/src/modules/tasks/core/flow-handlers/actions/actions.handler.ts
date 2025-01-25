@@ -49,8 +49,8 @@ const click = async (
  * @param selector 选择器
  */
 export async function ensureSelectorExists(page: Page, selector: string) {
-  const el = page.locator(selector);
-  if ((await el.count()) === 0) {
+  const el = await page.$(selector);
+  if (!el) {
     throw new Error(`选择器 ${selector} 不存在`);
   }
 }

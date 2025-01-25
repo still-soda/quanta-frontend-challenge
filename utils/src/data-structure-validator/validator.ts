@@ -108,6 +108,38 @@ function fitOne(
             }
          }
       }
+   } else if (val.type === 'record') {
+      const [keyType, valueType] = val.value;
+      const keys = Object.keys(obj[key]);
+      const values = Object.values(obj[key]);
+      for (let i = 0; i < keys.length; i++) {
+         const { result: res, catched: c } = fitOne(
+            i.toString(),
+            keyType,
+            keys
+         );
+         if (c) {
+            result = {
+               msg: `验证 record key 错误: ${res.msg}`,
+               ok: res.ok,
+            };
+            catched = true;
+            break;
+         }
+         const { result: res2, catched: c2 } = fitOne(
+            i.toString(),
+            valueType,
+            values
+         );
+         if (c2) {
+            result = {
+               msg: `验证 record value 错误: ${res2.msg}`,
+               ok: res2.ok,
+            };
+            catched = true;
+            break;
+         }
+      }
    }
 
    return { result, catched };

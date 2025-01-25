@@ -83,7 +83,6 @@ describe('数据验证器 - fit', () => {
       };
 
       const result = fit(obj, dataStructure);
-      console.log(result);
       expect(result).toHaveProperty('ok', true);
    });
 
@@ -167,12 +166,21 @@ describe('数据验证器 - fit', () => {
       expect(true).toBe(false);
    });
 
-   it('应该能够正常验证为 Record 的情况', () => {
-      const obj = { a: { a: 12, b: 20 } };
-      const dataStructure = {
-         a: $record($string(), $any()),
-      };
+   it.each([
+      [{ a: { a: 12, b: 20 } }, { a: $record($string(), $number()) }, true],
+      [{ a: { a: 12, b: '20' } }, { a: $record($string(), $number()) }, false],
+      [
+         { a: { a: 'hello', b: 'world' } },
+         { a: $record($string(), $enum('hello', 'world')) },
+         true,
+      ],
+      [
+         { a: { a: 'hello', b: 'world2' } },
+         { a: $record($string(), $enum('hello', 'world')) },
+         false,
+      ],
+   ])('应该能够正常验证为 Record 的情况 %o', (obj, dataStructure, val) => {
       const result = fit(obj, dataStructure);
-      expect(result.ok).toBe(true);
+      expect(result.ok).toBe(val);
    });
 });

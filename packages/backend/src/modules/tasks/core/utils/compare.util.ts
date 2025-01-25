@@ -11,7 +11,8 @@ export type Operator =
   | 'gte'
   | 'lte'
   | 'contains'
-  | 'notContains';
+  | 'notContains'
+  | 'match';
 
 /**
  * 这个类型是用来存储比较的参数的。
@@ -45,6 +46,7 @@ function getRelationStr(operator: Operator) {
   if (operator === 'lte') return '小于等于';
   if (operator === 'contains') return '包含';
   if (operator === 'notContains') return '不包含';
+  if (operator === 'match') return '匹配';
   return '';
 }
 
@@ -77,6 +79,7 @@ const compareFn: Record<Operator, (a: any, b: any) => boolean> = {
   lte: (a: any, b: any) => a <= b,
   contains: (a: string, b: string) => a.includes(b),
   notContains: (a: string, b: string) => !a.includes(b),
+  match: (a: any, b: any) => new RegExp(b).test(a),
 };
 
 /**
