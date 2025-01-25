@@ -103,10 +103,10 @@ export class ChallengesService {
     );
   }
 
-  async pushScreenshot(challengeId: string, screenshotId: string) {
+  async setScreenshot(challengeId: string, screenshotIdList: string[]) {
     return await this.challengeModel.findByIdAndUpdate(
-      { _id: challengeId },
-      { $push: { screenshots: screenshotId } },
+      challengeId,
+      { screenshots: screenshotIdList },
       { new: true },
     );
   }

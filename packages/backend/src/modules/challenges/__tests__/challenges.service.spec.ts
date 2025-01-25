@@ -225,4 +225,13 @@ describe('ChallengesService', () => {
       expect(found.status).toBe('draft');
     });
   });
+
+  it('应该正确设置截图', async () => {
+    const created = await createOne();
+    const { screenshots } = await service.setScreenshot(created.id, [
+      'test_id',
+    ]);
+    expect(screenshots).toHaveLength(1);
+    expect(screenshots.includes('test_id')).toBeTruthy();
+  });
 });

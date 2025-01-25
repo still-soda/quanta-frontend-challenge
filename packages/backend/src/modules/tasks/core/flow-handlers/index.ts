@@ -15,10 +15,16 @@ import {
  * @param success 是否成功
  * @param msg 测试结果消息
  * @param score 测试结果分数
+ * @param generateImgBuffer 生成的图片缓冲区，默认为 `null`，仅在截图测试点中存在
  * @returns 测试结果对象
  */
-function res(success: boolean, msg: string, score: number): HandlingResult {
-  return { success, msg, score };
+function res(
+  success: boolean,
+  msg: string,
+  score: number,
+  generateImgBuffer: Buffer = null,
+): HandlingResult {
+  return { success, msg, score, generateImgBuffer };
 }
 
 /**
@@ -29,6 +35,7 @@ function res(success: boolean, msg: string, score: number): HandlingResult {
  * - `success`: 测试是否成功
  * （一般只有在抛出异常时才会失败，正常测试得分为 0 不算失败）
  * - `score`: 测试结果分数
+ * - `generateImgBuffer`: 生成的图片缓冲区，**仅在截图测试点中存在**
  *
  * 当 `success` 为 `false` 的时候，意味着抛出了异常，此时 `score` 为 0，
  * `msg` 为异常消息。需要在外部处理异常。
@@ -67,12 +74,12 @@ export async function handleOneFlowData(
           ? handleScreenShotTestpointPreAction
           : handleScreenShotTestpointAction;
         const { testImgBuffer } = data.detail;
-        const { msg, score } = await fn({
+        const { msg, score, generatedImgBuffer } = await fn({
           page,
           detail: data.detail,
           testImgBuffer,
         } as any);
-        return res(true, msg, score);
+        return res(true, msg, score, generatedImgBuffer);
       } catch (error) {
         return res(false, error.message, 0);
       }

@@ -54,9 +54,11 @@ export type HandlerOptions =
  * - `msg`: 操作结果消息
  * - `success`: 操作是否成功
  * - `score`: 操作结果分数，非测试点操作一般为 0
+ * - `generateImgBuffer`: 生成的图片 Buffer，仅在截图测试点操作中存在
  */
 export interface HandlingResult {
   msg: string;
   success: boolean;
   score: number;
+  generateImgBuffer?: Buffer;
 }
