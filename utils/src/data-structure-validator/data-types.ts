@@ -8,6 +8,9 @@ export class DataType<Type extends string, Value> {
       this.value = content;
    }
 
+   /**
+    * 让当前数据类型成为可选值
+    */
    optional() {
       this.isOptional = true;
       return this;
@@ -42,6 +45,12 @@ export function $object(
       : d<'basic', 'object'>('basic', 'object');
 }
 
+export function $array<T extends string, K>(
+   ...contents: DataType<T, K>[]
+): DataType<'array', DataType<T, K>[]> {
+   return d('array', contents);
+}
+
 export function $function(): DataType<'basic', 'function'> {
    return d('basic', 'function');
 }
@@ -72,6 +81,10 @@ export function $fn(
    return d('function', fn);
 }
 
+export function $any(): ReturnType<typeof $fn> {
+   return d('function', () => true);
+}
+
 export function $enum<T>(...args: T[]): DataType<'enum', T[]> {
    return d('enum', args);
 }
@@ -95,4 +108,7 @@ export type availableTypes =
    | ReturnType<typeof $value>
    | ReturnType<typeof $fn>
    | ReturnType<typeof $enum>
-   | ReturnType<typeof $record>;
+   | ReturnType<typeof $record>
+   | ReturnType<typeof $array>
+   | ReturnType<typeof $any>
+   | DataType<'basic', 'object'>;

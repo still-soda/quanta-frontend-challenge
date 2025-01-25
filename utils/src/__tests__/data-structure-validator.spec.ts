@@ -1,10 +1,16 @@
 import {
+   $any,
+   $array,
+   $bigint,
    $boolean,
    $enum,
    $fn,
+   $function,
    $number,
    $object,
+   $record,
    $string,
+   $symbol,
    $value,
    contain,
    fit,
@@ -35,7 +41,9 @@ describe('数据验证器 - fit', () => {
          c: false,
          d: 'click',
          e: 'move',
-         f: [],
+         f: [1],
+         ff: ['aaa'],
+         fff: ['aaa', 123],
          g: {
             a: 123,
             b: 'hello',
@@ -44,6 +52,11 @@ describe('数据验证器 - fit', () => {
             },
          },
          h: 'str',
+         i: 'any',
+         j: () => true,
+         k: Symbol(),
+         l: 123n,
+         m: {},
       };
       const dataStructure = {
          a: $number(),
@@ -51,7 +64,9 @@ describe('数据验证器 - fit', () => {
          c: $boolean(),
          d: $enum('click', 'move'),
          e: $fn((val: string) => val === 'move'),
-         f: $fn(Array.isArray),
+         f: $array(),
+         ff: $array($string()),
+         fff: $array($string(), $number()),
          g: $object({
             a: $number(),
             b: $string(),
@@ -60,9 +75,15 @@ describe('数据验证器 - fit', () => {
             }),
          }),
          h: $value('str'),
+         i: $any(),
+         j: $function(),
+         k: $symbol(),
+         l: $bigint(),
+         m: $object(),
       };
 
       const result = fit(obj, dataStructure);
+      console.log(result);
       expect(result).toHaveProperty('ok', true);
    });
 
@@ -144,5 +165,14 @@ describe('数据验证器 - fit', () => {
          return;
       }
       expect(true).toBe(false);
+   });
+
+   it('应该能够正常验证为 Record 的情况', () => {
+      const obj = { a: { a: 12, b: 20 } };
+      const dataStructure = {
+         a: $record($string(), $any()),
+      };
+      const result = fit(obj, dataStructure);
+      expect(result.ok).toBe(true);
    });
 });
