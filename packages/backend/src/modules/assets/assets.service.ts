@@ -323,11 +323,7 @@ export class AssetsService {
    */
   async readTextFile(fileName: string) {
     const metadata = await this.getFileMetadataByName(fileName);
-    if (
-      !metadata ||
-      metadata.isStatic ||
-      !metadata.mimeType.startsWith('text')
-    ) {
+    if (!metadata || metadata.isStatic) {
       return '';
     }
 
@@ -347,11 +343,7 @@ export class AssetsService {
    */
   async readTextFileById(id: string) {
     const metadata = await this.getFileMetadataById(id);
-    if (
-      !metadata ||
-      metadata.isStatic ||
-      !metadata.mimeType.startsWith('text')
-    ) {
+    if (!metadata || metadata.isStatic) {
       return '';
     }
 
@@ -374,11 +366,7 @@ export class AssetsService {
    */
   async readStaticTextFile(fileName: string) {
     const metadata = await this.getFileMetadataByName(fileName);
-    if (
-      !metadata ||
-      !metadata.isStatic ||
-      !metadata.mimeType.startsWith('text')
-    ) {
+    if (!metadata || !metadata.isStatic) {
       return '';
     }
 
@@ -401,11 +389,7 @@ export class AssetsService {
    */
   async readStaticTextFileById(id: string) {
     const metadata = await this.getFileMetadataById(id);
-    if (
-      !metadata ||
-      !metadata.isStatic ||
-      !metadata.mimeType.startsWith('text')
-    ) {
+    if (!metadata || !metadata.isStatic) {
       return '';
     }
 

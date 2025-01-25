@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { FlowDataDto } from './dto/flow-data.dto';
 import { AssetsService } from '../assets/assets.service';
 import { dataValidators, FlowData, Validator } from './core/flow-data';
@@ -29,7 +29,7 @@ interface PreExecuteResult {
 }
 
 @Injectable()
-export class TasksService implements OnModuleInit {
+export class TasksService implements OnModuleInit, OnModuleDestroy {
   private browser: Browser;
 
   constructor(
@@ -41,7 +41,14 @@ export class TasksService implements OnModuleInit {
     this.browser = await chromium.launch({ headless: true });
   }
 
+  async onModuleDestroy() {
+    await this.browser.close();
+  }
+
   async getContext() {
+    if (!this.browser) {
+      this.browser = await chromium.launch({ headless: true });
+    }
     return await this.browser.newContext();
   }
 
@@ -155,11 +162,15 @@ export class TasksService implements OnModuleInit {
       }
 
       if (!handleResult.success) {
-        executeResult.push(handleResult);
+        executeResult.push({
+          msg: handleResult.msg,
+          score: handleResult.score,
+          success: handleResult.success,
+        });
         passed = false;
         break;
       } else {
-        const flowExplaination = explainOneFlowData(flow as any);
+        const flowExplaination = explainOneFlowData(flow as any, true);
         executeResult.push({
           msg: flowExplaination,
           score: handleResult.score,
@@ -183,10 +194,9 @@ export class TasksService implements OnModuleInit {
     passed &&= testScore === fullScore;
 
     if (passed) {
-      const result =
-        await this.challengesService.setStatusToPublished(challengeId);
-      if (!result || result.status !== 'published') {
-        throw new Error('设置挑战为发布状态失败');
+      const result = await this.challengesService.setStatusToReady(challengeId);
+      if (!result || result.status !== 'ready') {
+        throw new Error('设置挑战为准备发布状态失败');
       }
     }
 

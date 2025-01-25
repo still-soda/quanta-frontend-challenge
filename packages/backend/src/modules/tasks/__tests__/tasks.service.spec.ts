@@ -21,12 +21,13 @@ describe('TasksService', () => {
   let assetsService: AssetsService;
   let challengeService: ChallengesService;
   let mongodb: MongoMemoryServer;
+  let module: TestingModule;
 
   beforeAll(async () => {
     const mockDb = await createMockDBModule();
     mongodb = mockDb.mongodb;
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         mockDb.module,
         createEnvConfModule(),
@@ -36,12 +37,15 @@ describe('TasksService', () => {
       providers: [TasksService, AssetsService, ChallengesService],
     }).compile();
 
+    await module.init();
+
     tasksService = module.get<TasksService>(TasksService);
     assetsService = module.get<AssetsService>(AssetsService);
     challengeService = module.get<ChallengesService>(ChallengesService);
   });
 
   afterAll(async () => {
+    await module.close();
     await mongoose.disconnect();
     await mongodb.stop();
   });
@@ -246,7 +250,7 @@ describe('TasksService', () => {
             name: 'test',
             score: 20,
             selector: 'button',
-            text: 'clicked',
+            text: 'click me',
           },
         } as ExpectTestpointFlowData,
       ];
@@ -258,13 +262,191 @@ describe('TasksService', () => {
       expect(serializeResult.ok).toBe(true);
 
       const preExcuteResult = await tasksService.preExecute(chllenge.id);
+      expect(
+        preExcuteResult.result.reduce((acc, cur) => acc + cur.score, 0),
+      ).toBe(40);
+      expect(preExcuteResult.result.every((r) => r.success)).toBe(true);
+      expect(preExcuteResult).toHaveProperty('passed', true);
+
+      const updatedChallenge = await challengeService.findOne(chllenge.id);
+      expect(updatedChallenge.screenshots).toHaveProperty('length', 1);
+      expect(updatedChallenge).toHaveProperty('status', 'ready');
+      expect(updatedChallenge.flowdataId).toBe(serializeResult.id);
     });
 
-    it.todo('正确预执行正确的流程文件后，应该将结果关联到对应的挑战');
+    it('预执行不合法的流程文件时，应该中断并返回不通过和错误信息', async () => {
+      const chllenge = await challengeService.create({
+        title: 'test',
+        type: 'test',
+        difficulty: 'test',
+        authorId: 'test',
+        score: 100,
+      });
 
-    it.todo('预执行不合法的流程文件时，应该中断并返回不通过和错误信息');
+      const page = `
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <button id="btn">click me</button>
+          </body>
+        </html>
+      `;
+      const standardAnswer = new File([page], 'test.html');
+      const challengeId = chllenge.id;
+      const uploadResult = await tasksService.uploadStandardAnswer(
+        challengeId,
+        standardAnswer,
+      );
+      expect(uploadResult.ok).toBe(true);
 
-    it.todo('预执行不合法的流程文件后，不应该将结果关联到对应的挑战');
+      const data = [
+        {
+          type: 'mouse',
+          detail: {
+            type: 'move',
+            selector: '#btn',
+          },
+        } as MoveMouseFlowData,
+        {
+          type: 'mouse',
+          detail: {
+            type: 'click',
+            selector: '#btn',
+          },
+        } as ClickMouseFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'screenshot',
+            name: 'test',
+            score: 20,
+            threshold: 0.9,
+            selector: 'body',
+            root: '#btn',
+          },
+        } as ScreenShotTestpointFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'expect',
+            name: 'test',
+            score: 20,
+            selector: '#btn',
+            text: '---------- not click me ----------',
+          },
+        } as ExpectTestpointFlowData,
+      ];
+
+      const serializeResult = await tasksService.serializeFlowData(
+        chllenge.id,
+        { data },
+      );
+      expect(serializeResult.ok).toBe(true);
+
+      const preExcuteResult = await tasksService.preExecute(chllenge.id);
+      expect(
+        preExcuteResult.result.reduce((acc, cur) => acc + cur.score, 0),
+      ).toBe(20);
+      expect(preExcuteResult.result.every((r) => r.success)).toBe(true);
+      expect(preExcuteResult).toHaveProperty('passed', false);
+
+      const updatedChallenge = await challengeService.findOne(chllenge.id);
+      expect(updatedChallenge.screenshots).toHaveProperty('length', 1);
+      expect(updatedChallenge).toHaveProperty('status', 'draft');
+      expect(updatedChallenge.flowdataId).toBe(serializeResult.id);
+    });
+
+    it('流程发生错误时，应该中断并返回不通过和错误信息', async () => {
+      const chllenge = await challengeService.create({
+        title: 'test',
+        type: 'test',
+        difficulty: 'test',
+        authorId: 'test',
+        score: 100,
+      });
+
+      const page = `
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <button id="btn">click me</button>
+          </body>
+        </html>
+      `;
+      const standardAnswer = new File([page], 'test.html');
+      const challengeId = chllenge.id;
+      const uploadResult = await tasksService.uploadStandardAnswer(
+        challengeId,
+        standardAnswer,
+      );
+      expect(uploadResult.ok).toBe(true);
+
+      const data = [
+        {
+          type: 'mouse',
+          detail: {
+            type: 'move',
+            selector: '#btn',
+          },
+        } as MoveMouseFlowData,
+        {
+          type: 'mouse',
+          detail: {
+            type: 'click',
+            // 注意这里的 selector 是错误的
+            selector: '#btn--',
+          },
+        } as ClickMouseFlowData,
+        {
+          type: 'mouse',
+          detail: {
+            type: 'click',
+            selector: '#btn',
+          },
+        } as ClickMouseFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'screenshot',
+            name: 'test',
+            score: 20,
+            threshold: 0.9,
+            selector: 'body',
+            root: '#btn',
+          },
+        } as ScreenShotTestpointFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'expect',
+            name: 'test',
+            score: 20,
+            selector: '#btn',
+            text: 'click me',
+          },
+        } as ExpectTestpointFlowData,
+      ];
+
+      const serializeResult = await tasksService.serializeFlowData(
+        chllenge.id,
+        { data },
+      );
+      expect(serializeResult.ok).toBe(true);
+
+      const preExcuteResult = await tasksService.preExecute(chllenge.id);
+      expect(preExcuteResult.result.length).toBe(2);
+      expect(preExcuteResult.result[1].success).toBe(false);
+      expect(preExcuteResult).toHaveProperty('passed', false);
+
+      const updatedChallenge = await challengeService.findOne(chllenge.id);
+      expect(updatedChallenge.screenshots).toHaveProperty('length', 0);
+      expect(updatedChallenge).toHaveProperty('status', 'draft');
+      expect(updatedChallenge.flowdataId).toBe(serializeResult.id);
+    });
   });
 
   describe('execute', () => {});
