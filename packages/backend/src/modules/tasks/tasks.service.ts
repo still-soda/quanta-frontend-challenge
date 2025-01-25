@@ -1,15 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { FlowDataDto } from './dto/flow-data.dto';
 import { AssetsService } from '../assets/assets.service';
-import { dataValidators, Validator } from './core/flow-data';
+import { dataValidators, FlowData, Validator } from './core/flow-data';
 import { ChallengesService } from '../challenges/challenges.service';
+import { Browser, chromium } from 'playwright';
+import { explainOneFlowData, handleOneFlowData } from './core';
+
+interface ExecuteResult {
+  msg: string;
+  score: number;
+  success: boolean;
+}
 
 @Injectable()
-export class TasksService {
+export class TasksService implements OnModuleInit {
+  private browser: Browser;
+
   constructor(
     private readonly assetsService: AssetsService,
     private readonly challengesService: ChallengesService,
   ) {}
+
+  async onModuleInit() {
+    this.browser = await chromium.launch({ headless: true });
+  }
+
+  async getContext() {
+    return await this.browser.newContext();
+  }
 
   /**
    * 这个函数用来执行挑战。
@@ -45,11 +63,61 @@ export class TasksService {
    * @todo
    */
   async preExecute(challengeId: string) {
+    const challenge = await this.challengesService.findOne(challengeId);
+    if (!challenge) {
+      throw new Error('找不到 Challenge');
+    }
+
     // 1. 取出挑战的流程数据，验证是否存在
+    const { flowdataId } = challenge;
+    if (
+      !flowdataId ||
+      !(await this.assetsService.isFileExists({ id: flowdataId })).exists
+    ) {
+      throw new Error('流程数据不存在');
+    }
+    const flowdataText = await this.assetsService.readTextFile(flowdataId);
+    if (flowdataText === '') {
+      throw new Error('流程数据为空');
+    }
+    const flowdata: FlowData[] = JSON.parse(flowdataText);
+
     // 2. 取出挑战的标准答案，验证是否存在
+    const { standardAnswer } = challenge;
+    if (standardAnswer.length === 0) {
+      throw new Error('标准答案未设置');
+    }
+    const stdAnswerContent = await this.assetsService.readTextFileById(
+      standardAnswer[0],
+    );
+    if (!stdAnswerContent) {
+      throw new Error('标准答案文件不存在');
+    }
+    const context = await this.getContext();
+    const page = await context.newPage();
+    await page.setContent(stdAnswerContent);
+    await page.waitForLoadState('load');
+
     // 3. 将标准答案按照流程数据执行，生成得分和截图
+    const executeResult: ExecuteResult[] = [];
+    let passed = true;
+    for (const flow of flowdata) {
+      const handleResult = await handleOneFlowData(page, flow as any, true);
+
+      if (!handleResult.success) {
+        executeResult.push(handleResult);
+        passed = false;
+        break;
+      } else {
+        const flowExplaination = explainOneFlowData(flow as any);
+        executeResult.push({ ...handleResult, msg: flowExplaination });
+      }
+    }
+
     // 4. 将得分和截图关联在挑战上
+
     // 5. 判断得分是否是满分，如果是满分，将挑战设置为可发布
+
     // 6. 返回执行结果
   }
 
@@ -103,7 +171,7 @@ export class TasksService {
   /**
    * 调用这个函数来上传标准答案。
    * @param challengeId 挑战 ID
-   * @param file 标准答案文件
+   * @param file 标准答案文件 ID
    * @param suffix 文件后缀
    * @returns 保存的文件信息
    */
@@ -129,12 +197,14 @@ export class TasksService {
       throw new Error('找不到 Challenge');
     }
 
-    const fileName = `${challengeId}${suffix}`;
-    await this.challengesService.setStandardAnswer(challengeId, [fileName]);
-    return this.assetsService.saveFile({
+    const saveResult = await this.assetsService.saveFile({
       file,
-      name: fileName,
+      name: file.name,
       mimeType: 'text/html',
     });
+    await this.challengesService.setStandardAnswer(challengeId, [
+      saveResult.id,
+    ]);
+    return saveResult;
   }
 }

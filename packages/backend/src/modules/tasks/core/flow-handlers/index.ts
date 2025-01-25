@@ -7,6 +7,7 @@ import { HandlerOptions, HandlingResult } from './index.type';
 import {
   handleExpectTestpointAction,
   handleScreenShotTestpointAction,
+  handleScreenShotTestpointPreAction,
 } from './testpoints/testpoints.handler';
 
 /**
@@ -34,10 +35,12 @@ function res(success: boolean, msg: string, score: number): HandlingResult {
  *
  * @param page 页面
  * @param data 流程数据
+ * @param isPre 是否是预执行，默认为 `false`
  */
 export async function handleOneFlowData(
   page: Page,
   data: HandlerOptions,
+  isPre: boolean = false,
 ): Promise<HandlingResult> {
   if (data.type === 'mouse') {
     try {
@@ -60,12 +63,15 @@ export async function handleOneFlowData(
   if (data.type === 'testpoint') {
     if (data.detail.type === 'screenshot') {
       try {
+        const fn = isPre
+          ? handleScreenShotTestpointPreAction
+          : handleScreenShotTestpointAction;
         const { testImgBuffer } = data.detail;
-        const { msg, score } = await handleScreenShotTestpointAction({
+        const { msg, score } = await fn({
           page,
           detail: data.detail,
           testImgBuffer,
-        });
+        } as any);
         return res(true, msg, score);
       } catch (error) {
         return res(false, error.message, 0);

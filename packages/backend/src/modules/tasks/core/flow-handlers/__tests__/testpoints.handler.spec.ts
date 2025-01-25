@@ -504,7 +504,7 @@ describe('Testpoints Handler', () => {
           },
         });
       expect(msg).toBe('ok');
-      expect(generatedImgBuffer instanceof Buffer).toBe(true);
+      expect(generatedImgBuffer).toBeInstanceOf(Buffer);
       expect(score).toBe(20);
       await page.close();
     });
@@ -546,9 +546,13 @@ describe('Testpoints Handler', () => {
           threshold: 0.9,
         },
       });
-      expect(generatedImgBuffer instanceof Buffer).toBe(true);
+      expect(generatedImgBuffer).toBeInstanceOf(Buffer);
 
-      const { msg, score } = await handleScreenShotTestpointAction({
+      const {
+        msg,
+        score,
+        generatedImgBuffer: buffer,
+      } = await handleScreenShotTestpointAction({
         page,
         detail: {
           name: 'test',
@@ -560,6 +564,7 @@ describe('Testpoints Handler', () => {
         testImgBuffer: generatedImgBuffer,
       });
       expect(msg).toBe('ok');
+      expect(buffer).toBeInstanceOf(Buffer);
       expect(score).toBe(20);
       await page.close();
     });
@@ -578,13 +583,17 @@ describe('Testpoints Handler', () => {
           threshold: 0.9,
         },
       });
-      expect(generatedImgBuffer instanceof Buffer).toBe(true);
+      expect(generatedImgBuffer).toBeInstanceOf(Buffer);
 
       await page.setContent(
         '<div id="test" style="background: red">1234</div>',
       );
 
-      const { msg, score } = await handleScreenShotTestpointAction({
+      const {
+        msg,
+        score,
+        generatedImgBuffer: buffer,
+      } = await handleScreenShotTestpointAction({
         page,
         detail: {
           name: 'test',
@@ -596,6 +605,7 @@ describe('Testpoints Handler', () => {
         testImgBuffer: generatedImgBuffer,
       });
       expect(msg).toMatch(/相似度 \d+\.?\d*% 低于阈值 90%/);
+      expect(buffer).toBeInstanceOf(Buffer);
       expect(score).toBe(0);
       await page.close();
     });
@@ -614,9 +624,13 @@ describe('Testpoints Handler', () => {
           threshold: 0.9,
         },
       });
-      expect(generatedImgBuffer instanceof Buffer).toBe(true);
+      expect(generatedImgBuffer).toBeInstanceOf(Buffer);
 
-      const { msg, score } = await handleScreenShotTestpointAction({
+      const {
+        msg,
+        score,
+        generatedImgBuffer: buffer,
+      } = await handleScreenShotTestpointAction({
         page,
         detail: {
           name: 'test',
@@ -628,6 +642,7 @@ describe('Testpoints Handler', () => {
         testImgBuffer: generatedImgBuffer,
       });
       expect(msg).toBe('期望选择器 #test1 存在，实际值不存在');
+      expect(buffer).toBe(null);
       expect(score).toBe(0);
       await page.close();
     });

@@ -76,7 +76,7 @@ describe('ChallengesService', () => {
 
   it('应该查询一个挑战', async () => {
     const created = await createOne();
-    const found = await service.findOne(created._id.toString());
+    const found = await service.findOne(created.id);
     expect(found).toHaveProperty('_id');
     expect(found.title).toBe('test challenge');
     expect(found.type).toBe('test type');
@@ -90,7 +90,7 @@ describe('ChallengesService', () => {
   it('应该更新一个挑战', async () => {
     const created = await createOne();
     expect(created.title).toBe('test challenge');
-    const updated = await service.update(created._id.toString(), {
+    const updated = await service.update(created.id, {
       title: 'updated challenge',
     });
     expect(updated).toHaveProperty('_id');
@@ -99,7 +99,7 @@ describe('ChallengesService', () => {
 
   it('不应该更新包含UpdateChallengeDto中不存在字段的挑战', async () => {
     const created = await createOne();
-    const updated = await service.update(created._id.toString(), {
+    const updated = await service.update(created.id, {
       standardAnswer: ['1.html'],
     } as any);
     expect(updated.standardAnswer).toHaveLength(0);
@@ -107,88 +107,122 @@ describe('ChallengesService', () => {
 
   it('应该删除一个挑战', async () => {
     const created = await createOne();
-    await service.remove(created._id.toString());
+    await service.remove(created.id);
 
-    const found = await service.findOne(created._id.toString());
+    const found = await service.findOne(created.id);
     expect(found).toBeNull();
   });
 
   it('应该正确设置标准答案', async () => {
     // 正常设置
     const created1 = await createOne();
-    const updated1 = await service.setStandardAnswer(created1._id.toString(), [
+    const updated1 = await service.setStandardAnswer(created1.id, [
       '1.html',
       '2.html',
     ]);
     expect(updated1.standardAnswer).toHaveLength(2);
-    const found1 = await service.findOne(created1._id.toString());
+    const found1 = await service.findOne(created1.id);
     expect(found1.standardAnswer.includes('1.html')).toBe(true);
     expect(found1.standardAnswer.includes('2.html')).toBe(true);
     // 无内容
     const created2 = await createOne();
-    const updated2 = await service.setStandardAnswer(
-      created2._id.toString(),
-      [],
-    );
+    const updated2 = await service.setStandardAnswer(created2.id, []);
     expect(updated2).toBeNull();
-    const found2 = await service.findOne(created2._id.toString());
+    const found2 = await service.findOne(created2.id);
     expect(found2.standardAnswer).toHaveLength(0);
     // null
     const created3 = await createOne();
-    const updated3 = await service.setStandardAnswer(
-      created3._id.toString(),
-      null,
-    );
+    const updated3 = await service.setStandardAnswer(created3.id, null);
     expect(updated3).toBeNull();
-    const found3 = await service.findOne(created3._id.toString());
+    const found3 = await service.findOne(created3.id);
     expect(found3.standardAnswer).toHaveLength(0);
   });
 
   it('解决挑战时应该正确添加最快解决者', async () => {
     const created = await createOne();
-    const updated = await service.solveChallenge(
-      created._id.toString(),
-      'teset_user_id',
-    );
+    const updated = await service.solveChallenge(created.id, 'teset_user_id');
     expect(updated.fastestSolvers.includes('teset_user_id')).toBeTruthy();
   });
 
   it('在已有3个最快解决者的情况下，不应该再添加', async () => {
     const created = await createOne();
     await Promise.all([
-      service.solveChallenge(created._id.toString(), 'user1'),
-      service.solveChallenge(created._id.toString(), 'user2'),
-      service.solveChallenge(created._id.toString(), 'user3'),
+      service.solveChallenge(created.id, 'user1'),
+      service.solveChallenge(created.id, 'user2'),
+      service.solveChallenge(created.id, 'user3'),
     ]);
-    const updated = await service.solveChallenge(
-      created._id.toString(),
-      'user4',
-    );
+    const updated = await service.solveChallenge(created.id, 'user4');
     expect(updated).toBeNull();
 
-    const found = await service.findOne(created._id.toString());
+    const found = await service.findOne(created.id);
     expect(found.fastestSolvers.includes('user4')).toBeFalsy();
     expect(found.fastestSolvers).toHaveLength(3);
   });
 
   it('在已经是最快解决者的情况下，不应该再添加', async () => {
     const created = await createOne();
-    await service.solveChallenge(created._id.toString(), 'user1');
-    const updated = await service.solveChallenge(
-      created._id.toString(),
-      'user1',
-    );
+    await service.solveChallenge(created.id, 'user1');
+    const updated = await service.solveChallenge(created.id, 'user1');
     expect(updated).toBeNull();
 
-    const found = await service.findOne(created._id.toString());
+    const found = await service.findOne(created.id);
     expect(found.fastestSolvers).toHaveLength(1);
     expect(found.fastestSolvers.includes('user1')).toBeTruthy();
   });
 
   it('应该正确设置流程数据', async () => {
     const created = await createOne();
-    await service.setFlowData(created._id.toString(), 'test_id');
-    const updated = await service.findOne(created._id.toString());
+    await service.setFlowData(created.id, 'test_id');
+    const updated = await service.findOne(created.id);
     expect(updated.flowdataId).toBe('test_id');
+  });
+
+  describe('应该正确设置状态', () => {
+    it('应该正确设置为 ready 状态', async () => {
+      const created = await createOne();
+      const updated = await service.setStatusToReady(created.id);
+      expect(updated.status).toBe('ready');
+    });
+
+    it('如果状态不是 draft，不应该设置为 ready 状态', async () => {
+      const created = await createOne();
+      const updated = await service.setStatusToReady(created.id);
+      expect(updated.status).toBe('ready');
+      const updated2 = await service.setStatusToReady(created.id);
+      expect(updated2).toBeNull();
+      const found = await service.findOne(created.id);
+      expect(found.status).toBe('ready');
+    });
+
+    it('应该正确设置为 published 状态', async () => {
+      const created = await createOne();
+      await service.setStatusToReady(created.id);
+      const updated = await service.setStatusToPublished(created.id);
+      expect(updated.status).toBe('published');
+    });
+
+    it('如果状态不是 ready，不应该设置为 published 状态', async () => {
+      const created = await createOne();
+      const updated = await service.setStatusToPublished(created.id);
+      expect(updated).toBeNull();
+      const found = await service.findOne(created.id);
+      expect(found.status).toBe('draft');
+    });
+
+    it('应该正确设置为 closed 状态', async () => {
+      const created = await createOne();
+      await service.setStatusToReady(created.id);
+      await service.setStatusToPublished(created.id);
+      const updated = await service.setStatusToClosed(created.id);
+      expect(updated.status).toBe('closed');
+    });
+
+    it('如果状态不是 published，不应该设置为 closed 状态', async () => {
+      const created = await createOne();
+      const updated = await service.setStatusToClosed(created.id);
+      expect(updated).toBeNull();
+      const found = await service.findOne(created.id);
+      expect(found.status).toBe('draft');
+    });
   });
 });

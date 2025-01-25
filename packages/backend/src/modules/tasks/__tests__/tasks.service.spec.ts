@@ -140,7 +140,7 @@ describe('TasksService', () => {
       const standardAnswer = new File(['test'], 'test.html');
       const challengeId = challenge._id.toString();
 
-      const { fileName, ok } = await tasksService.uploadStandardAnswer(
+      const { fileName, ok, id } = await tasksService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
         '.html',
@@ -151,9 +151,8 @@ describe('TasksService', () => {
       );
       // 检查数据库中是否正确设置了标准答案
       const foundedChallenge = await challengeService.findOne(challengeId);
-      const answerName = `${challengeId}.html`;
       expect(foundedChallenge).toHaveProperty('standardAnswer');
-      expect(foundedChallenge.standardAnswer.includes(answerName)).toBe(true);
+      expect(foundedChallenge.standardAnswer.includes(id)).toBe(true);
       // 检查文件是否存在
       const { exists } = await assetsService.isFileExists({ fileName });
       expect(exists).toBeTruthy();

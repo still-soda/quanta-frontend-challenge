@@ -17,6 +17,7 @@ jest.mock('../actions/actions.handler', () => ({
 jest.mock('../testpoints/testpoints.handler', () => ({
   handleExpectTestpointAction: jest.fn(),
   handleScreenShotTestpointAction: jest.fn(),
+  handleScreenShotTestpointPreAction: jest.fn(),
 }));
 
 const [
@@ -24,11 +25,13 @@ const [
   handleTriggerAction,
   handleExpectTestpointAction,
   handleScreenShotTestpointAction,
+  handleScreenShotTestpointPreAction,
 ] = [
   ActionsHandler.handleMouseAction,
   ActionsHandler.handleTriggerAction,
   TestpointsHandler.handleExpectTestpointAction,
   TestpointsHandler.handleScreenShotTestpointAction,
+  TestpointsHandler.handleScreenShotTestpointPreAction,
 ] as jest.Mock[];
 
 describe('Flow Data Handler Index', () => {
@@ -211,6 +214,65 @@ describe('Flow Data Handler Index', () => {
 
     expect(handleScreenShotTestpointAction).toHaveBeenCalledTimes(1);
     expect(handleScreenShotTestpointAction).toHaveBeenCalledWith({
+      page,
+      detail: data.detail,
+      testImgBuffer: data.detail.testImgBuffer,
+    });
+    expect(result).toEqual({ success: false, msg: 'error', score: 0 });
+  });
+
+  it('应该正确转发 testpoint-flow-data（screenshot，pre，成功）', async () => {
+    handleScreenShotTestpointPreAction.mockClear().mockResolvedValue({
+      msg: 'ok',
+      score: 20,
+    });
+
+    const data: ScreenShotTestpointFlowData & {
+      detail: { testImgBuffer: Buffer };
+    } = {
+      type: 'testpoint',
+      detail: {
+        type: 'screenshot',
+        name: 'test',
+        score: 20,
+        root: 'body',
+        threshold: 1,
+        testImgBuffer: Buffer.from('test'),
+      },
+    };
+    const result = await handleOneFlowData(page, data, true);
+
+    expect(handleScreenShotTestpointPreAction).toHaveBeenCalledTimes(1);
+    expect(handleScreenShotTestpointPreAction).toHaveBeenCalledWith({
+      page,
+      detail: data.detail,
+      testImgBuffer: data.detail.testImgBuffer,
+    });
+    expect(result).toEqual({ success: true, msg: 'ok', score: 20 });
+  });
+
+  it('应该正确转发 testpoint-flow-data（screenshot，pre，失败，调用抛出异常）', async () => {
+    handleScreenShotTestpointPreAction
+      .mockClear()
+      .mockRejectedValue(new Error('error'));
+
+    const data: ScreenShotTestpointFlowData & {
+      detail: { testImgBuffer: Buffer };
+    } = {
+      type: 'testpoint',
+      detail: {
+        type: 'screenshot',
+        name: 'test',
+        score: 20,
+        root: 'body',
+        threshold: 1,
+        testImgBuffer: Buffer.from('test'),
+      },
+    };
+    const result = await handleOneFlowData(page, data, true);
+
+    expect(handleScreenShotTestpointPreAction).toHaveBeenCalledTimes(1);
+    expect(handleScreenShotTestpointPreAction).toHaveBeenCalledWith({
       page,
       detail: data.detail,
       testImgBuffer: data.detail.testImgBuffer,

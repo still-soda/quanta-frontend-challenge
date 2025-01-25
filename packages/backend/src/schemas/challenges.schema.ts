@@ -4,6 +4,8 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 export type ChallengesDocument = Challenges & Document;
 
+export type ChallengeStatus = 'draft' | 'ready' | 'published' | 'closed';
+
 @Schema()
 @ApiSchema({ description: '挑战' })
 export class Challenges extends Document {
@@ -13,6 +15,15 @@ export class Challenges extends Document {
   })
   @Prop()
   title: string;
+
+  @ApiProperty({
+    example: 'ready',
+    description:
+      '挑战状态，可选值为 draft, ready, published, closed，分别表示草稿（预执行未执行或未通过）、准备中、已发布、已关闭',
+    default: 'draft',
+  })
+  @Prop({ default: 'draft' })
+  status: ChallengeStatus;
 
   @ApiProperty({
     example: 123,

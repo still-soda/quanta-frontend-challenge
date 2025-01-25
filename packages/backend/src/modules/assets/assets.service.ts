@@ -341,6 +341,33 @@ export class AssetsService {
   }
 
   /**
+   * 读取文本文件内容，如果文件不存在或者不是文本文件则返回空字符串
+   * @param id 文件元数据 Id
+   * @returns 文件内容
+   */
+  async readTextFileById(id: string) {
+    const metadata = await this.getFileMetadataById(id);
+    if (
+      !metadata ||
+      metadata.isStatic ||
+      !metadata.mimeType.startsWith('text')
+    ) {
+      return '';
+    }
+
+    try {
+      const content = fs.readFileSync(
+        `${this.FILE_ROOT}/${metadata.localName}`,
+        'utf-8',
+      );
+      return content;
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
+  }
+
+  /**
    * 读取静态文本文件内容，如果文件不存在或者不是文本文件则返回空字符串
    * @param fileName 文件名
    * @returns 文件内容
@@ -358,6 +385,33 @@ export class AssetsService {
     try {
       const content = fs.readFileSync(
         `${this.STATIC_ROOT}/${fileName}`,
+        'utf-8',
+      );
+      return content;
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
+  }
+
+  /**
+   * 读取静态文本文件内容，如果文件不存在或者不是文本文件则返回空字符串
+   * @param id 文件元数据 Id
+   * @returns 文件内容
+   */
+  async readStaticTextFileById(id: string) {
+    const metadata = await this.getFileMetadataById(id);
+    if (
+      !metadata ||
+      !metadata.isStatic ||
+      !metadata.mimeType.startsWith('text')
+    ) {
+      return '';
+    }
+
+    try {
+      const content = fs.readFileSync(
+        `${this.STATIC_ROOT}/${metadata.localName}`,
         'utf-8',
       );
       return content;

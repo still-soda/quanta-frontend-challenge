@@ -11,6 +11,7 @@ import { Jimp, diff } from 'jimp';
 
 export interface TestpointActionResult {
   msg: string;
+  generatedImgBuffer?: Buffer;
   score: number;
 }
 
@@ -175,6 +176,7 @@ export async function handleScreenShotTestpointPreAction(options: {
  * - `threshold`: 相似度阈值
  * @returns 测试点结果
  * - `msg`: 消息
+ * - `generatedImgBuffer`: 生成的图片缓冲区
  * - `score`: 分数
  */
 export async function handleScreenShotTestpointAction(options: {
@@ -187,7 +189,11 @@ export async function handleScreenShotTestpointAction(options: {
 
   const rootElement = page.locator(root);
   if ((await rootElement.count()) === 0) {
-    return { msg: `期望选择器 ${root} 存在，实际值不存在`, score: 0 };
+    return {
+      msg: `期望选择器 ${root} 存在，实际值不存在`,
+      score: 0,
+      generatedImgBuffer: null,
+    };
   }
 
   const screenshot = await rootElement.screenshot();
@@ -198,10 +204,11 @@ export async function handleScreenShotTestpointAction(options: {
   const similarity = 1 - percent;
 
   if (similarity >= threshold) {
-    return { msg: 'ok', score };
+    return { msg: 'ok', score, generatedImgBuffer: screenshot };
   } else {
     return {
       msg: `相似度 ${similarity * 100}% 低于阈值 ${threshold * 100}%`,
+      generatedImgBuffer: screenshot,
       score: 0,
     };
   }
