@@ -61,6 +61,7 @@ export function validateExpectTestpointFlowData(
         text: $string().optional(),
         attr: $string().optional(),
         typeParser: $enum('text', 'number', 'boolean').optional(),
+        compare: $enum('eq', 'ne', 'gt', 'lt', 'gte', 'lte').optional(),
       }),
     },
     shouldThrow,
