@@ -33,6 +33,21 @@ describe('explainExpectTestpointAction', () => {
     );
   });
 
+  it('应该返回带样式的测试点描述', () => {
+    const detail = {
+      name: '测试点3',
+      score: 15,
+      selector: '#exists',
+      style: {
+        color: 'red',
+        fontSize: '16px',
+      },
+    } as any;
+    expect(explainExpectTestpointAction(detail)).toBe(
+      '[测试点3: 15分]: 期望选择器 #exists 的样式等于 {"color":"red","fontSize":"16px"}',
+    );
+  });
+
   it('应该返回存在的期望测试点描述', () => {
     const detail = {
       name: '测试点3',

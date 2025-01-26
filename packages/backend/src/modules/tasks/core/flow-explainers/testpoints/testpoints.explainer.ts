@@ -3,6 +3,11 @@ import {
   ScreenShotTestpointFlowData,
 } from '../../flow-data';
 
+/**
+ * 解释一条测试点流程语句，如果是 style ，产生的多条语句用 ';;' 分隔。
+ * @param detail 流程数据
+ * @returns 解释结果字符串
+ */
 export function explainExpectTestpointAction(
   detail: ExpectTestpointFlowData['detail'],
 ) {
@@ -30,6 +35,17 @@ export function explainExpectTestpointAction(
     return `${prefix} 期望选择器 ${detail.selector} 的属性 ${detail.attr} ${
       relSymbol
     } ${detail.value} ${suffix}`;
+  }
+
+  if (detail.style) {
+    const results: string[] = [];
+    for (const [prop, value] of Object.entries(detail.style)) {
+      const result = `"${prop}":"${value}"`;
+      results.push(result);
+    }
+    return `${prefix} 期望选择器 ${detail.selector} 的样式${relSymbol} {${results.join(
+      ',',
+    )}}`;
   }
 
   if (detail.text) {

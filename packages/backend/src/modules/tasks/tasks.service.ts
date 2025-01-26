@@ -5,6 +5,7 @@ import { dataValidators, FlowData, Validator } from './core/flow-data';
 import { ChallengesService } from '../challenges/challenges.service';
 import { Browser, chromium } from 'playwright';
 import { explainOneFlowData, handleOneFlowData } from './core';
+import { HandlerOptions } from './core/flow-handlers/index.type';
 
 /**
  * 这个接口定义了执行结果的数据结构。
@@ -12,7 +13,7 @@ import { explainOneFlowData, handleOneFlowData } from './core';
  * - `score` 用来存储得分
  * - `success` 用来存储是否执行成功
  */
-interface ExecuteResult {
+interface HandleResult {
   msg: string;
   score: number;
   success: boolean;
@@ -24,7 +25,19 @@ interface ExecuteResult {
  * - `passed` 是否通过预执行进入准备发布状态
  */
 interface PreExecuteResult {
-  result: ExecuteResult[];
+  result: HandleResult[];
+  passed: boolean;
+}
+
+/**
+ * 这个接口定义了执行结果的数据结构。
+ * - `result` 一个包含执行结果的数组
+ * - `screenshotIdList` 一个包含截图 ID 的数组
+ * - `passed` 是否通过挑战
+ */
+interface ExecuteResult {
+  result: HandleResult[];
+  screenshotIdList: string[];
   passed: boolean;
 }
 
@@ -53,25 +66,139 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * 这个函数用来执行挑战。
+   * 这个函数用来执行挑战。要求挑战的状态为 `published`。
    *
    * 这个函数接受一个 `challengeId` 和一个 `submitFileName`，然后将会取出
    * `challengeId` 对应的预执行结果数据。然后对 `submitFileId` 对应的提交文件
    * 进行执行，生成得分和截图，将他们与预执行结果数据进行比对，得到最终得分。
    *
-   * 最后将会把数据存储到 `submittions` 表中。
+   * 最后将会返回执行结果。
    *
    * @param challengeId 挑战 ID
-   * @param submitFileName 提交文件名
+   * @param submitFileId 提交文件 ID
+   * @returns
+   * - `result` 一个包含执行结果的数组
+   *    - `msg` 用来存储执行结果的消息
+   *    - `score` 用来存储得分
+   *    - `success` 用来存储是否执行成功
+   * - `screenshotIdList` 一个包含截图 ID 的数组
+   * - `passed` 是否通过挑战
+   * @throws
+   * - 找不到 Challenge
+   * - 挑战未发布
+   * - 流程数据不存在
+   * - 流程数据为空
+   * - 流程数据解析失败
+   * - 提交文件不存在
+   * - 截图测试点的参考截图记录不存在
+   * - 截图测试点的参考截图文件不存在
    */
-  async execute(challengeId: string, submitFileId: string) {
+  async execute(
+    challengeId: string,
+    submitFileId: string,
+  ): Promise<ExecuteResult> {
     // 1. 取出挑战的流程数据，验证是否存在
+    const challenge = await this.challengesService.findOne(challengeId);
+    if (!challenge) {
+      throw new Error('找不到 Challenge');
+    }
+    if (challenge.status !== 'published') {
+      throw new Error('挑战未发布');
+    }
+
     // 2. 取出预执行结果数据，验证是否存在
+    const { flowdataId } = challenge;
+    if (!flowdataId) {
+      const { exists } = await this.assetsService.isFileExists({
+        id: flowdataId,
+      });
+      if (!exists) {
+        throw new Error('流程数据不存在');
+      }
+    }
+
     // 3. 取出提交文件，验证是否存在
+    const { exists } = await this.assetsService.isFileExists({
+      id: submitFileId,
+    });
+    if (!exists) {
+      throw new Error('提交文件不存在');
+    }
+    const submitFileContent =
+      await this.assetsService.readTextFileById(submitFileId);
+
     // 4. 将提交文件按照流程数据执行，生成得分和截图
+    const context = await this.getContext();
+    const page = await context.newPage();
+    await page.setContent(submitFileContent);
+    await page.waitForLoadState('load');
+
     // 5. 将得分和截图与预执行结果数据进行比对，得到最终得分
+    const flowdataText = await this.assetsService.readTextFileById(flowdataId);
+    let flowdata: HandlerOptions[];
+    try {
+      flowdata = JSON.parse(flowdataText);
+    } catch (error) {
+      throw new Error('流程数据解析失败');
+    }
+
+    const executeResult: HandleResult[] = [];
+    const generatedScreenshotsIdList: string[] = [];
+    let passed = true;
+    let screenshotCounter = 0;
+
+    for (const flow of flowdata) {
+      if (flow.type === 'testpoint' && flow.detail.type === 'screenshot') {
+        const id = challenge.screenshots[screenshotCounter];
+        if (!id) {
+          throw new Error('截图测试点的参考截图记录不存在');
+        }
+        const buffer = await this.assetsService.getFileById(id);
+        if (buffer === null) {
+          throw new Error('截图测试点的参考截图文件不存在');
+        }
+        flow.detail.testImgBuffer = buffer;
+      }
+
+      const handleResult = await handleOneFlowData(page, flow as any);
+
+      if (handleResult.generateImgBuffer) {
+        const { id } = await this.assetsService.saveFile({
+          file: handleResult.generateImgBuffer,
+          name: `${challengeId}-${flowdataId}.png`,
+          mimeType: 'image/png',
+        });
+        generatedScreenshotsIdList.push(id);
+      }
+
+      const flowExplaination = explainOneFlowData(flow as any);
+      executeResult.push({
+        msg: `${flowExplaination} :: ${handleResult.msg}`,
+        score: handleResult.score,
+        success: handleResult.success,
+      });
+
+      if (!handleResult.success) {
+        passed = false;
+        break;
+      }
+    }
+
     // 6. 将最终得分存储到 submittions 表中
+    const testScore = executeResult.reduce((acc, cur) => acc + cur.score, 0);
+    const fullScore = flowdata.reduce(
+      (acc, cur) => acc + ((cur.detail as any).score ?? 0),
+      0,
+    );
+    passed &&= testScore === fullScore;
+
     // 7. 返回执行结果
+    await context.close();
+    return {
+      result: executeResult,
+      screenshotIdList: generatedScreenshotsIdList,
+      passed,
+    };
   }
 
   /**
@@ -146,7 +273,7 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
     await page.waitForLoadState('load');
 
     // 3. 将标准答案按照流程数据执行，生成得分和截图
-    const executeResult: ExecuteResult[] = [];
+    const executeResult: HandleResult[] = [];
     const generatedScreenshotsIdList: string[] = [];
     let passed = true;
     for (const flow of flowdata) {
@@ -161,21 +288,16 @@ export class TasksService implements OnModuleInit, OnModuleDestroy {
         generatedScreenshotsIdList.push(id);
       }
 
+      const flowExplaination = explainOneFlowData(flow as any, true);
+      executeResult.push({
+        msg: `${flowExplaination} :: ${handleResult.msg}`,
+        score: handleResult.score,
+        success: handleResult.success,
+      });
+
       if (!handleResult.success) {
-        executeResult.push({
-          msg: handleResult.msg,
-          score: handleResult.score,
-          success: handleResult.success,
-        });
         passed = false;
         break;
-      } else {
-        const flowExplaination = explainOneFlowData(flow as any, true);
-        executeResult.push({
-          msg: flowExplaination,
-          score: handleResult.score,
-          success: handleResult.success,
-        });
       }
     }
 

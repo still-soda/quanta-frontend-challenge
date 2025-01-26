@@ -191,7 +191,7 @@ describe('TasksService', () => {
 
   describe('preExecute', () => {
     it('应该正确预执行正确的流程文件，返回通过和正确信息', async () => {
-      const chllenge = await challengeService.create({
+      const challenge = await challengeService.create({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -210,7 +210,7 @@ describe('TasksService', () => {
         </html>
       `;
       const standardAnswer = new File([page], 'test.html');
-      const challengeId = chllenge.id;
+      const challengeId = challenge.id;
       const uploadResult = await tasksService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
@@ -256,19 +256,19 @@ describe('TasksService', () => {
       ];
 
       const serializeResult = await tasksService.serializeFlowData(
-        chllenge.id,
+        challenge.id,
         { data },
       );
       expect(serializeResult.ok).toBe(true);
 
-      const preExcuteResult = await tasksService.preExecute(chllenge.id);
+      const preExcuteResult = await tasksService.preExecute(challenge.id);
       expect(
         preExcuteResult.result.reduce((acc, cur) => acc + cur.score, 0),
       ).toBe(40);
       expect(preExcuteResult.result.every((r) => r.success)).toBe(true);
       expect(preExcuteResult).toHaveProperty('passed', true);
 
-      const updatedChallenge = await challengeService.findOne(chllenge.id);
+      const updatedChallenge = await challengeService.findOne(challenge.id);
       expect(updatedChallenge.screenshots).toHaveProperty('length', 1);
       expect(updatedChallenge).toHaveProperty('status', 'ready');
       expect(updatedChallenge.flowdataId).toBe(serializeResult.id);
@@ -449,5 +449,373 @@ describe('TasksService', () => {
     });
   });
 
-  describe('execute', () => {});
+  describe('execute', () => {
+    it('如果挑战不在发布状态，应该抛出错误', async () => {
+      const challenge = await challengeService.create({
+        title: 'test',
+        type: 'test',
+        difficulty: 'test',
+        authorId: 'test',
+        score: 100,
+      });
+
+      const page = `
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <button id="btn">click me</button>
+          </body>
+        </html>
+      `;
+      const standardAnswer = new File([page], 'test.html');
+      const challengeId = challenge.id;
+      const uploadResult = await tasksService.uploadStandardAnswer(
+        challengeId,
+        standardAnswer,
+      );
+      expect(uploadResult.ok).toBe(true);
+
+      const data = [
+        {
+          type: 'mouse',
+          detail: {
+            type: 'move',
+            selector: 'button',
+          },
+        } as MoveMouseFlowData,
+        {
+          type: 'mouse',
+          detail: {
+            type: 'click',
+            selector: 'button',
+          },
+        } as ClickMouseFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'screenshot',
+            name: 'test',
+            score: 20,
+            threshold: 0.9,
+            selector: 'body',
+            root: 'button',
+          },
+        } as ScreenShotTestpointFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'expect',
+            name: 'test',
+            score: 20,
+            selector: 'button',
+            text: 'click me',
+          },
+        } as ExpectTestpointFlowData,
+      ];
+
+      const serializeResult = await tasksService.serializeFlowData(
+        challenge.id,
+        { data },
+      );
+      expect(serializeResult.ok).toBe(true);
+
+      const { passed } = await tasksService.preExecute(challenge.id);
+      expect(passed).toBe(true);
+
+      await expect(
+        tasksService.execute(challengeId, 'test_file_id'),
+      ).rejects.toThrow('挑战未发布');
+    });
+
+    it('应该正确执行挑战，返回执行结果（部分错误，不通过）', async () => {
+      const challenge = await challengeService.create({
+        title: 'test',
+        type: 'test',
+        difficulty: 'test',
+        authorId: 'test',
+        score: 100,
+      });
+
+      const page = `
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <button id="btn">click me</button>
+          </body>
+        </html>
+      `;
+      const standardAnswer = new File([page], 'test.html');
+      const challengeId = challenge.id;
+      const uploadResult = await tasksService.uploadStandardAnswer(
+        challengeId,
+        standardAnswer,
+      );
+      expect(uploadResult.ok).toBe(true);
+
+      const data = [
+        {
+          type: 'mouse',
+          detail: {
+            type: 'move',
+            selector: 'button',
+          },
+        } as MoveMouseFlowData,
+        {
+          type: 'mouse',
+          detail: {
+            type: 'click',
+            selector: 'button',
+          },
+        } as ClickMouseFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'screenshot',
+            name: 'test',
+            score: 20,
+            threshold: 0.9,
+            selector: 'body',
+            root: 'button',
+          },
+        } as ScreenShotTestpointFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'expect',
+            name: 'test',
+            score: 20,
+            selector: 'button',
+            text: 'click me',
+          },
+        } as ExpectTestpointFlowData,
+      ];
+
+      const serializeResult = await tasksService.serializeFlowData(
+        challenge.id,
+        { data },
+      );
+      expect(serializeResult.ok).toBe(true);
+
+      const { passed } = await tasksService.preExecute(challenge.id);
+      expect(passed).toBe(true);
+
+      const result = await challengeService.setStatusToPublished(challengeId);
+      expect(result.status).toBe('published');
+
+      const testPage = `
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <button id="btn">not click me</button>
+          </body>
+        </html>
+      `;
+      const { id } = await assetsService.saveTextFile({
+        content: testPage,
+        name: 'test.html',
+        mimeType: 'text/html',
+      });
+
+      const executeResult = await tasksService.execute(challengeId, id);
+      expect(executeResult.passed).toBe(false);
+      expect(executeResult.screenshotIdList.length).toBe(1);
+      expect(executeResult.result.length).toBe(4);
+    });
+
+    it('应该正确执行挑战，返回执行结果（完全正确，通过）', async () => {
+      const challenge = await challengeService.create({
+        title: 'test',
+        type: 'test',
+        difficulty: 'test',
+        authorId: 'test',
+        score: 100,
+      });
+
+      const page = `
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <button id="btn">click me</button>
+          </body>
+        </html>
+      `;
+      const standardAnswer = new File([page], 'test.html');
+      const challengeId = challenge.id;
+      const uploadResult = await tasksService.uploadStandardAnswer(
+        challengeId,
+        standardAnswer,
+      );
+      expect(uploadResult.ok).toBe(true);
+
+      const data = [
+        {
+          type: 'mouse',
+          detail: {
+            type: 'move',
+            selector: 'button',
+          },
+        } as MoveMouseFlowData,
+        {
+          type: 'mouse',
+          detail: {
+            type: 'click',
+            selector: 'button',
+          },
+        } as ClickMouseFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'screenshot',
+            name: 'test',
+            score: 20,
+            threshold: 0.9,
+            selector: 'body',
+            root: 'button',
+          },
+        } as ScreenShotTestpointFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'expect',
+            name: 'test',
+            score: 20,
+            selector: 'button',
+            text: 'click me',
+          },
+        } as ExpectTestpointFlowData,
+      ];
+
+      const serializeResult = await tasksService.serializeFlowData(
+        challenge.id,
+        { data },
+      );
+      expect(serializeResult.ok).toBe(true);
+
+      const { passed } = await tasksService.preExecute(challenge.id);
+      expect(passed).toBe(true);
+
+      const result = await challengeService.setStatusToPublished(challengeId);
+      expect(result.status).toBe('published');
+
+      const testPage = page;
+      const { id } = await assetsService.saveTextFile({
+        content: testPage,
+        name: 'test.html',
+        mimeType: 'text/html',
+      });
+
+      const executeResult = await tasksService.execute(challengeId, id);
+      console.log(executeResult);
+      expect(executeResult.passed).toBe(true);
+      expect(executeResult.screenshotIdList.length).toBe(1);
+      expect(executeResult.result.length).toBe(4);
+    });
+
+    it('如果执行过程中发生错误，应该中断并返回错误信息', async () => {
+      const challenge = await challengeService.create({
+        title: 'test',
+        type: 'test',
+        difficulty: 'test',
+        authorId: 'test',
+        score: 100,
+      });
+
+      const page = `
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <button id="btn">click me</button>
+          </body>
+        </html>
+      `;
+      const standardAnswer = new File([page], 'test.html');
+      const challengeId = challenge.id;
+      const uploadResult = await tasksService.uploadStandardAnswer(
+        challengeId,
+        standardAnswer,
+      );
+      expect(uploadResult.ok).toBe(true);
+
+      const data = [
+        {
+          type: 'mouse',
+          detail: {
+            type: 'move',
+            selector: 'button',
+          },
+        } as MoveMouseFlowData,
+        {
+          type: 'mouse',
+          detail: {
+            type: 'click',
+            selector: '#btn',
+          },
+        } as ClickMouseFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'screenshot',
+            name: 'test',
+            score: 20,
+            threshold: 0.9,
+            selector: 'body',
+            root: 'button',
+          },
+        } as ScreenShotTestpointFlowData,
+        {
+          type: 'testpoint',
+          detail: {
+            type: 'expect',
+            name: 'test',
+            score: 20,
+            selector: 'button',
+            text: 'click me',
+          },
+        } as ExpectTestpointFlowData,
+      ];
+
+      const serializeResult = await tasksService.serializeFlowData(
+        challenge.id,
+        { data },
+      );
+      expect(serializeResult.ok).toBe(true);
+
+      const { passed } = await tasksService.preExecute(challenge.id);
+      expect(passed).toBe(true);
+
+      const result = await challengeService.setStatusToPublished(challengeId);
+      expect(result.status).toBe('published');
+
+      const testPage = `
+        <html>
+          <head>
+            <title>test</title>
+          </head>
+          <body>
+            <button id="btn-but-not-exist">not click me</button>
+          </body>
+        </html>
+      `;
+      const { id } = await assetsService.saveTextFile({
+        content: testPage,
+        name: 'test.html',
+        mimeType: 'text/html',
+      });
+
+      const executeResult = await tasksService.execute(challengeId, id);
+      expect(executeResult.passed).toBe(false);
+      expect(executeResult.screenshotIdList.length).toBe(0);
+      expect(executeResult.result.length).toBe(2);
+    });
+  });
 });
