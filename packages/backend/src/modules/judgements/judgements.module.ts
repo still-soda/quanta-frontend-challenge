@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TasksService } from './tasks.service';
+import { JudgementsService } from './judgements.service';
 import { AssetsModule } from '../assets/assets.module';
 import { ChallengesModule } from '../challenges/challenges.module';
 
 @Module({
   imports: [AssetsModule, ChallengesModule],
-  providers: [TasksService],
+  providers: [JudgementsService],
 })
-export class TasksModule {}
+export class JudgementsModule {}

@@ -5,10 +5,11 @@ import { ActionsModule } from './modules/actions/actions.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SubmissionsModule } from './modules/submissions/submissions.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TasksModule } from './modules/tasks/tasks.module';
+import { JudgementsModule } from './modules/judgements/judgements.module';
 import { AssetsModule } from './modules/assets/assets.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -17,12 +18,15 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
+    BullModule.forRoot({
+      redis: { host: 'localhost', port: 6379 },
+    }),
     UsersModule,
     ChallengesModule,
     ActionsModule,
     NotificationsModule,
     SubmissionsModule,
-    TasksModule,
+    JudgementsModule,
     AssetsModule,
     AuthModule,
   ],

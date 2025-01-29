@@ -65,7 +65,12 @@ describe('Flow Data Handler Index', () => {
       page,
       detail: data.detail,
     });
-    expect(result).toEqual({ success: true, msg: 'ok', score: 0 });
+    expect(result).toEqual({
+      success: true,
+      msg: 'ok',
+      score: 0,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确转发 mouse-flow-data（失败，调用抛出异常）', async () => {
@@ -82,7 +87,12 @@ describe('Flow Data Handler Index', () => {
       page,
       detail: data.detail,
     });
-    expect(result).toEqual({ success: false, msg: 'error', score: 0 });
+    expect(result).toEqual({
+      success: false,
+      msg: 'error',
+      score: 0,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确转发 trigger-flow-data（成功）', async () => {
@@ -103,7 +113,12 @@ describe('Flow Data Handler Index', () => {
       page,
       detail: data.detail,
     });
-    expect(result).toEqual({ success: true, msg: 'ok', score: 0 });
+    expect(result).toEqual({
+      success: true,
+      msg: 'ok',
+      score: 0,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确转发 trigger-flow-data（失败，调用抛出异常）', async () => {
@@ -120,7 +135,12 @@ describe('Flow Data Handler Index', () => {
       page,
       detail: data.detail,
     });
-    expect(result).toEqual({ success: false, msg: 'error', score: 0 });
+    expect(result).toEqual({
+      success: false,
+      msg: 'error',
+      score: 0,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确转发 testpoint-flow-data（expect，成功）', async () => {
@@ -140,7 +160,12 @@ describe('Flow Data Handler Index', () => {
       page,
       detail: data.detail,
     });
-    expect(result).toEqual({ success: true, msg: 'ok', score: 20 });
+    expect(result).toEqual({
+      success: true,
+      msg: 'ok',
+      score: 20,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确转发 testpoint-flow-data（expect，失败，调用抛出异常）', async () => {
@@ -159,7 +184,12 @@ describe('Flow Data Handler Index', () => {
       page,
       detail: data.detail,
     });
-    expect(result).toEqual({ success: false, msg: 'error', score: 0 });
+    expect(result).toEqual({
+      success: false,
+      msg: 'error',
+      score: 0,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确转发 testpoint-flow-data（screenshot，成功）', async () => {
@@ -189,7 +219,12 @@ describe('Flow Data Handler Index', () => {
       detail: data.detail,
       testImgBuffer: data.detail.testImgBuffer,
     });
-    expect(result).toEqual({ success: true, msg: 'ok', score: 20 });
+    expect(result).toEqual({
+      success: true,
+      msg: 'ok',
+      score: 20,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确转发 testpoint-flow-data（screenshot，失败，调用抛出异常）', async () => {
@@ -218,7 +253,12 @@ describe('Flow Data Handler Index', () => {
       detail: data.detail,
       testImgBuffer: data.detail.testImgBuffer,
     });
-    expect(result).toEqual({ success: false, msg: 'error', score: 0 });
+    expect(result).toEqual({
+      success: false,
+      msg: 'error',
+      score: 0,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确转发 testpoint-flow-data（screenshot，pre，成功）', async () => {
@@ -248,7 +288,12 @@ describe('Flow Data Handler Index', () => {
       detail: data.detail,
       testImgBuffer: data.detail.testImgBuffer,
     });
-    expect(result).toEqual({ success: true, msg: 'ok', score: 20 });
+    expect(result).toEqual({
+      success: true,
+      msg: 'ok',
+      score: 20,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确转发 testpoint-flow-data（screenshot，pre，失败，调用抛出异常）', async () => {
@@ -277,7 +322,12 @@ describe('Flow Data Handler Index', () => {
       detail: data.detail,
       testImgBuffer: data.detail.testImgBuffer,
     });
-    expect(result).toEqual({ success: false, msg: 'error', score: 0 });
+    expect(result).toEqual({
+      success: false,
+      msg: 'error',
+      score: 0,
+      generateImgBuffer: null,
+    });
   });
 
   it('应该正确处理未知的流程数据类型', async () => {
@@ -287,6 +337,7 @@ describe('Flow Data Handler Index', () => {
       success: false,
       msg: '未知的流程数据类型',
       score: 0,
+      generateImgBuffer: null,
     });
   });
 });

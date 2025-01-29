@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TasksService } from '../tasks.service';
+import { JudgementsService } from '../judgements.service';
 import { AssetsService } from '../../assets/assets.service';
 import { ChallengesService } from '../../challenges/challenges.service';
 import { ChallengesModule } from '../../challenges/challenges.module';
@@ -14,10 +14,10 @@ import {
   ScreenShotTestpointFlowData,
 } from '../core/flow-data/index';
 import { uuidFileNameRegEndWith } from '../../../utils/testing.utils';
-import { AssetsModule } from '../../../modules/assets/assets.module';
+import { AssetsModule } from '../../assets/assets.module';
 
-describe('TasksService', () => {
-  let tasksService: TasksService;
+describe('JudgementsService', () => {
+  let judgementsService: JudgementsService;
   let assetsService: AssetsService;
   let challengeService: ChallengesService;
   let mongodb: MongoMemoryServer;
@@ -34,12 +34,12 @@ describe('TasksService', () => {
         ChallengesModule,
         AssetsModule,
       ],
-      providers: [TasksService, AssetsService, ChallengesService],
+      providers: [JudgementsService, AssetsService, ChallengesService],
     }).compile();
 
     await module.init();
 
-    tasksService = module.get<TasksService>(TasksService);
+    judgementsService = module.get<JudgementsService>(JudgementsService);
     assetsService = module.get<AssetsService>(AssetsService);
     challengeService = module.get<ChallengesService>(ChallengesService);
   });
@@ -51,7 +51,7 @@ describe('TasksService', () => {
   });
 
   it('应该正确获取 service', () => {
-    expect(tasksService).toBeDefined();
+    expect(judgementsService).toBeDefined();
     expect(assetsService).toBeDefined();
     expect(challengeService).toBeDefined();
   });
@@ -77,7 +77,7 @@ describe('TasksService', () => {
         ],
       };
 
-      const { id, ok, fileName } = await tasksService.serializeFlowData(
+      const { id, ok, fileName } = await judgementsService.serializeFlowData(
         challengeId,
         flowDataDto as any,
       );
@@ -110,7 +110,7 @@ describe('TasksService', () => {
       };
 
       await expect(
-        tasksService.serializeFlowData(challengeId, flowDataDto as any),
+        judgementsService.serializeFlowData(challengeId, flowDataDto as any),
       ).rejects.toThrow('非法的流程数据');
     });
 
@@ -126,7 +126,7 @@ describe('TasksService', () => {
       };
 
       await expect(
-        tasksService.serializeFlowData(challengeId, flowDataDto as any),
+        judgementsService.serializeFlowData(challengeId, flowDataDto as any),
       ).rejects.toThrow('找不到 Challenge');
     });
   });
@@ -144,7 +144,7 @@ describe('TasksService', () => {
       const standardAnswer = new File(['test'], 'test.html');
       const challengeId = challenge._id.toString();
 
-      const { fileName, ok, id } = await tasksService.uploadStandardAnswer(
+      const { fileName, ok, id } = await judgementsService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
         '.html',
@@ -167,7 +167,7 @@ describe('TasksService', () => {
       const standardAnswer = new File(['test'], 'test.html');
 
       await expect(
-        tasksService.uploadStandardAnswer(challengeId, standardAnswer),
+        judgementsService.uploadStandardAnswer(challengeId, standardAnswer),
       ).rejects.toThrow('找不到 Challenge');
     });
 
@@ -184,7 +184,11 @@ describe('TasksService', () => {
       const challengeId = challenge._id.toString();
 
       await expect(
-        tasksService.uploadStandardAnswer(challengeId, standardAnswer, '.html'),
+        judgementsService.uploadStandardAnswer(
+          challengeId,
+          standardAnswer,
+          '.html',
+        ),
       ).rejects.toThrow('文件不存在');
     });
   });
@@ -211,7 +215,7 @@ describe('TasksService', () => {
       `;
       const standardAnswer = new File([page], 'test.html');
       const challengeId = challenge.id;
-      const uploadResult = await tasksService.uploadStandardAnswer(
+      const uploadResult = await judgementsService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
       );
@@ -255,13 +259,13 @@ describe('TasksService', () => {
         } as ExpectTestpointFlowData,
       ];
 
-      const serializeResult = await tasksService.serializeFlowData(
+      const serializeResult = await judgementsService.serializeFlowData(
         challenge.id,
         { data },
       );
       expect(serializeResult.ok).toBe(true);
 
-      const preExcuteResult = await tasksService.preExecute(challenge.id);
+      const preExcuteResult = await judgementsService.preExecute(challenge.id);
       expect(
         preExcuteResult.result.reduce((acc, cur) => acc + cur.score, 0),
       ).toBe(40);
@@ -295,7 +299,7 @@ describe('TasksService', () => {
       `;
       const standardAnswer = new File([page], 'test.html');
       const challengeId = chllenge.id;
-      const uploadResult = await tasksService.uploadStandardAnswer(
+      const uploadResult = await judgementsService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
       );
@@ -339,13 +343,13 @@ describe('TasksService', () => {
         } as ExpectTestpointFlowData,
       ];
 
-      const serializeResult = await tasksService.serializeFlowData(
+      const serializeResult = await judgementsService.serializeFlowData(
         chllenge.id,
         { data },
       );
       expect(serializeResult.ok).toBe(true);
 
-      const preExcuteResult = await tasksService.preExecute(chllenge.id);
+      const preExcuteResult = await judgementsService.preExecute(chllenge.id);
       expect(
         preExcuteResult.result.reduce((acc, cur) => acc + cur.score, 0),
       ).toBe(20);
@@ -379,7 +383,7 @@ describe('TasksService', () => {
       `;
       const standardAnswer = new File([page], 'test.html');
       const challengeId = chllenge.id;
-      const uploadResult = await tasksService.uploadStandardAnswer(
+      const uploadResult = await judgementsService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
       );
@@ -431,13 +435,13 @@ describe('TasksService', () => {
         } as ExpectTestpointFlowData,
       ];
 
-      const serializeResult = await tasksService.serializeFlowData(
+      const serializeResult = await judgementsService.serializeFlowData(
         chllenge.id,
         { data },
       );
       expect(serializeResult.ok).toBe(true);
 
-      const preExcuteResult = await tasksService.preExecute(chllenge.id);
+      const preExcuteResult = await judgementsService.preExecute(chllenge.id);
       expect(preExcuteResult.result.length).toBe(2);
       expect(preExcuteResult.result[1].success).toBe(false);
       expect(preExcuteResult).toHaveProperty('passed', false);
@@ -471,7 +475,7 @@ describe('TasksService', () => {
       `;
       const standardAnswer = new File([page], 'test.html');
       const challengeId = challenge.id;
-      const uploadResult = await tasksService.uploadStandardAnswer(
+      const uploadResult = await judgementsService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
       );
@@ -515,17 +519,17 @@ describe('TasksService', () => {
         } as ExpectTestpointFlowData,
       ];
 
-      const serializeResult = await tasksService.serializeFlowData(
+      const serializeResult = await judgementsService.serializeFlowData(
         challenge.id,
         { data },
       );
       expect(serializeResult.ok).toBe(true);
 
-      const { passed } = await tasksService.preExecute(challenge.id);
+      const { passed } = await judgementsService.preExecute(challenge.id);
       expect(passed).toBe(true);
 
       await expect(
-        tasksService.execute(challengeId, 'test_file_id'),
+        judgementsService.execute(challengeId, 'test_file_id'),
       ).rejects.toThrow('挑战未发布');
     });
 
@@ -550,7 +554,7 @@ describe('TasksService', () => {
       `;
       const standardAnswer = new File([page], 'test.html');
       const challengeId = challenge.id;
-      const uploadResult = await tasksService.uploadStandardAnswer(
+      const uploadResult = await judgementsService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
       );
@@ -594,13 +598,13 @@ describe('TasksService', () => {
         } as ExpectTestpointFlowData,
       ];
 
-      const serializeResult = await tasksService.serializeFlowData(
+      const serializeResult = await judgementsService.serializeFlowData(
         challenge.id,
         { data },
       );
       expect(serializeResult.ok).toBe(true);
 
-      const { passed } = await tasksService.preExecute(challenge.id);
+      const { passed } = await judgementsService.preExecute(challenge.id);
       expect(passed).toBe(true);
 
       const result = await challengeService.setStatusToPublished(challengeId);
@@ -622,7 +626,7 @@ describe('TasksService', () => {
         mimeType: 'text/html',
       });
 
-      const executeResult = await tasksService.execute(challengeId, id);
+      const executeResult = await judgementsService.execute(challengeId, id);
       expect(executeResult.passed).toBe(false);
       expect(executeResult.screenshotIdList.length).toBe(1);
       expect(executeResult.result.length).toBe(4);
@@ -649,7 +653,7 @@ describe('TasksService', () => {
       `;
       const standardAnswer = new File([page], 'test.html');
       const challengeId = challenge.id;
-      const uploadResult = await tasksService.uploadStandardAnswer(
+      const uploadResult = await judgementsService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
       );
@@ -693,13 +697,13 @@ describe('TasksService', () => {
         } as ExpectTestpointFlowData,
       ];
 
-      const serializeResult = await tasksService.serializeFlowData(
+      const serializeResult = await judgementsService.serializeFlowData(
         challenge.id,
         { data },
       );
       expect(serializeResult.ok).toBe(true);
 
-      const { passed } = await tasksService.preExecute(challenge.id);
+      const { passed } = await judgementsService.preExecute(challenge.id);
       expect(passed).toBe(true);
 
       const result = await challengeService.setStatusToPublished(challengeId);
@@ -712,8 +716,7 @@ describe('TasksService', () => {
         mimeType: 'text/html',
       });
 
-      const executeResult = await tasksService.execute(challengeId, id);
-      console.log(executeResult);
+      const executeResult = await judgementsService.execute(challengeId, id);
       expect(executeResult.passed).toBe(true);
       expect(executeResult.screenshotIdList.length).toBe(1);
       expect(executeResult.result.length).toBe(4);
@@ -740,7 +743,7 @@ describe('TasksService', () => {
       `;
       const standardAnswer = new File([page], 'test.html');
       const challengeId = challenge.id;
-      const uploadResult = await tasksService.uploadStandardAnswer(
+      const uploadResult = await judgementsService.uploadStandardAnswer(
         challengeId,
         standardAnswer,
       );
@@ -784,13 +787,13 @@ describe('TasksService', () => {
         } as ExpectTestpointFlowData,
       ];
 
-      const serializeResult = await tasksService.serializeFlowData(
+      const serializeResult = await judgementsService.serializeFlowData(
         challenge.id,
         { data },
       );
       expect(serializeResult.ok).toBe(true);
 
-      const { passed } = await tasksService.preExecute(challenge.id);
+      const { passed } = await judgementsService.preExecute(challenge.id);
       expect(passed).toBe(true);
 
       const result = await challengeService.setStatusToPublished(challengeId);
@@ -812,7 +815,7 @@ describe('TasksService', () => {
         mimeType: 'text/html',
       });
 
-      const executeResult = await tasksService.execute(challengeId, id);
+      const executeResult = await judgementsService.execute(challengeId, id);
       expect(executeResult.passed).toBe(false);
       expect(executeResult.screenshotIdList.length).toBe(0);
       expect(executeResult.result.length).toBe(2);

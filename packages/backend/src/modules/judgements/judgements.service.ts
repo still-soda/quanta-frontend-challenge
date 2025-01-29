@@ -42,7 +42,7 @@ interface ExecuteResult {
 }
 
 @Injectable()
-export class TasksService implements OnModuleInit, OnModuleDestroy {
+export class JudgementsService implements OnModuleInit, OnModuleDestroy {
   private browser: Browser;
 
   constructor(
