@@ -10,6 +10,7 @@ import { AssetsModule } from './modules/assets/assets.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { BullModule } from '@nestjs/bull';
     JudgementsModule,
     AssetsModule,
     AuthModule,
+    TasksModule,
   ],
   controllers: [],
   providers: [],

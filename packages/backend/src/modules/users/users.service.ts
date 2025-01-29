@@ -53,26 +53,26 @@ export class UsersService {
       score?: number;
     },
   ) {
-    const $push = {};
+    const $addToSet = {};
     const $pull = {};
     const $inc = { totalSubmissions: 1 };
 
     if (options.status === 'failed') {
-      $push['failedTasks'] = taskId;
+      $addToSet['failedTasks'] = taskId;
       $pull['tryingTasks'] = taskId;
     } else if (options.status === 'trying') {
-      $push['tryingTasks'] = taskId;
+      $addToSet['tryingTasks'] = taskId;
       $pull['failedTasks'] = taskId;
     } else {
       $pull['tryingTasks'] = taskId;
       $pull['failedTasks'] = taskId;
-      $push['solvedTasks'] = taskId;
+      $addToSet['solvedTasks'] = taskId;
       $inc['totalScore'] = options.score ?? 0;
     }
 
     return this.userModel.findByIdAndUpdate(
       { _id: id },
-      { $inc, $push, $pull },
+      { $inc, $addToSet, $pull },
       { new: true },
     );
   }

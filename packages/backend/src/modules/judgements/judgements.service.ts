@@ -13,7 +13,7 @@ import { HandlerOptions } from './core/flow-handlers/index.type';
  * - `score` 用来存储得分
  * - `success` 用来存储是否执行成功
  */
-interface HandleResult {
+export interface HandleResult {
   msg: string;
   score: number;
   success: boolean;
@@ -23,10 +23,14 @@ interface HandleResult {
  * 这个接口定义了预执行结果的数据结构。
  * - `result` 一个包含执行结果的数组
  * - `passed` 是否通过预执行进入准备发布状态
+ * - `score` 得分
+ * - `totalScore` 满分
  */
-interface PreExecuteResult {
+export interface PreExecuteResult {
   result: HandleResult[];
   passed: boolean;
+  score: number;
+  totalScore: number;
 }
 
 /**
@@ -34,10 +38,14 @@ interface PreExecuteResult {
  * - `result` 一个包含执行结果的数组
  * - `screenshotIdList` 一个包含截图 ID 的数组
  * - `passed` 是否通过挑战
+ * - `score` 得分
+ * - `totalScore` 满分
  */
-interface ExecuteResult {
+export interface ExecuteResult {
   result: HandleResult[];
   screenshotIdList: string[];
+  score: number;
+  totalScore: number;
   passed: boolean;
 }
 
@@ -197,6 +205,8 @@ export class JudgementsService implements OnModuleInit, OnModuleDestroy {
     return {
       result: executeResult,
       screenshotIdList: generatedScreenshotsIdList,
+      score: testScore,
+      totalScore: fullScore,
       passed,
     };
   }
@@ -324,7 +334,12 @@ export class JudgementsService implements OnModuleInit, OnModuleDestroy {
 
     // 6. 做最后的处理，返回执行结果
     await context.close();
-    return { result: executeResult, passed };
+    return {
+      result: executeResult,
+      score: testScore,
+      totalScore: fullScore,
+      passed,
+    };
   }
 
   /**
@@ -339,6 +354,12 @@ export class JudgementsService implements OnModuleInit, OnModuleDestroy {
    * @param challengeId 挑战 ID
    * @param flowDataDto 流程数据
    * @returns 保存的文件信息
+   * @throws
+   * - 找不到 Challenge
+   * - 非法的流程数据
+   * - 序列化流程数据失败: {msg}
+   * - 流程总分必须大于 0
+   * - 至少要有一个测试点
    */
   async serializeFlowData(challengeId: string, flowDataDto: FlowDataDto) {
     // 验证 challengeId 是否存在
@@ -349,6 +370,21 @@ export class JudgementsService implements OnModuleInit, OnModuleDestroy {
       }
     } catch (error) {
       throw new Error('找不到 Challenge');
+    }
+
+    // 验证总分大于 0，测试点数量大于 0
+    let totalScore = 0;
+    let testpointsCount = 0;
+    flowDataDto.data.forEach((flowData) => {
+      totalScore += (flowData.detail as any).score ?? 0;
+      testpointsCount += flowData.type === 'testpoint' ? 1 : 0;
+    });
+    if (totalScore <= 0) {
+      throw new Error('流程总分必须大于 0');
+    }
+
+    if (testpointsCount <= 0) {
+      throw new Error('至少要有一个测试点');
     }
 
     // 验证流程数据合法性

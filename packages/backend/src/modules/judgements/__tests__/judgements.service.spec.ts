@@ -68,12 +68,17 @@ describe('JudgementsService', () => {
       expect(challenge.flowdataId).toBeUndefined();
 
       const challengeId = challenge.id;
-      const flowDataDto: { data: MoveMouseFlowData[] } = {
+      const flowDataDto: {
+        data: (MoveMouseFlowData | ExpectTestpointFlowData)[];
+      } = {
         data: [
           { type: 'mouse', detail: { type: 'move' } },
           { type: 'mouse', detail: { type: 'move' } },
           { type: 'mouse', detail: { type: 'move' } },
-          { type: 'mouse', detail: { type: 'move' } },
+          {
+            type: 'testpoint',
+            detail: { type: 'expect', name: 'test', score: 20 },
+          },
         ],
       };
 
@@ -91,27 +96,75 @@ describe('JudgementsService', () => {
       expect(flowdataId).toBe(id);
     });
 
-    it('测试流程不合法时，应该抛出错误', async () => {
-      const challenge = await challengeService.create({
-        title: 'test',
-        type: 'test',
-        difficulty: 'test',
-        authorId: 'test',
-        score: 100,
-      });
-      const challengeId = challenge._id.toString();
-      // 没有type字段
-      const flowDataDto = {
-        data: [
-          { detail: { name: '测试', score: 20 } },
-          { detail: { name: '测试', score: 20 } },
-          { detail: { name: '测试', score: 20 } },
-        ],
-      };
+    describe('测试流程不合法时，应该抛出错误', () => {
+      test('流程验证不通过', async () => {
+        const challenge = await challengeService.create({
+          title: 'test',
+          type: 'test',
+          difficulty: 'test',
+          authorId: 'test',
+          score: 100,
+        });
+        const challengeId = challenge._id.toString();
+        // 没有type字段
+        const flowDataDto = {
+          data: [
+            { type: 'testpoint', detail: { name: '测试', score: 20 } },
+            { detail: { name: '测试', score: 20 } },
+            { detail: { name: '测试', score: 20 } },
+          ],
+        };
 
-      await expect(
-        judgementsService.serializeFlowData(challengeId, flowDataDto as any),
-      ).rejects.toThrow('非法的流程数据');
+        await expect(
+          judgementsService.serializeFlowData(challengeId, flowDataDto as any),
+        ).rejects.toThrow('非法的流程数据');
+      });
+
+      test('总分小于等于0', async () => {
+        const challenge = await challengeService.create({
+          title: 'test',
+          type: 'test',
+          difficulty: 'test',
+          authorId: 'test',
+          score: 100,
+        });
+        const challengeId = challenge._id.toString();
+        // 没有type字段
+        const flowDataDto = {
+          data: [
+            { type: 'testpoint', detail: { name: '测试', score: 0 } },
+            { detail: { name: '测试', score: 0 } },
+            { detail: { name: '测试', score: 0 } },
+          ],
+        };
+
+        await expect(
+          judgementsService.serializeFlowData(challengeId, flowDataDto as any),
+        ).rejects.toThrow('流程总分必须大于 0');
+      });
+
+      test('没有测试点', async () => {
+        const challenge = await challengeService.create({
+          title: 'test',
+          type: 'test',
+          difficulty: 'test',
+          authorId: 'test',
+          score: 100,
+        });
+        const challengeId = challenge._id.toString();
+        // 没有type字段
+        const flowDataDto = {
+          data: [
+            { detail: { name: '测试', score: 20 } },
+            { detail: { name: '测试', score: 20 } },
+            { detail: { name: '测试', score: 20 } },
+          ],
+        };
+
+        await expect(
+          judgementsService.serializeFlowData(challengeId, flowDataDto as any),
+        ).rejects.toThrow('至少要有一个测试点');
+      });
     });
 
     it('chellengeId 对应的挑战不存在时，应该抛出错误', async () => {
@@ -121,7 +174,7 @@ describe('JudgementsService', () => {
           { type: 'mouse', detail: { type: 'move' } },
           { type: 'mouse', detail: { type: 'move' } },
           { type: 'mouse', detail: { type: 'move' } },
-          { type: 'mouse', detail: { type: 'move' } },
+          { type: 'testpoint', detail: { type: 'move' } },
         ],
       };
 
@@ -266,9 +319,8 @@ describe('JudgementsService', () => {
       expect(serializeResult.ok).toBe(true);
 
       const preExcuteResult = await judgementsService.preExecute(challenge.id);
-      expect(
-        preExcuteResult.result.reduce((acc, cur) => acc + cur.score, 0),
-      ).toBe(40);
+      expect(preExcuteResult.totalScore).toBe(40);
+      expect(preExcuteResult.score).toBe(40);
       expect(preExcuteResult.result.every((r) => r.success)).toBe(true);
       expect(preExcuteResult).toHaveProperty('passed', true);
 
@@ -350,9 +402,8 @@ describe('JudgementsService', () => {
       expect(serializeResult.ok).toBe(true);
 
       const preExcuteResult = await judgementsService.preExecute(chllenge.id);
-      expect(
-        preExcuteResult.result.reduce((acc, cur) => acc + cur.score, 0),
-      ).toBe(20);
+      expect(preExcuteResult.totalScore).toBe(40);
+      expect(preExcuteResult.score).toBe(20);
       expect(preExcuteResult.result.every((r) => r.success)).toBe(true);
       expect(preExcuteResult).toHaveProperty('passed', false);
 
@@ -442,6 +493,8 @@ describe('JudgementsService', () => {
       expect(serializeResult.ok).toBe(true);
 
       const preExcuteResult = await judgementsService.preExecute(chllenge.id);
+      expect(preExcuteResult.totalScore).toBe(40);
+      expect(preExcuteResult.score).toBe(0);
       expect(preExcuteResult.result.length).toBe(2);
       expect(preExcuteResult.result[1].success).toBe(false);
       expect(preExcuteResult).toHaveProperty('passed', false);
@@ -627,6 +680,8 @@ describe('JudgementsService', () => {
       });
 
       const executeResult = await judgementsService.execute(challengeId, id);
+      expect(executeResult.totalScore).toBe(40);
+      expect(executeResult.score).toBe(0);
       expect(executeResult.passed).toBe(false);
       expect(executeResult.screenshotIdList.length).toBe(1);
       expect(executeResult.result.length).toBe(4);
@@ -717,6 +772,8 @@ describe('JudgementsService', () => {
       });
 
       const executeResult = await judgementsService.execute(challengeId, id);
+      expect(executeResult.totalScore).toBe(40);
+      expect(executeResult.score).toBe(40);
       expect(executeResult.passed).toBe(true);
       expect(executeResult.screenshotIdList.length).toBe(1);
       expect(executeResult.result.length).toBe(4);
@@ -816,6 +873,8 @@ describe('JudgementsService', () => {
       });
 
       const executeResult = await judgementsService.execute(challengeId, id);
+      expect(executeResult.totalScore).toBe(40);
+      expect(executeResult.score).toBe(0);
       expect(executeResult.passed).toBe(false);
       expect(executeResult.screenshotIdList.length).toBe(0);
       expect(executeResult.result.length).toBe(2);

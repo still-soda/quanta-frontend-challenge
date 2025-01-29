@@ -4,6 +4,10 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 export type SubmissionsDocument = Submissions & Document;
 
+export type SubmissionStatus = 'pending' | 'failed' | 'passed';
+
+export type SubmissionType = 'execute' | 'preExecute';
+
 @Schema()
 @ApiSchema({ description: '提交' })
 export class Submissions extends Document {
@@ -22,6 +26,14 @@ export class Submissions extends Document {
   userId: string;
 
   @ApiProperty({
+    example: 'preExecute',
+    description: '提交类型',
+    enum: ['execute', 'preExecute'],
+  })
+  @Prop()
+  type: SubmissionType;
+
+  @ApiProperty({
     example: 30,
     default: -1,
     description: '得分，-1表示未评分',
@@ -38,12 +50,21 @@ export class Submissions extends Document {
   correctRate: number;
 
   @ApiProperty({
-    example: true,
-    default: false,
-    description: '是否通过',
+    example: 'pending',
+    default: 'pending',
+    enum: ['pending', 'failed', 'passed'],
+    description: '判题状态',
   })
-  @Prop({ default: false })
-  isPassed: boolean;
+  @Prop({ default: 'pending' })
+  status: SubmissionStatus;
+
+  @ApiProperty({
+    example: '提交成功',
+    default: '',
+    description: '消息',
+  })
+  @Prop({ default: '' })
+  message: string;
 
   @ApiProperty({
     example: '2021-01-01T00:00:00.000Z',
