@@ -3,11 +3,13 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConsoleLogger } from '@nestjs/common';
+import { GlobalExceptionFilter } from './common/filter/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: console,
   });
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Swagger
   const config = new DocumentBuilder()
