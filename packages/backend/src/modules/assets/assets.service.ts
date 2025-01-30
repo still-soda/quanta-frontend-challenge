@@ -17,8 +17,8 @@ export class AssetsService {
     private readonly assetsModel: Model<AssetsDocument>,
     private readonly configService: ConfigService,
   ) {
-    this.FILE_ROOT = this.configService.get('FILE_ROOT');
-    this.STATIC_ROOT = this.configService.get('STATIC_ROOT');
+    this.FILE_ROOT = this.configService.getOrThrow('FILE_ROOT');
+    this.STATIC_ROOT = this.configService.getOrThrow('STATIC_ROOT');
   }
 
   /**

@@ -60,7 +60,10 @@ export class TasksProcessor {
    * - `Error`: 需要 `submitFileId`
    * - `Error`: 提交记录不存在
    */
-  @Process('execute')
+  @Process({
+    name: 'execute',
+    concurrency: Number(process.env.MAX_EXECUTE_CONCURRENCY ?? 2),
+  })
   async handleExecute(job: TaskJob): Promise<ProcessResult> {
     const { submissionId, submitFileId, challengeId } = job.data;
 
@@ -113,7 +116,10 @@ export class TasksProcessor {
    * - `Error`: 需要 `submissionId`
    * - `Error`: 提交记录不存在
    */
-  @Process('preExecute')
+  @Process({
+    name: 'preExecute',
+    concurrency: Number(process.env.MAX_PRE_EXECUTE_CONCURRENCY ?? 2),
+  })
   async handlePreExecute(job: TaskJob): Promise<ProcessResult> {
     if (!job.data.submissionId) {
       throw new Error('需要 submissionId');

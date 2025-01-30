@@ -1,8 +1,8 @@
 import { ConfigModule } from '@nestjs/config';
 
-export function createEnvConfModule() {
+export function createEnvConfModule(...envFilePaths: string[]) {
   return ConfigModule.forRoot({
     isGlobal: true,
-    envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
+    envFilePath: [...envFilePaths, `.env.${process.env.NODE_ENV}`, '.env'],
   });
 }

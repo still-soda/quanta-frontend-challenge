@@ -2,10 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskJob, TasksProcessor } from '../tasks.processor';
 import { JudgementsModule } from '../../../modules/judgements/judgements.module';
 import { SubmissionsModule } from '../../../modules/submissions/submissions.module';
-import {
-  ExecuteResult,
-  JudgementsService,
-} from '../../judgements/judgements.service';
+import { JudgementsService } from '../../judgements/judgements.service';
 import { SubmissionsService } from '../../submissions/submissions.service';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
@@ -26,12 +23,7 @@ describe('TasksProcessor', () => {
     mongodb = mockDb.mongodb;
 
     module = await Test.createTestingModule({
-      imports: [
-        JudgementsModule,
-        SubmissionsModule,
-        mockDb.module,
-        createEnvConfModule(),
-      ],
+      imports: [JudgementsModule, SubmissionsModule, mockDb.module],
     }).compile();
     module.useLogger(console);
     await module.init();
