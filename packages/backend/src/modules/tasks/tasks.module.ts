@@ -12,7 +12,7 @@ import { BullModule } from '@nestjs/bull';
     BullModule.registerQueue({
       name: 'tasks',
       defaultJobOptions: {
-        timeout: 1000 * 30, // 30 秒
+        timeout: Number(process.env.MAX_PROCESS_TIMEOUT ?? 30000), // 30 秒
       },
     }),
   ],

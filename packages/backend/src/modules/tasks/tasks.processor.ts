@@ -19,12 +19,21 @@ export type TaskJob = Job<{
   submitFileId?: string;
 }>;
 
+export type TaskJobData = TaskJob['data'];
+
 export type ProcessResult = {
   passed: boolean;
   type: SubmissionType;
 };
 
-// badge('execute') => '[Execute]'
+/**
+ * 生成一个徽章字符串。
+ * @example
+ * ```ts
+ * badge('execute')     // => '[Execute]'
+ * badge('preExecute')  // => '[PreExecute]'
+ * ```
+ */
 const badge = (str: string) =>
   `[${str.toUpperCase().slice(0, 1)}${str.toLowerCase().slice(1)}]`;
 
@@ -121,23 +130,21 @@ export class TasksProcessor {
     concurrency: Number(process.env.MAX_PRE_EXECUTE_CONCURRENCY ?? 2),
   })
   async handlePreExecute(job: TaskJob): Promise<ProcessResult> {
-    if (!job.data.submissionId) {
+    const { submissionId, challengeId } = job.data;
+
+    if (!submissionId) {
       throw new Error('需要 submissionId');
     }
 
-    const submission = await this.submissionsService.findOne(
-      job.data.submissionId,
-    );
+    const submission = await this.submissionsService.findOne(submissionId);
     if (!submission) {
       throw new Error('提交记录不存在');
     }
 
-    const result = await this.judgementsService.preExecute(
-      job.data.challengeId,
-    );
+    const result = await this.judgementsService.preExecute(challengeId);
 
     const resultMsg = JSON.stringify(result.result);
-    await this.submissionsService.update(job.data.submissionId, {
+    await this.submissionsService.update(submissionId, {
       status: result.passed ? 'passed' : 'failed',
       score: result.score,
       correctRate: result.score / result.totalScore,
