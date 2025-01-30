@@ -5,9 +5,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   Submissions,
   SubmissionsDocument,
-} from 'src/schemas/submissions.schema';
+} from '../../schemas/submissions.schema';
 import { DeleteResult, Model } from 'mongoose';
-import validateData from 'src/utils/validate-data.utils';
+import validateData from '../../utils/validate-data.utils';
 
 @Injectable()
 export class SubmissionsService {

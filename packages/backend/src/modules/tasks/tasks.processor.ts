@@ -8,19 +8,18 @@ import { Job } from 'bull';
 import {
   ExecuteResult,
   JudgementsService,
-  PreExecuteResult,
 } from '../judgements/judgements.service';
 import { Logger } from '@nestjs/common';
 import { SubmissionsService } from '../submissions/submissions.service';
 import { SubmissionType } from 'src/schemas/submissions.schema';
 
-type TaskJob = Job<{
+export type TaskJob = Job<{
   challengeId: string;
   submissionId: string;
   submitFileId?: string;
 }>;
 
-type ProcessResult = {
+export type ProcessResult = {
   passed: boolean;
   type: SubmissionType;
 };
@@ -38,6 +37,29 @@ export class TasksProcessor {
     private readonly submissionsService: SubmissionsService,
   ) {}
 
+  /**
+   * 消费任务然后执行，并更新提交记录的状态、分数、正确率和消息。
+   *
+   * 该方法首先会检查任务数据中是否包含 `submissionId` 和 `submitFileId`，
+   * 如果不存在则抛出错误。然后会根据 `submissionId` 查询提交记录，
+   * 如果不存在则抛出错误。
+   *
+   * 接着调用 `JudgementsService.execute` 方法执行评测，获取评测结果。
+   *
+   * 最后更新提交记录的状态、分数、正确率和消息。
+   *
+   * @param job 任务
+   * - `challengeId`: 挑战 ID
+   * - `submissionId`: 提交记录 ID
+   * - `submitFileId`: 提交文件 ID
+   * @returns 一个对象，包含是否通过和提交类型
+   * - `passed`: 是否通过
+   * - `type`: 提交类型，如 `execute` 或 `preExecute`
+   * @throws
+   * - `Error`: 需要 `submissionId`
+   * - `Error`: 需要 `submitFileId`
+   * - `Error`: 提交记录不存在
+   */
   @Process('execute')
   async handleExecute(job: TaskJob): Promise<ProcessResult> {
     const { submissionId, submitFileId, challengeId } = job.data;
@@ -71,6 +93,26 @@ export class TasksProcessor {
     return { passed: result.passed, type: submission.type };
   }
 
+  /**
+   * 消费任务然后执行预评测，并更新提交记录的状态、分数、正确率和消息。
+   *
+   * 该方法首先会检查任务数据中是否包含 `submissionId`，
+   * 如果不存在则抛出错误。然后会根据 `submissionId` 查询提交记录，
+   *
+   * 接着调用 `JudgementsService.preExecute` 方法执行预评测，获取评测结果。
+   *
+   * 最后更新提交记录的状态、分数、正确率和消息。
+   *
+   * @param job 任务
+   * - `challengeId`: 挑战 ID
+   * - `submissionId`: 提交记录 ID
+   * @returns 一个对象，包含是否通过和提交类型
+   * - `passed`: 是否通过
+   * - `type`: 提交类型，如 `execute` 或 `preExecute`
+   * @throws
+   * - `Error`: 需要 `submissionId`
+   * - `Error`: 提交记录不存在
+   */
   @Process('preExecute')
   async handlePreExecute(job: TaskJob): Promise<ProcessResult> {
     if (!job.data.submissionId) {
@@ -99,6 +141,20 @@ export class TasksProcessor {
     return { passed: result.passed, type: submission.type };
   }
 
+  /**
+   * 当任务执行完成时调用。
+   *
+   * 该方法会记录任务的完成状态，包括挑战 ID、提交记录 ID 和是否通过。例如：
+   *
+   * > [Execute] 挑战：1 | 提交：1 | 完成：passed
+   *
+   * @param job 完成的任务
+   * - `challengeId`: 挑战 ID
+   * - `submissionId`: 提交记录 ID
+   * @param result 评测结果
+   * - `passed`: 是否通过
+   * - `type`: 提交类型，如 `execute` 或 `preExecute`
+   */
   @OnQueueCompleted()
   async onExecuteCompleted(job: TaskJob, { passed, type }: ProcessResult) {
     const { challengeId, submissionId } = job.data;
@@ -109,6 +165,18 @@ export class TasksProcessor {
     );
   }
 
+  /**
+   * 当任务执行失败时调用。
+   *
+   * 该方法会记录任务的失败状态，包括挑战 ID、提交记录 ID 和错误消息。例如：
+   *
+   * > [Execute] 挑战：1 | 提交：1 | 失败：评测失败的原因
+   *
+   * @param job 失败的任务
+   * - `challengeId`: 挑战 ID
+   * - `submissionId`: 提交记录 ID
+   * @param error 错误
+   */
   @OnQueueFailed()
   async onExecuteFailed(job: TaskJob, error: Error) {
     const { submissionId, challengeId } = job.data;

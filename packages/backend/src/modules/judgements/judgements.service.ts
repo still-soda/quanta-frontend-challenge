@@ -1,11 +1,11 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { FlowDataDto } from './dto/flow-data.dto';
-import { AssetsService } from '../assets/assets.service';
-import { dataValidators, FlowData, Validator } from './core/flow-data';
-import { ChallengesService } from '../challenges/challenges.service';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Browser, chromium } from 'playwright';
+import { AssetsService } from '../assets/assets.service';
+import { ChallengesService } from '../challenges/challenges.service';
 import { explainOneFlowData, handleOneFlowData } from './core';
+import { dataValidators, FlowData, Validator } from './core/flow-data';
 import { HandlerOptions } from './core/flow-handlers/index.type';
+import { FlowDataDto } from './dto/flow-data.dto';
 
 /**
  * 这个接口定义了执行结果的数据结构。

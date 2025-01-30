@@ -1,5 +1,8 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 
+/**
+ * 全局异常过滤器
+ */
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(GlobalExceptionFilter.name);
@@ -11,11 +14,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     const status = exception.getStatus();
     const message = exception.message || 'Internal server error';
+    const requestInfo =
+      '[Info] body: ' +
+      JSON.stringify(request.body) +
+      ' | query: ' +
+      JSON.stringify(request.query) +
+      ' | params: ' +
+      JSON.stringify(request.params);
 
     this.logger.error(
       `[Status ${status}] When ${request.method} ${request.url} | ${message}`,
+      requestInfo,
       exception.stack,
-      GlobalExceptionFilter.name,
     );
 
     response.status(status).json({
