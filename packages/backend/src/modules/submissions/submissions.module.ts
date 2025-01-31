@@ -15,6 +15,6 @@ import {
   ],
   controllers: [SubmissionsController],
   providers: [SubmissionsService],
-  exports: [MongooseModule],
+  exports: [MongooseModule, SubmissionsService],
 })
 export class SubmissionsModule {}

@@ -2,11 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { GlobalExceptionFilter } from './common/filter/global-exception.filter';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { ConsoleLogger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: console,
+    logger: new ConsoleLogger(),
   });
   app.useGlobalFilters(new GlobalExceptionFilter());
 

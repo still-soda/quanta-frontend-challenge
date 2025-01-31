@@ -4,11 +4,15 @@ import { TasksController } from './tasks.controller';
 import { SubmissionsModule } from '../submissions/submissions.module';
 import { JudgementsModule } from '../judgements/judgements.module';
 import { BullModule } from '@nestjs/bull';
+import { UsersModule } from '../users/users.module';
+import { ChallengesModule } from '../challenges/challenges.module';
 
 @Module({
   imports: [
     SubmissionsModule,
     JudgementsModule,
+    UsersModule,
+    ChallengesModule,
     BullModule.registerQueue({
       name: 'tasks',
       defaultJobOptions: {
