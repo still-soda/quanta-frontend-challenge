@@ -27,6 +27,22 @@ export class TasksService {
     private readonly usersService: UsersService,
   ) {}
 
+  /**
+   * 推送执行任务到队列。
+   *
+   * 会对挑战 ID 和用户 ID 进行校验，如果找不到对应的 Challenge 或 User，
+   * 会抛出异常。（等到任务执行时会对挑战再进行一次校验，
+   * 避免中间删除导致错误的情况）
+   *
+   * @param options
+   * - `challengeId`: 挑战 ID
+   * - `submitFileId`: 提交文件 ID
+   * - `userId`: 用户 ID
+   * @returns 任务 ID
+   * @throws
+   * - `Error`: 找不到 Challenge
+   * - `Error`: 找不到 User
+   */
   async pushExecuteJob(options: ExecuteTasksOptions) {
     const { challengeId, userId, submitFileId } = options;
 
@@ -51,6 +67,21 @@ export class TasksService {
     });
   }
 
+  /**
+   * 推送预执行任务到队列。
+   *
+   * 会对挑战 ID 和用户 ID 进行校验，如果找不到对应的 Challenge 或 User，
+   * 会抛出异常。（等到任务执行时会对挑战再进行一次校验，
+   * 避免中间删除导致错误的情况）
+   *
+   * @param options
+   * - `challengeId`: 挑战 ID
+   * - `userId`: 用户 ID
+   * @returns 任务 ID
+   * @throws
+   * - `Error`: 找不到 Challenge
+   * - `Error`: 找不到 User
+   */
   async pushPreExecuteJob(options: PreExecuteTasksOptions) {
     const { challengeId, userId } = options;
 
