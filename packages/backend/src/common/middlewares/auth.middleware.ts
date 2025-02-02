@@ -2,7 +2,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { NextFunction } from 'express';
 import { Request, Response } from 'express';
-import { AuthService } from 'src/modules/auth/auth.service';
+import { AuthService } from '../../modules/auth/auth.service';
 
 /**
  * 验证用户身份令牌的中间件。
@@ -42,7 +42,7 @@ export class AuthMiddleware implements NestMiddleware {
       return res.status(401).json({ message: '无效的身份令牌' });
     }
 
-    req.body.user = user;
+    (req as any).user = user;
     next();
   }
 }
