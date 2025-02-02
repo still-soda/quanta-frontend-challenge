@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { UsersModule } from './modules/users/users.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
 import { ActionsModule } from './modules/actions/actions.module';
@@ -11,16 +11,23 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthMiddleware } from './common/middlewares/auth.middleware';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/quanta-frontend-challenge'),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
+      envFilePath: ['.env.local', `.env.${process.env.NODE_ENV}`, '.env'],
     }),
     BullModule.forRoot({
       redis: { host: 'localhost', port: 6379 },
+    }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
     UsersModule,
     ChallengesModule,
@@ -35,4 +42,8 @@ import { TasksModule } from './modules/tasks/tasks.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}

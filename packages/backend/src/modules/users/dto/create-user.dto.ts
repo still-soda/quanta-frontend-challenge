@@ -37,13 +37,20 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
-    example: 'password',
-    description: '密码',
+    example: 'passwordHash',
+    description: '密码哈希',
   })
   @IsString()
-  @MinLength(6, { message: '密码长度不能小于6' })
   @Expose()
-  password: string;
+  passwordHash: string;
+
+  @ApiProperty({
+    example: 'salt',
+    description: '密码哈希盐',
+  })
+  @IsString()
+  @Expose()
+  salt: string;
 
   @ApiProperty({
     example: 'phone',

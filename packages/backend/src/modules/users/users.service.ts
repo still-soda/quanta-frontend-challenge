@@ -26,6 +26,10 @@ export class UsersService {
     return this.userModel.findById(id);
   }
 
+  findByUsername(username: string) {
+    return this.userModel.findOne({ username });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     updateUserDto = await validateData(UpdateUserDto, updateUserDto);
     return this.userModel.findByIdAndUpdate({ _id: id }, updateUserDto, {

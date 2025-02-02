@@ -27,9 +27,13 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  @Min(6, { message: '密码长度不能小于6' })
   @Expose()
-  password?: string;
+  passwordHash?: string;
+
+  @IsOptional()
+  @IsString()
+  @Expose()
+  salt?: string;
 
   @IsOptional()
   @Length(11, 11, { message: '手机号长度必须是11' })

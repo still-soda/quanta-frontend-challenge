@@ -9,9 +9,9 @@ export type UsersDocument = Users & Document;
 export class Users extends Document {
   @ApiProperty({
     example: 'username',
-    description: '用户名',
+    description: '用户名，唯一',
   })
-  @Prop()
+  @Prop({ unique: true, index: true })
   username: string;
 
   @ApiProperty({
@@ -29,11 +29,18 @@ export class Users extends Document {
   email: string;
 
   @ApiProperty({
-    example: 'password',
-    description: '密码',
+    example: 'passwordHash',
+    description: '密码哈希（十六进制）',
   })
   @Prop()
-  password: string;
+  passwordHash: string;
+
+  @ApiProperty({
+    example: 'salt',
+    description: '密码哈希盐',
+  })
+  @Prop()
+  salt: string;
 
   @ApiProperty({
     example: 'phone',

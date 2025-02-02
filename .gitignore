@@ -23,3 +23,4 @@ quanta-frontend-challenge.code-workspace
 *.njsproj
 *.sln
 *.sw?
+.env.local

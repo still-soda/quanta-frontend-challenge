@@ -27,7 +27,8 @@ describe('UsersService', () => {
       username: 'test_user',
       email: 'test_user@email.com',
       number: '20231003059',
-      password: 'password',
+      passwordHash: 'password',
+      salt: 'salt',
       phone: '13400011111',
     };
     result = await service.create(createUserDto);
@@ -44,7 +45,8 @@ describe('UsersService', () => {
     expect(result.username).toBe('test_user');
     expect(result.email).toBe('test_user@email.com');
     expect(result.number).toBe('20231003059');
-    expect(result.password).toBe('password');
+    expect(result.passwordHash).toBe('password');
+    expect(result.salt).toBe('salt');
     expect(result.phone).toBe('13400011111');
     expect(result.role).toBe(0);
   });
@@ -120,33 +122,14 @@ describe('UsersService', () => {
     expect(user).toBeNull();
   });
 
-  it('密码长度小于6字符时应该抛出错误（create）', async () => {
-    await expect(
-      service.create({
-        username: 'test_user',
-        email: 'test_user@email.com',
-        number: '20231003059',
-        password: 'pass',
-        phone: '13400011111',
-      }),
-    ).rejects.toThrow('密码长度不能小于6');
-  });
-
-  it('密码长度小于6字符时应该抛出错误（update）', async () => {
-    await expect(
-      service.update(userId, {
-        password: 'pass',
-      }),
-    ).rejects.toThrow('密码长度不能小于6');
-  });
-
   it('个性签名长度超过100字符时应该抛出错误（create）', async () => {
     await expect(
       service.create({
         username: 'test_user',
         email: 'test_user@email.com',
         number: '20231003059',
-        password: 'password',
+        passwordHash: 'password',
+        salt: 'salt',
         phone: '13400011111',
         signature: 'a'.repeat(101),
       }),
@@ -167,7 +150,8 @@ describe('UsersService', () => {
         username: 'test_user',
         email: 'test_user@email.com',
         number: '20231003059',
-        password: 'password',
+        passwordHash: 'password',
+        salt: 'salt',
         phone: '1340001111',
       }),
     ).rejects.toThrow('手机号长度必须是11');
@@ -187,7 +171,8 @@ describe('UsersService', () => {
         username: 'test_user',
         email: 'test_user@email.com',
         number: '2023100305',
-        password: 'password',
+        passwordHash: 'password',
+        salt: 'salt',
         phone: '13400011111',
       }),
     ).rejects.toThrow('学号长度必须是11');
@@ -207,7 +192,8 @@ describe('UsersService', () => {
         username: 'test_user',
         email: 'test_user',
         number: '20231003059',
-        password: 'password',
+        passwordHash: 'password',
+        salt: 'salt',
         phone: '13400011111',
       }),
     ).rejects.toThrow('邮箱格式不正确');
@@ -227,7 +213,8 @@ describe('UsersService', () => {
         username: '',
         email: 'test_user@email.com',
         number: '20231003059',
-        password: 'password',
+        passwordHash: 'password',
+        salt: 'salt',
         phone: '13400011111',
       }),
     ).rejects.toThrow('用户名长度必须在1到20之间');
@@ -247,7 +234,8 @@ describe('UsersService', () => {
         username: 'test_user',
         email: 'test_user@email.com',
         number: '20231003059',
-        password: 'password',
+        passwordHash: 'password',
+        salt: 'salt',
         phone: '13400011111',
         role: 2,
       }),
@@ -267,7 +255,8 @@ describe('UsersService', () => {
       username: 'test_user',
       email: 'test_user@email.com',
       number: '20231003059',
-      password: 'password',
+      passwordHash: 'password',
+      salt: 'salt',
       phone: '13400011111',
     } as any);
     const updated = await service.update(created._id.toString(), {
@@ -282,10 +271,11 @@ describe('UsersService', () => {
 
   it('创建用户时不应该初始化不在CreateUserDto中的字段', async () => {
     const result = await service.create({
-      username: 'test_user',
+      username: 'test_user1',
       email: 'test_user@email.com',
       number: '20231003059',
-      password: 'password',
+      passwordHash: 'password',
+      salt: 'salt',
       phone: '13400011111',
       tryingTasks: ['task_id'],
       failedTasks: ['task_id'],
@@ -294,5 +284,11 @@ describe('UsersService', () => {
     expect(result.tryingTasks).toHaveLength(0);
     expect(result.failedTasks).toHaveLength(0);
     expect(result.solvedTasks).toHaveLength(0);
+  });
+
+  it('应该通过用户名查找用户', async () => {
+    const result = await service.findByUsername('test_user');
+    expect(result).toBeDefined();
+    expect(result.username).toBe('test_user');
   });
 });
