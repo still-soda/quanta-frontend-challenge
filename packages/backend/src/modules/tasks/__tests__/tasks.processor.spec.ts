@@ -23,7 +23,12 @@ describe('TasksProcessor', () => {
     mongodb = mockDb.mongodb;
 
     module = await Test.createTestingModule({
-      imports: [JudgementsModule, SubmissionsModule, mockDb.module],
+      imports: [
+        JudgementsModule,
+        SubmissionsModule,
+        createEnvConfModule(),
+        mockDb.module,
+      ],
     }).compile();
     module.useLogger(console);
     await module.init();

@@ -46,11 +46,11 @@ export class TasksService {
   async pushExecuteJob(options: ExecuteTasksOptions) {
     const { challengeId, userId, submitFileId } = options;
 
-    if (!this.challengesService.findOne(challengeId)) {
+    if (!(await this.challengesService.findOne(challengeId))) {
       throw new Error('找不到 Challenge');
     }
 
-    if (!this.usersService.findOne(userId)) {
+    if (!(await this.usersService.findOne(userId))) {
       throw new Error('找不到 User');
     }
 
@@ -85,11 +85,11 @@ export class TasksService {
   async pushPreExecuteJob(options: PreExecuteTasksOptions) {
     const { challengeId, userId } = options;
 
-    if (!this.challengesService.findOne(challengeId)) {
+    if (!(await this.challengesService.findOne(challengeId))) {
       throw new Error('找不到 Challenge');
     }
 
-    if (!this.usersService.findOne(userId)) {
+    if (!(await this.usersService.findOne(userId))) {
       throw new Error('找不到 User');
     }
 

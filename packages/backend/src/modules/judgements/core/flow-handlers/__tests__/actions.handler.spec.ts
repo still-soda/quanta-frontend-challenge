@@ -3,7 +3,6 @@ import {
   handleMouseAction,
   handleTriggerAction,
 } from '../actions/actions.handler';
-import { ensureSelectorExists } from '../actions/actions.handler';
 
 describe('Actions Handler', () => {
   describe('unit test', () => {

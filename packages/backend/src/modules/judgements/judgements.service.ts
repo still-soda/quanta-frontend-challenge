@@ -1,4 +1,9 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  OnApplicationShutdown,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { Browser, chromium } from 'playwright';
 import { AssetsService } from '../assets/assets.service';
 import { ChallengesService } from '../challenges/challenges.service';
@@ -50,7 +55,9 @@ export interface ExecuteResult {
 }
 
 @Injectable()
-export class JudgementsService implements OnModuleInit, OnModuleDestroy {
+export class JudgementsService
+  implements OnModuleInit, OnModuleDestroy, OnApplicationShutdown
+{
   private browser: Browser;
 
   constructor(
@@ -63,7 +70,11 @@ export class JudgementsService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleDestroy() {
-    await this.browser.close();
+    await this.browser?.close();
+  }
+
+  async onApplicationShutdown() {
+    await this.browser?.close();
   }
 
   async getContext() {
