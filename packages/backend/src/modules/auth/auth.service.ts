@@ -5,7 +5,7 @@ import * as crypto from 'crypto';
 import { UsersDocument } from 'src/schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
 
-type LoginResult = Promise<string | null>;
+type LoginResult = Promise<string | number>;
 
 @Injectable()
 export class AuthService {
@@ -91,20 +91,22 @@ export class AuthService {
    * @param options
    * - `username`: 用户名
    * - `password`: 用户密码
-   * @returns 登录成功返回Token，否则返回 `null`
+   * @returns 登录成功返回Token，否则：
+   * - 用户不存在返回 `-1`
+   * - 密码错误返回 `-2`
    */
   async login(options: { username: string; password: string }): LoginResult {
     const { username, password } = options;
     const user = await this.usersService.findByUsername(username);
     if (!user) {
-      return null;
+      return -1;
     }
     const { salt, passwordHash } = user;
     if (this.validatePassword(passwordHash, salt, password)) {
       const token = this.generateToken(user);
       return token;
     }
-    return null;
+    return -2;
   }
 
   /**
@@ -117,20 +119,20 @@ export class AuthService {
    * - `phone`: 用户手机号
    * @returns
    * - 注册成功返回 Token
-   * - 注册失败返回 `null`，原因可能是用户名已存在
+   * - 用户名重复返回 `-1`
    **/
-  async signup(options: {
+  async register(options: {
     username: string;
     password: string;
     email: string;
     number: string;
     phone: string;
-  }): Promise<string | null> {
+  }): Promise<string | number> {
     const { username, password, email, number, phone } = options;
 
     const userExist = await this.usersService.findByUsername(username);
     if (userExist) {
-      return null;
+      return -1;
     }
 
     const { salt, hash: passwordHash } = this.encryptPassword(password);
@@ -154,9 +156,9 @@ export class AuthService {
    * - `newPassword`: 新密码
    * @returns
    * - 重置成功返回 `true`
-   * - 重置失败返回 `false`，原因可能是用户名不存在
+   * - 重置失败返回 `false`，原因是用户名不存在
    */
-  async forgotPassword(options: { username: string; newPassword: string }) {
+  async resetPassword(options: { username: string; newPassword: string }) {
     const { username, newPassword } = options;
     const user = await this.usersService.findByUsername(username);
     if (!user) {

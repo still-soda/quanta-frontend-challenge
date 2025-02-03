@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { ConsoleLogger } from '@nestjs/common';
-import { AuthMiddleware } from './common/middlewares/auth.middleware';
+import 'reflect-metadata';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -23,5 +23,8 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
+  console.log(
+    `Application is running on: http://127.0.0.1:${process.env.PORT ?? 3000}`,
+  );
 }
 bootstrap();

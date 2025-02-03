@@ -25,10 +25,18 @@ export class AuthMiddleware implements NestMiddleware {
   ) {}
 
   use(req: Request, res: Response, next: NextFunction) {
-    const requireAuth = this.reflector.get<boolean>('require-auth', req.route);
-    if (!requireAuth) {
+    let notRequireAuth = false;
+    if (req.route) {
+      console.log('AuthMiddleware', req.route);
+      notRequireAuth = !this.reflector.get<boolean>('require-auth', req.route);
+    } else {
+      notRequireAuth = true;
+    }
+    if (notRequireAuth) {
       return next();
     }
+
+    console.log('AuthMiddleware');
 
     const token: string = req.headers['authorization'];
     if (!token) {

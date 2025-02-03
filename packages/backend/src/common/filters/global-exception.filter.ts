@@ -1,4 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  Logger,
+} from '@nestjs/common';
 
 /**
  * 全局异常过滤器
@@ -14,19 +20,24 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     const status = exception.getStatus();
     const message = exception.message || 'Internal server error';
-    const requestInfo =
-      '[Info] body: ' +
-      JSON.stringify(request.body) +
-      ' | query: ' +
-      JSON.stringify(request.query) +
-      ' | params: ' +
-      JSON.stringify(request.params);
+    const ip = request.headers['x-real-ip'] || request.ip;
 
-    this.logger.error(
-      `[Status ${status}] When ${request.method} ${request.url} | ${message}`,
-      requestInfo,
-      exception.stack,
-    );
+    const info = {
+      status: status,
+      method: request.method,
+      url: request.url,
+      ip: ip,
+      body: request.body,
+      query: request.query,
+      params: request.params,
+      message: message,
+    };
+
+    const optionalParams = [];
+    const withStack = !exception.getResponse()?.__without_stack__;
+    withStack && optionalParams.push(exception.stack);
+
+    this.logger.error(JSON.stringify(info), ...optionalParams);
 
     response.status(status).json({
       code: status,

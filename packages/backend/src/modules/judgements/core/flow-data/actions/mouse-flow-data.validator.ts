@@ -10,7 +10,6 @@ import {
   $string,
   $value,
   fit,
-  Optional,
 } from '@challenge/utils';
 
 export function validateMoveMouseFlowData(

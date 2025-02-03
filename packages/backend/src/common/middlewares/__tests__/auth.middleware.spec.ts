@@ -51,13 +51,13 @@ describe('AuthMiddleware', () => {
     const phone = '12345678901';
 
     jest.spyOn(authMiddleware['reflector'], 'get').mockReturnValueOnce(true);
-    jest.spyOn(authService, 'signup').mockImplementation(async () => 'token');
+    jest.spyOn(authService, 'register').mockImplementation(async () => 'token');
     jest.spyOn(authService, 'verifyToken').mockImplementation(() => ({
       username,
       id: 'id',
     }));
 
-    const token = await authService.signup({
+    const token = await authService.register({
       username,
       password,
       email,
@@ -107,12 +107,12 @@ describe('AuthMiddleware', () => {
     const phone = '12345678901';
 
     jest.spyOn(authMiddleware['reflector'], 'get').mockReturnValueOnce(true);
-    jest.spyOn(authService, 'signup').mockImplementation(async () => 'token');
+    jest.spyOn(authService, 'register').mockImplementation(async () => 'token');
     jest.spyOn(authService, 'verifyToken').mockImplementation(() => {
       throw new Error('Invalid token');
     });
 
-    const token = await authService.signup({
+    const token = await authService.register({
       username,
       password,
       email,

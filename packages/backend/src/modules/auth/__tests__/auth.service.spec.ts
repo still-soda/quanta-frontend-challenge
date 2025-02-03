@@ -43,7 +43,7 @@ describe('AuthService', () => {
     const number = '12345678901';
     const phone = '12345678901';
 
-    const token = await authService.signup({
+    const token = await authService.register({
       username,
       password,
       email,
@@ -58,6 +58,32 @@ describe('AuthService', () => {
     expect(user.email).toBe(email);
   });
 
+  it('用户名重复的注册返回-1', async () => {
+    const username = 'test8';
+    const password = 'test';
+    const email = 'test@test.com';
+    const number = '12345678901';
+    const phone = '12345678901';
+
+    await authService.register({
+      username,
+      password,
+      email,
+      number,
+      phone,
+    });
+
+    const token = await authService.register({
+      username,
+      password,
+      email,
+      number,
+      phone,
+    });
+
+    expect(token).toBe(-1);
+  });
+
   it('应该正确登录用户', async () => {
     const username = 'test2';
     const password = 'test';
@@ -65,7 +91,7 @@ describe('AuthService', () => {
     const number = '12345678901';
     const phone = '12345678901';
 
-    const signupToken = await authService.signup({
+    const signupToken = await authService.register({
       username,
       password,
       email,
@@ -85,19 +111,27 @@ describe('AuthService', () => {
     const number = '12345678901';
     const phone = '12345678901';
 
-    const token = await authService.signup({
+    const token = await authService.register({
       username,
       password,
       email,
       number,
       phone,
     });
-    expect(token).not.toBeNull();
+    expect(typeof token).toBe('string');
 
-    const user = authService.verifyToken(token);
+    const user = authService.verifyToken(token as string);
     expect(user).toBeDefined();
     expect(user.username).toBe(username);
     expect(user.id).toBeDefined();
+  });
+
+  it('用户不存在的登录返回-1', async () => {
+    const username = 'test7';
+    const password = 'test';
+
+    const result = await authService.login({ username, password });
+    expect(result).toBe(-1);
   });
 
   it('应该正确修改密码', async () => {
@@ -107,7 +141,7 @@ describe('AuthService', () => {
     const number = '12345678901';
     const phone = '12345678901';
 
-    await authService.signup({
+    await authService.register({
       username,
       password,
       email,
@@ -116,14 +150,14 @@ describe('AuthService', () => {
     });
 
     const newPassword = 'test2';
-    const ok = await authService.forgotPassword({
+    const ok = await authService.resetPassword({
       username,
       newPassword,
     });
     expect(ok).toBeTruthy();
 
     const oldToken = await authService.login({ username, password });
-    expect(oldToken).toBeNull();
+    expect(oldToken).toBe(-2);
 
     const newToken = await authService.login({
       username,
