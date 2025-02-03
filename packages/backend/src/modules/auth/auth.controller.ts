@@ -10,6 +10,12 @@ import {
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Auth } from '../../common/decorators/auth.decorator';
+
+interface UserInfo {
+  username: string;
+  id: string;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -115,6 +121,7 @@ export class AuthController {
    * @throws
    * - `bad request` 请求参数错误
    * - `not found` 用户不存在
+   * - `forbidden` 无权限
    **/
   @ApiOperation({ summary: '重置密码' })
   @ApiBody({ type: ResetPasswordDto })
@@ -131,18 +138,29 @@ export class AuthController {
     description: '用户不存在',
     schema: responseSchema('not found', '用户不存在'),
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: '无权限',
+    schema: responseSchema('forbidden', '无权限'),
+  })
+  @Auth()
   @Post('reset-password')
-  async resetPassword(@Body() body: ResetPasswordDto) {
+  async resetPassword(@Body() body: ResetPasswordDto & { user: UserInfo }) {
+    let validatedBody: ResetPasswordDto;
     try {
-      body = await validateData(ResetPasswordDto, body);
+      validatedBody = await validateData(ResetPasswordDto, body);
     } catch (error) {
       throw responseError('bad request', { msg: error.message });
     }
 
-    const success = await this.authService.resetPassword(body);
+    if (body.user.username !== validatedBody.username) {
+      throw responseError('forbidden', { msg: '无权限' });
+    }
+
+    const success = await this.authService.resetPassword(validatedBody);
 
     if (success) {
-      return responseSuccess('ok', { success });
+      return responseSuccess('ok', { success }, '重置成功');
     }
     throw responseError('not found', { msg: '用户不存在' });
   }

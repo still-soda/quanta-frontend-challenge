@@ -6,7 +6,6 @@ import { UsersModule } from '../../../modules/users/users.module';
 import { AuthModule } from '../auth.module';
 import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 import { createJwtModule } from '../../../utils/create-jwt.utils';
-import { UsersService } from '../../../modules/users/users.service';
 import validateData from '../../../utils/validate-data.utils';
 import mongoose from 'mongoose';
 import { AuthService } from '../auth.service';
@@ -19,7 +18,6 @@ const mockValidateData = validateData as jest.MockedFunction<
 
 describe('AuthController', () => {
   let authController: AuthController;
-  let usersService: UsersService;
   let authService: AuthService;
   let mongodb: MongoMemoryServer;
 
@@ -39,7 +37,6 @@ describe('AuthController', () => {
     }).compile();
 
     authController = module.get<AuthController>(AuthController);
-    usersService = module.get<UsersService>(UsersService);
     authService = module.get<AuthService>(AuthService);
   });
 
@@ -197,6 +194,73 @@ describe('AuthController', () => {
       });
 
       await expect(result).rejects.toThrow('请求参数错误');
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('应该在重置密码时返回成功', async () => {
+      jest
+        .spyOn(authService, 'resetPassword')
+        .mockImplementation(async () => true);
+
+      mockValidateData.mockImplementationOnce((_, data) =>
+        Promise.resolve(data),
+      );
+
+      const result = await authController.resetPassword({
+        username: 'test',
+        newPassword: 'test',
+        user: { username: 'test', id: 'test' },
+      });
+
+      expect(result.code).toBe(200);
+      expect(result.message).toBe('重置成功');
+    });
+
+    it('应该在重置密码时返回请求参数错误', async () => {
+      mockValidateData.mockImplementationOnce(() => {
+        throw new Error('请求参数错误');
+      });
+
+      const result = authController.resetPassword({
+        username: 'test',
+        newPassword: 'test',
+        user: { username: 'test', id: 'test' },
+      });
+
+      await expect(result).rejects.toThrow('请求参数错误');
+    });
+
+    it('应该在验证得到的用户信息与请求的用户信息不一致时返回无权限', async () => {
+      mockValidateData.mockImplementationOnce((_, data) =>
+        Promise.resolve(data),
+      );
+
+      const result = authController.resetPassword({
+        username: 'test',
+        newPassword: 'test',
+        user: { username: 'test2', id: 'test' },
+      });
+
+      await expect(result).rejects.toThrow('无权限');
+    });
+
+    it('应该在重置密码时返回用户不存在', async () => {
+      jest
+        .spyOn(authService, 'resetPassword')
+        .mockImplementation(async () => false);
+
+      mockValidateData.mockImplementationOnce((_, data) =>
+        Promise.resolve(data),
+      );
+
+      const result = authController.resetPassword({
+        username: 'test',
+        newPassword: 'test',
+        user: { username: 'test', id: 'test' },
+      });
+
+      await expect(result).rejects.toThrow('用户不存在');
     });
   });
 });

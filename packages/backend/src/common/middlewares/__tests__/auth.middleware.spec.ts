@@ -76,7 +76,7 @@ describe('AuthMiddleware', () => {
 
     authMiddleware.use(req as any, res as any, next);
 
-    expect(req).toHaveProperty('user', { username, id: 'id' });
+    expect(req).toHaveProperty('body.user', { username, id: 'id' });
     expect(next).toHaveBeenCalledTimes(1);
   });
 

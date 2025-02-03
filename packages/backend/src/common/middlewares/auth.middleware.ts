@@ -25,18 +25,12 @@ export class AuthMiddleware implements NestMiddleware {
   ) {}
 
   use(req: Request, res: Response, next: NextFunction) {
-    let notRequireAuth = false;
-    if (req.route) {
-      console.log('AuthMiddleware', req.route);
-      notRequireAuth = !this.reflector.get<boolean>('require-auth', req.route);
-    } else {
-      notRequireAuth = true;
-    }
+    const notRequireAuth = req.route
+      ? !this.reflector.get<boolean>('require-auth', req.route)
+      : true;
     if (notRequireAuth) {
       return next();
     }
-
-    console.log('AuthMiddleware');
 
     const token: string = req.headers['authorization'];
     if (!token) {
@@ -50,7 +44,8 @@ export class AuthMiddleware implements NestMiddleware {
       return res.status(401).json({ message: '无效的身份令牌' });
     }
 
-    (req as any).user = user;
+    req.body ??= {};
+    req.body.user = user;
     next();
   }
 }
