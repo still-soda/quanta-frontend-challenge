@@ -97,13 +97,28 @@ export function responseError(
   return new HttpException(payload, payload.code);
 }
 
-export class HttpResponseSchema {
-  @ApiProperty({ type: Number, description: '状态码' })
-  code: number;
-
-  @ApiProperty({ type: String, description: '消息' })
-  message: string;
-
-  @ApiProperty({ type: Object, description: '数据' })
-  data: object;
+/**
+ * 工具函数，构造并返回响应的 JSON Schema，用于 Swagger 文档。
+ * @param type 响应类型
+ * @param msg 消息
+ * @param data 数据
+ * - `type`: 数据类型
+ * - `schema`: 数据结构
+ * - `example`: 示例
+ * - `properties`: 属性
+ * @returns JSON Schema
+ */
+export function responseSchema<T>(
+  type: HttpResponseMessage,
+  msg?: string,
+  data?: { type?: any; schema?: any; example?: any; properties?: any },
+) {
+  return {
+    type: 'object',
+    properties: {
+      message: { type: 'string', example: msg ?? type },
+      code: { type: 'number', example: type2code[type] },
+      data,
+    },
+  };
 }

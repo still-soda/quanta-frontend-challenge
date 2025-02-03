@@ -1,10 +1,4 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  Logger,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 
 /**
  * 全局异常过滤器
@@ -41,8 +35,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     response.status(status).json({
       code: status,
-      msg: message,
-      timestamp: new Date().toISOString(),
+      message: message,
     });
   }
 }
