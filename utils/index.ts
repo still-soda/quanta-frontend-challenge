@@ -1,4 +1,4 @@
-// 此处到处的 .ts 文件需要以 .js 结尾，否则会报错
+// 此处导出的 .ts 文件需要以 .js 结尾，否则会报错
 export * from './src/compare-chain.js';
 export * from './src/date.js';
 export * from './src/uuid.js';

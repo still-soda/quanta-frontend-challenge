@@ -10,8 +10,8 @@ import {
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiNeedAuth, Auth } from '../../common/decorators/auth.decorator';
-import { UserInfo } from 'src/common/middlewares/auth.middleware';
+import { Auth } from '../../common/decorators/auth.decorator';
+import { UserInfo } from '../../common/guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -28,7 +28,6 @@ export class AuthController {
    * - `unauthorized` 密码错误
    */
   @ApiOperation({ summary: '用户登录' })
-  @ApiNeedAuth()
   @ApiBody({ type: LoginDto })
   @ApiResponse({
     status: HttpStatus.OK,

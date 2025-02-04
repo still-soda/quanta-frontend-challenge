@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthModule } from '../../../modules/auth/auth.module';
 import { AuthService } from '../../../modules/auth/auth.service';
 import { UsersModule } from '../../../modules/users/users.module';
-import { AuthMiddleware } from '../auth.middleware';
+import { AuthGuard } from '../auth.guard';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import mongoose from 'mongoose';
@@ -10,7 +10,7 @@ import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 import { createJwtModule } from '../../../utils/create-jwt.utils';
 
 describe('AuthMiddleware', () => {
-  let authMiddleware: AuthMiddleware;
+  let authGuard: AuthGuard;
   let authService: AuthService;
   let mongodb: MongoMemoryServer;
 
@@ -26,10 +26,10 @@ describe('AuthMiddleware', () => {
         createEnvConfModule(),
         createJwtModule(),
       ],
-      providers: [AuthMiddleware],
+      providers: [AuthGuard],
     }).compile();
 
-    authMiddleware = module.get<AuthMiddleware>(AuthMiddleware);
+    authGuard = module.get<AuthGuard>(AuthGuard);
     authService = module.get<AuthService>(AuthService);
   });
 
@@ -39,7 +39,7 @@ describe('AuthMiddleware', () => {
   });
 
   it('应该正确获取中间件和服务', () => {
-    expect(authMiddleware).toBeDefined();
+    expect(authGuard).toBeDefined();
     expect(authService).toBeDefined();
   });
 
@@ -50,7 +50,7 @@ describe('AuthMiddleware', () => {
     const number = '12345678901';
     const phone = '12345678901';
 
-    jest.spyOn(authMiddleware['reflector'], 'get').mockReturnValueOnce(true);
+    jest.spyOn(authGuard['reflector'], 'get').mockReturnValueOnce(true);
     jest.spyOn(authService, 'register').mockImplementation(async () => 'token');
     jest.spyOn(authService, 'verifyToken').mockImplementation(() => ({
       username,
@@ -72,16 +72,25 @@ describe('AuthMiddleware', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    const next = jest.fn();
+    const context = {
+      switchToHttp: () => ({
+        getRequest: () => req,
+        getResponse: () => res,
+      }),
+      getHandler: () => {},
+    } as any;
+    jest.spyOn(context, 'switchToHttp').mockReturnValue({
+      getRequest: () => req,
+      getResponse: () => res,
+    });
 
-    authMiddleware.use(req as any, res as any, next);
+    authGuard.canActivate(context);
 
     expect(req).toHaveProperty('body.user', { username, id: 'id' });
-    expect(next).toHaveBeenCalledTimes(1);
   });
 
   it('没有令牌应该报 401 Unauthorized', async () => {
-    jest.spyOn(authMiddleware['reflector'], 'get').mockReturnValueOnce(true);
+    jest.spyOn(authGuard['reflector'], 'get').mockReturnValueOnce(true);
 
     const req = {
       headers: {},
@@ -91,9 +100,19 @@ describe('AuthMiddleware', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    const next = jest.fn();
+    const context = {
+      switchToHttp: () => ({
+        getRequest: () => req,
+        getResponse: () => res,
+      }),
+      getHandler: () => {},
+    } as any;
+    jest.spyOn(context, 'switchToHttp').mockReturnValue({
+      getRequest: () => req,
+      getResponse: () => res,
+    });
 
-    authMiddleware.use(req as any, res as any, next);
+    authGuard.canActivate(context);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({ message: '需要身份令牌' });
@@ -106,7 +125,7 @@ describe('AuthMiddleware', () => {
     const number = '12345678901';
     const phone = '12345678901';
 
-    jest.spyOn(authMiddleware['reflector'], 'get').mockReturnValueOnce(true);
+    jest.spyOn(authGuard['reflector'], 'get').mockReturnValueOnce(true);
     jest.spyOn(authService, 'register').mockImplementation(async () => 'token');
     jest.spyOn(authService, 'verifyToken').mockImplementation(() => {
       throw new Error('Invalid token');
@@ -127,9 +146,19 @@ describe('AuthMiddleware', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    const next = jest.fn();
+    const context = {
+      switchToHttp: () => ({
+        getRequest: () => req,
+        getResponse: () => res,
+      }),
+      getHandler: () => {},
+    } as any;
+    jest.spyOn(context, 'switchToHttp').mockReturnValue({
+      getRequest: () => req,
+      getResponse: () => res,
+    });
 
-    authMiddleware.use(req as any, res as any, next);
+    authGuard.canActivate(context);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({ message: '无效的身份令牌' });

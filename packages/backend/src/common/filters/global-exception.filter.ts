@@ -12,8 +12,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
-    const status = exception.getStatus();
-    const message = exception.message || 'Internal server error';
+    const status = exception?.getStatus?.() || 500;
+    const message = exception?.message || 'Internal server error';
     const ip = request.headers['x-real-ip'] || request.ip;
 
     const info = {
@@ -28,7 +28,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     };
 
     const optionalParams = [];
-    const withStack = !exception.getResponse()?.__without_stack__;
+    const withStack = !exception?.getResponse?.()?.__without_stack__;
     withStack && optionalParams.push(exception.stack);
 
     this.logger.error(JSON.stringify(info), ...optionalParams);

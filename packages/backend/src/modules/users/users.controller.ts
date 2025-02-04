@@ -5,15 +5,15 @@ import {
   responseError,
   responseSchema,
   responseSuccess,
-} from 'src/utils/http-response.utils';
+} from '../../utils/http-response.utils';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import {
   GuestGetUserDto,
   guestGetUserDtoProps,
 } from './dto/guest-get-user.dto';
-import { ApiNeedAuth, Auth } from 'src/common/decorators/auth.decorator';
-import { UserInfo } from 'src/common/middlewares/auth.middleware';
+import { ApiNeedAuth, Auth } from '../../common/decorators/auth.decorator';
+import { UserInfo } from '../../common/guards/auth.guard';
 import {
   OwnerGetUserDto,
   ownerGetUserDtoProps,
