@@ -97,7 +97,7 @@ export class AuthService {
    */
   async login(options: { username: string; password: string }): LoginResult {
     const { username, password } = options;
-    const user = await this.usersService.findByUsername(username);
+    const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       return -1;
     }
@@ -130,7 +130,7 @@ export class AuthService {
   }): Promise<string | number> {
     const { username, password, email, number, phone } = options;
 
-    const userExist = await this.usersService.findByUsername(username);
+    const userExist = await this.usersService.findOneByUsername(username);
     if (userExist) {
       return -1;
     }
@@ -160,7 +160,7 @@ export class AuthService {
    */
   async resetPassword(options: { username: string; newPassword: string }) {
     const { username, newPassword } = options;
-    const user = await this.usersService.findByUsername(username);
+    const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       return false;
     }

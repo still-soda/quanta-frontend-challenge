@@ -18,16 +18,16 @@ export class UsersService {
     return createdUser.save();
   }
 
-  findAll() {
-    return this.userModel.find().exec();
+  async findAll() {
+    return await this.userModel.find().exec();
   }
 
-  findOne(id: string) {
-    return this.userModel.findById(id);
+  async findOne(id: string) {
+    return await this.userModel.findById(id);
   }
 
-  findByUsername(username: string) {
-    return this.userModel.findOne({ username });
+  async findOneByUsername(username: string) {
+    return await this.userModel.findOne({ username });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {

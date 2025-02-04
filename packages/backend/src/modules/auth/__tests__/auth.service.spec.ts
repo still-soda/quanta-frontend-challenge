@@ -52,7 +52,7 @@ describe('AuthService', () => {
     });
     expect(token).not.toBeNull();
 
-    const user = await usersService.findByUsername(username);
+    const user = await usersService.findOneByUsername(username);
     expect(user).toBeDefined();
     expect(user.username).toBe(username);
     expect(user.email).toBe(email);

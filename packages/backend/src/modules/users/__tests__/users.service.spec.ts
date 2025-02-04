@@ -287,7 +287,7 @@ describe('UsersService', () => {
   });
 
   it('应该通过用户名查找用户', async () => {
-    const result = await service.findByUsername('test_user');
+    const result = await service.findOneByUsername('test_user');
     expect(result).toBeDefined();
     expect(result.username).toBe('test_user');
   });
