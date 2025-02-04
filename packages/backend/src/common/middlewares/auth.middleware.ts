@@ -5,6 +5,19 @@ import { Request, Response } from 'express';
 import { AuthService } from '../../modules/auth/auth.service';
 
 /**
+ * 用户信息接口，用于被 `@Auth()` 装饰器标记的路由.
+ *
+ * 当用户验证成功后，验证器中间件会将用户信息存储在请求体中。
+ *
+ * - `user` 用户信息
+ *    - `username` 用户名
+ *    - `id` 用户 ID
+ */
+export interface UserInfo {
+  user: { username: string; id: string };
+}
+
+/**
  * 验证用户身份令牌的中间件。
  *
  * **需要在路由上添加 `@RequireAuth()` 装饰器。**

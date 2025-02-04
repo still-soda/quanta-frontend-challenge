@@ -11,11 +11,7 @@ import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Auth } from '../../common/decorators/auth.decorator';
-
-interface UserInfo {
-  username: string;
-  id: string;
-}
+import { UserInfo } from 'src/common/middlewares/auth.middleware';
 
 @Controller('auth')
 export class AuthController {
@@ -145,7 +141,7 @@ export class AuthController {
   })
   @Auth()
   @Post('reset-password')
-  async resetPassword(@Body() body: ResetPasswordDto & { user: UserInfo }) {
+  async resetPassword(@Body() body: ResetPasswordDto & UserInfo) {
     let validatedBody: ResetPasswordDto;
     try {
       validatedBody = await validateData(ResetPasswordDto, body);

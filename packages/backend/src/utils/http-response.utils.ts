@@ -1,5 +1,4 @@
 import { HttpException } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
 
 export const HTTP_RESPONSE_TYPES = [
   { code: 200, message: 'ok' },
@@ -79,7 +78,7 @@ export function responseSuccess<T = any>(
  * @param options 日志选项
  * - `msg`: 消息
  * - `withoutStack`: 是否不记录堆栈信息，默认不记录
- * @returns 状态对应的异常，需要在控制器中抛出
+ * @returns 状态对应的异常，**需要在控制器中抛出**
  */
 export function responseError(
   type: HttpResponseMessage,
@@ -108,7 +107,7 @@ export function responseError(
  * - `properties`: 属性
  * @returns JSON Schema
  */
-export function responseSchema<T>(
+export function responseSchema(
   type: HttpResponseMessage,
   msg?: string,
   data?: { type?: any; schema?: any; example?: any; properties?: any },
