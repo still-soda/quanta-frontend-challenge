@@ -2,8 +2,8 @@ import { CanActivate, ExecutionContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { CachesService } from 'src/modules/caches/caches.service';
-import { responseError } from 'src/utils/http-response.utils';
+import { CachesService } from '../../modules/caches/caches.service';
+import { responseError } from '../../utils/http-response.utils';
 
 export class IpLimitGuard implements CanActivate {
   constructor(
@@ -24,8 +24,8 @@ export class IpLimitGuard implements CanActivate {
     }
 
     const ip =
-      request.headers['x-real-ip'] ||
-      request.headers['x-forwarded-for'] ||
+      request.headers?.['x-real-ip'] ||
+      request.headers?.['x-forwarded-for'] ||
       request.socket?.remoteAddress ||
       (request as any).ip;
 
