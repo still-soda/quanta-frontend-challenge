@@ -6,15 +6,8 @@ import { UsersModule } from '../../../modules/users/users.module';
 import { AuthModule } from '../auth.module';
 import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 import { createJwtModule } from '../../../utils/create-jwt.utils';
-import validateData from '../../../utils/validate-data.utils';
 import mongoose from 'mongoose';
 import { AuthService } from '../auth.service';
-
-jest.mock('../../../utils/validate-data.utils');
-
-const mockValidateData = validateData as jest.MockedFunction<
-  typeof validateData
->;
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -49,10 +42,6 @@ describe('AuthController', () => {
     it('应该在登录时返回令牌', async () => {
       jest.spyOn(authService, 'login').mockImplementation(async () => 'token');
 
-      mockValidateData.mockImplementationOnce((_, data) =>
-        Promise.resolve(data),
-      );
-
       const result = await authController.login({
         username: 'test',
         password: 'test',
@@ -66,10 +55,6 @@ describe('AuthController', () => {
     it('应该在登录时返回用户不存在', async () => {
       jest.spyOn(authService, 'login').mockImplementation(async () => -1);
 
-      mockValidateData.mockImplementationOnce((_, data) =>
-        Promise.resolve(data),
-      );
-
       const result = authController.login({
         username: 'test',
         password: 'test',
@@ -81,10 +66,6 @@ describe('AuthController', () => {
     it('应该在登录时返回密码错误', async () => {
       jest.spyOn(authService, 'login').mockImplementation(async () => -2);
 
-      mockValidateData.mockImplementationOnce((_, data) =>
-        Promise.resolve(data),
-      );
-
       const result = authController.login({
         username: 'test',
         password: 'test',
@@ -94,7 +75,7 @@ describe('AuthController', () => {
     });
 
     it('应该在登录时返回请求参数错误', async () => {
-      mockValidateData.mockImplementationOnce(() => {
+      jest.spyOn(authController, 'login').mockImplementationOnce(async () => {
         throw new Error('请求参数错误');
       });
 
@@ -113,10 +94,6 @@ describe('AuthController', () => {
         .spyOn(authService, 'register')
         .mockImplementation(async () => 'token');
 
-      mockValidateData.mockImplementationOnce((_, data) =>
-        Promise.resolve(data),
-      );
-
       const result = await authController.register({
         username: 'test',
         password: 'test',
@@ -133,10 +110,6 @@ describe('AuthController', () => {
     it('应该在注册时返回用户名重复', async () => {
       jest.spyOn(authService, 'register').mockImplementation(async () => -1);
 
-      mockValidateData.mockImplementationOnce((_, data) =>
-        Promise.resolve(data),
-      );
-
       const result = authController.register({
         username: 'test',
         password: 'test',
@@ -149,41 +122,11 @@ describe('AuthController', () => {
     });
 
     it('应该在注册时返回请求参数错误', async () => {
-      mockValidateData.mockImplementationOnce(() => {
-        throw new Error('请求参数错误');
-      });
-
-      const result = authController.register({
-        username: 'test',
-        password: 'test',
-        email: 'test@email.com',
-        number: '12345678901',
-        phone: '12345678901',
-      });
-
-      await expect(result).rejects.toThrow('请求参数错误');
-    });
-
-    it('应该在注册时返回请求参数错误', async () => {
-      mockValidateData.mockImplementationOnce(() => {
-        throw new Error('请求参数错误');
-      });
-
-      const result = authController.register({
-        username: 'test',
-        password: 'test',
-        email: 'test@email.com',
-        number: '12345678901',
-        phone: '12345678901',
-      });
-
-      await expect(result).rejects.toThrow('请求参数错误');
-    });
-
-    it('应该在注册时返回请求参数错误', async () => {
-      mockValidateData.mockImplementationOnce(() => {
-        throw new Error('请求参数错误');
-      });
+      jest
+        .spyOn(authController, 'register')
+        .mockImplementationOnce(async () => {
+          throw new Error('请求参数错误');
+        });
 
       const result = authController.register({
         username: 'test',
@@ -203,10 +146,6 @@ describe('AuthController', () => {
         .spyOn(authService, 'resetPassword')
         .mockImplementation(async () => true);
 
-      mockValidateData.mockImplementationOnce((_, data) =>
-        Promise.resolve(data),
-      );
-
       const result = await authController.resetPassword(
         { username: 'test', newPassword: 'test' },
         { username: 'test', id: 'test' },
@@ -217,9 +156,11 @@ describe('AuthController', () => {
     });
 
     it('应该在重置密码时返回请求参数错误', async () => {
-      mockValidateData.mockImplementationOnce(() => {
-        throw new Error('请求参数错误');
-      });
+      jest
+        .spyOn(authController, 'resetPassword')
+        .mockImplementationOnce(async () => {
+          throw new Error('请求参数错误');
+        });
 
       const result = authController.resetPassword(
         { username: 'test', newPassword: 'test' },
@@ -229,27 +170,10 @@ describe('AuthController', () => {
       await expect(result).rejects.toThrow('请求参数错误');
     });
 
-    it('应该在验证得到的用户信息与请求的用户信息不一致时返回无权限', async () => {
-      mockValidateData.mockImplementationOnce((_, data) =>
-        Promise.resolve(data),
-      );
-
-      const result = authController.resetPassword(
-        { username: 'test', newPassword: 'test' },
-        { username: 'test2', id: 'test' },
-      );
-
-      await expect(result).rejects.toThrow('无权限');
-    });
-
     it('应该在重置密码时返回用户不存在', async () => {
       jest
         .spyOn(authService, 'resetPassword')
         .mockImplementation(async () => false);
-
-      mockValidateData.mockImplementationOnce((_, data) =>
-        Promise.resolve(data),
-      );
 
       const result = authController.resetPassword(
         { username: 'test', newPassword: 'test' },

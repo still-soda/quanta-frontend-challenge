@@ -50,20 +50,16 @@ export class AuthController {
   @HttpCode(200)
   @Post('login')
   async login(@Body() body: LoginDto) {
-    try {
-      body = await validateData(LoginDto, body);
-    } catch (error) {
-      throw responseError('bad request', { msg: error.message });
-    }
-
     const token = await this.authService.login(body);
 
     if (typeof token === 'string') {
       return responseSuccess('ok', { token }, '登录成功');
     }
+
     if (token === -1) {
       throw responseError('not found', { msg: '用户不存在' });
     }
+
     throw responseError('unauthorized', { msg: '密码错误' });
   }
 
@@ -97,17 +93,12 @@ export class AuthController {
   @HttpCode(200)
   @Post('register')
   async register(@Body() body: RegisterDto) {
-    try {
-      body = await validateData(RegisterDto, body);
-    } catch (error) {
-      throw responseError('bad request', { msg: error.message });
-    }
-
     const token = await this.authService.register(body);
 
     if (typeof token === 'string') {
       return responseSuccess('ok', { token }, '注册成功');
     }
+
     throw responseError('conflict', { msg: '用户名重复' });
   }
 
@@ -148,22 +139,12 @@ export class AuthController {
     @Body() body: ResetPasswordDto,
     @CurrentUser() user: UserData,
   ) {
-    let validatedBody: ResetPasswordDto;
-    try {
-      validatedBody = await validateData(ResetPasswordDto, body);
-    } catch (error) {
-      throw responseError('bad request', { msg: error.message });
-    }
-
-    if (user.username !== validatedBody.username) {
-      throw responseError('forbidden', { msg: '无权限' });
-    }
-
-    const success = await this.authService.resetPassword(validatedBody);
+    const success = await this.authService.resetPassword(body, user.username);
 
     if (success) {
       return responseSuccess('ok', { success }, '重置成功');
     }
+
     throw responseError('not found', { msg: '用户不存在' });
   }
 }

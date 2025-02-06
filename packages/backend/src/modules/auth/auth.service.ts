@@ -4,6 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import { UsersDocument } from 'src/schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { responseError } from '../../utils/http-response.utils';
+import validateData from '../../utils/validate-data.utils';
 
 type LoginResult = Promise<string | number>;
 
@@ -88,15 +93,23 @@ export class AuthService {
 
   /**
    * 用户登录。
-   * @param options
+   * @param dto 登录信息
    * - `username`: 用户名
    * - `password`: 用户密码
    * @returns 登录成功返回Token，否则：
    * - 用户不存在返回 `-1`
    * - 密码错误返回 `-2`
+   * @throws
+   * - `bad request` 请求参数错误
    */
-  async login(options: { username: string; password: string }): LoginResult {
-    const { username, password } = options;
+  async login(dto: LoginDto): LoginResult {
+    try {
+      dto = await validateData(LoginDto, dto);
+    } catch (error) {
+      throw responseError('bad request', { msg: error.message });
+    }
+
+    const { username, password } = dto;
     const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       return -1;
@@ -111,7 +124,7 @@ export class AuthService {
 
   /**
    * 用户注册，用户名不可重复。
-   * @param options
+   * @param dto 注册信息
    * - `username`: 用户名
    * - `password`: 用户密码
    * - `email`: 用户邮箱
@@ -120,15 +133,17 @@ export class AuthService {
    * @returns
    * - 注册成功返回 Token
    * - 用户名重复返回 `-1`
+   * @throws
+   * - `bad request` 请求参数错误
    **/
-  async register(options: {
-    username: string;
-    password: string;
-    email: string;
-    number: string;
-    phone: string;
-  }): Promise<string | number> {
-    const { username, password, email, number, phone } = options;
+  async register(dto: RegisterDto): Promise<string | number> {
+    try {
+      dto = await validateData(RegisterDto, dto);
+    } catch (error) {
+      throw responseError('bad request', { msg: error.message });
+    }
+
+    const { username, password, email, number, phone } = dto;
 
     const userExist = await this.usersService.findOneByUsername(username);
     if (userExist) {
@@ -151,15 +166,28 @@ export class AuthService {
 
   /**
    * 忘记密码，重置密码。
-   * @param options
+   * @param dto 重置密码信息
    * - `username`: 用户名
    * - `newPassword`: 新密码
    * @returns
    * - 重置成功返回 `true`
    * - 重置失败返回 `false`，原因是用户名不存在
+   * @throws
+   * - `bad request` 请求参数错误
+   * - `forbidden` 无权限
    */
-  async resetPassword(options: { username: string; newPassword: string }) {
-    const { username, newPassword } = options;
+  async resetPassword(dto: ResetPasswordDto, receivedName: string) {
+    try {
+      dto = await validateData(ResetPasswordDto, dto);
+    } catch (error) {
+      throw responseError('bad request', { msg: error.message });
+    }
+
+    if (receivedName !== dto.username) {
+      throw responseError('forbidden', { msg: '无权限' });
+    }
+
+    const { username, newPassword } = dto;
     const user = await this.usersService.findOneByUsername(username);
     if (!user) {
       return false;

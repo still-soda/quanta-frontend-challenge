@@ -1,10 +1,20 @@
-import { CanActivate, ExecutionContext } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { CachesService } from '../../modules/caches/caches.service';
 import { responseError } from '../../utils/http-response.utils';
 
+/**
+ * IP 限制守卫，用于限制同一 IP 的请求频率。
+ *
+ * 通过在控制器方法上添加 `@IpLimit()` 装饰器来启用 IP 限制。
+ *
+ * @throws
+ * - `400` 无法获取 IP 地址
+ * - `429` 请求过于频繁
+ */
+@Injectable()
 export class IpLimitGuard implements CanActivate {
   constructor(
     private readonly configService: ConfigService,

@@ -38,10 +38,10 @@ describe('AuthService', () => {
 
   it('应该正确注册用户', async () => {
     const username = 'test1';
-    const password = 'test';
+    const password = '___test';
     const email = 'test@test.com';
     const number = '12345678901';
-    const phone = '12345678901';
+    const phone = '13411100000';
 
     const token = await authService.register({
       username,
@@ -60,10 +60,10 @@ describe('AuthService', () => {
 
   it('用户名重复的注册返回-1', async () => {
     const username = 'test8';
-    const password = 'test';
+    const password = '___test';
     const email = 'test@test.com';
     const number = '12345678901';
-    const phone = '12345678901';
+    const phone = '13411100000';
 
     await authService.register({
       username,
@@ -86,10 +86,10 @@ describe('AuthService', () => {
 
   it('应该正确登录用户', async () => {
     const username = 'test2';
-    const password = 'test';
+    const password = '___test';
     const email = 'test@test.com';
     const number = '12345678901';
-    const phone = '12345678901';
+    const phone = '13411100000';
 
     const signupToken = await authService.register({
       username,
@@ -106,10 +106,10 @@ describe('AuthService', () => {
 
   it('应该正确获取用户信息', async () => {
     const username = 'test5';
-    const password = 'test';
+    const password = '___test';
     const email = 'test@test.com';
     const number = '12345678901';
-    const phone = '12345678901';
+    const phone = '13411100000';
 
     const token = await authService.register({
       username,
@@ -128,7 +128,7 @@ describe('AuthService', () => {
 
   it('用户不存在的登录返回-1', async () => {
     const username = 'test7';
-    const password = 'test';
+    const password = '___test';
 
     const result = await authService.login({ username, password });
     expect(result).toBe(-1);
@@ -136,10 +136,10 @@ describe('AuthService', () => {
 
   it('应该正确修改密码', async () => {
     const username = 'test4';
-    const password = 'test';
+    const password = '___test';
     const email = 'test@test.com';
     const number = '12345678901';
-    const phone = '12345678901';
+    const phone = '13411100000';
 
     await authService.register({
       username,
@@ -149,11 +149,11 @@ describe('AuthService', () => {
       phone,
     });
 
-    const newPassword = 'test2';
-    const ok = await authService.resetPassword({
+    const newPassword = '___test2';
+    const ok = await authService.resetPassword(
+      { username, newPassword },
       username,
-      newPassword,
-    });
+    );
     expect(ok).toBeTruthy();
 
     const oldToken = await authService.login({ username, password });

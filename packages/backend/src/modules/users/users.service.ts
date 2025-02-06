@@ -7,7 +7,7 @@ import { Users, UsersDocument } from '../../schemas/users.schema';
 import validateData from '../../utils/validate-data.utils';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { AssetsService, MulterFile } from '../assets/assets.service';
-import { responseError } from 'src/utils/http-response.utils';
+import { responseError } from '../../utils/http-response.utils';
 import { MimeType } from '../assets/mime-type.type';
 
 @Injectable()
@@ -36,14 +36,22 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    updateUserDto = await validateData(UpdateUserDto, updateUserDto);
+    try {
+      updateUserDto = await validateData(UpdateUserDto, updateUserDto);
+    } catch (error) {
+      throw responseError('bad request', { msg: error.message });
+    }
     return this.userModel.findByIdAndUpdate({ _id: id }, updateUserDto, {
       new: true,
     });
   }
 
   async userUpdate(id: string, userUpdateDto: UserUpdateDto) {
-    userUpdateDto = await validateData(UserUpdateDto, userUpdateDto);
+    try {
+      userUpdateDto = await validateData(UserUpdateDto, userUpdateDto);
+    } catch (error) {
+      throw responseError('bad request', { msg: error.message });
+    }
     return this.userModel.findByIdAndUpdate({ _id: id }, userUpdateDto, {
       new: true,
     });

@@ -44,8 +44,8 @@ import { IpLimitGuard } from './common/guards/ip-limit.guard';
   ],
   controllers: [],
   providers: [
-    { provide: 'AUTH_GUARD', useClass: AuthGuard },
-    { provide: 'IP_LIMIT_GUARD', useClass: IpLimitGuard },
+    { provide: 'APP_GUARD', useClass: AuthGuard },
+    { provide: 'APP_GUARD', useClass: IpLimitGuard },
   ],
 })
 export class AppModule {}
