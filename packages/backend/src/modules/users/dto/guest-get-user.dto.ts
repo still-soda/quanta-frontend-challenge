@@ -4,6 +4,7 @@ import { Expose } from 'class-transformer';
 export class GuestGetUserDto {
   @ApiProperty({
     example: 'username',
+    required: true,
     description: '用户名',
   })
   @Expose()
@@ -11,6 +12,7 @@ export class GuestGetUserDto {
 
   @ApiProperty({
     example: 'number',
+    required: true,
     description: '学号',
   })
   @Expose()
@@ -19,6 +21,7 @@ export class GuestGetUserDto {
   @ApiProperty({
     example: 0,
     default: 0,
+    required: true,
     description: '挑战总分',
   })
   @Expose()
@@ -27,22 +30,25 @@ export class GuestGetUserDto {
   @ApiProperty({
     example: 0,
     default: 0,
+    required: true,
     description: '总提交次数',
   })
   @Expose()
   totalSubmissions: number;
 
   @ApiProperty({
-    example: 'https://www.gravatar.com/avatar/',
+    example: 'xxxxxxxxxxxx',
     default: '',
-    description: '头像URL',
+    required: true,
+    description: '头像文件 ID',
   })
   @Expose()
-  avatarUrl: string;
+  avatarId: string;
 
   @ApiProperty({
     example: 'signature',
     default: '',
+    required: true,
     description: '个性签名',
   })
   @Expose()
@@ -53,30 +59,44 @@ export class GuestGetUserDto {
  * 用户信息 Schema，用于 Swagger 文档
  */
 export const guestGetUserDtoProps = {
-  username: { type: 'string', example: 'username', description: '用户名' },
-  number: { type: 'string', example: 'number', description: '学号' },
+  username: {
+    type: 'string',
+    required: true,
+    example: 'username',
+    description: '用户名',
+  },
+  number: {
+    type: 'string',
+    required: true,
+    example: 'number',
+    description: '学号',
+  },
   totalScore: {
     type: 'number',
     example: 0,
     default: 0,
+    required: true,
     description: '挑战总分',
   },
   totalSubmissions: {
     type: 'number',
     example: 0,
     default: 0,
+    required: true,
     description: '总提交次数',
   },
-  avatarUrl: {
+  avatarId: {
     type: 'string',
     example: 'https://www.gravatar.com/avatar/',
     default: '',
+    required: true,
     description: '头像URL',
   },
   signature: {
     type: 'string',
     example: 'signature',
     default: '',
+    required: true,
     description: '个性签名',
   },
 };

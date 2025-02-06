@@ -5,11 +5,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Users, UsersDocument } from '../../schemas/users.schema';
 import validateData from '../../utils/validate-data.utils';
+import { UserUpdateDto } from './dto/user-update.dto';
+import { AssetsService, MulterFile } from '../assets/assets.service';
+import { responseError } from 'src/utils/http-response.utils';
+import { MimeType } from '../assets/mime-type.type';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(Users.name) private readonly userModel: Model<UsersDocument>,
+    private readonly assetsService: AssetsService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -35,6 +40,37 @@ export class UsersService {
     return this.userModel.findByIdAndUpdate({ _id: id }, updateUserDto, {
       new: true,
     });
+  }
+
+  async userUpdate(id: string, userUpdateDto: UserUpdateDto) {
+    userUpdateDto = await validateData(UserUpdateDto, userUpdateDto);
+    return this.userModel.findByIdAndUpdate({ _id: id }, userUpdateDto, {
+      new: true,
+    });
+  }
+
+  /**
+   * 上传并更新头像。
+   * @param id 用户ID
+   * @param file 头像文件
+   * @returns 操作是否成功。
+   */
+  async updateAvatar(id: string, file: MulterFile) {
+    if (!file.mimetype.startsWith('image/')) {
+      throw responseError('bad request', { msg: '只能上传图片文件' });
+    }
+
+    const { ok, id: metadataId } = await this.assetsService.saveFileAsStatic({
+      file: file.buffer,
+      name: file.originalname,
+      mimeType: file.mimetype as MimeType,
+    });
+    if (!ok) {
+      return false;
+    }
+
+    await this.update(id, { avatarId: metadataId });
+    return true;
   }
 
   remove(id: string): Promise<any> {

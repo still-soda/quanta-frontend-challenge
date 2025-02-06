@@ -7,6 +7,15 @@ import { Assets, AssetsDocument } from '../../schemas/assets.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { MimeType } from './mime-type.type';
 
+export interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  buffer: Buffer;
+  size: number;
+}
+
 @Injectable()
 export class AssetsService {
   private readonly FILE_ROOT: string;

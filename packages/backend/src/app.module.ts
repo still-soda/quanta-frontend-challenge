@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthGuard } from './common/guards/auth.guard';
 
 @Module({
   imports: [
@@ -39,6 +40,6 @@ import { JwtModule } from '@nestjs/jwt';
     TasksModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [{ provide: 'APP_GUARD', useClass: AuthGuard }],
 })
 export class AppModule {}

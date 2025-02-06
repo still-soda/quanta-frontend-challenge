@@ -15,12 +15,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const status = exception?.getStatus?.() || 500;
     const message = exception?.message || 'Internal server error';
     const ip = request.headers['x-real-ip'] || request.ip;
+    const token = request.headers['authorization'];
 
     const info = {
       status: status,
       method: request.method,
       url: request.url,
       ip: ip,
+      token: token,
       body: request.body,
       query: request.query,
       params: request.params,

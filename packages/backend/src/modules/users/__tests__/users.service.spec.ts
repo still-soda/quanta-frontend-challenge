@@ -5,6 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from '../users.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
+import { AssetsModule } from '../../../modules/assets/assets.module';
+import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -17,7 +19,12 @@ describe('UsersService', () => {
     const uri = mongodb.getUri();
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [UsersModule, MongooseModule.forRoot(uri)],
+      imports: [
+        UsersModule,
+        AssetsModule,
+        createEnvConfModule(),
+        MongooseModule.forRoot(uri),
+      ],
       providers: [UsersService, UsersModule],
     }).compile();
 
@@ -68,12 +75,12 @@ describe('UsersService', () => {
     const result = await service.update(userId, {
       username: 'test_user_updated',
       email: 'test_user_updated@email.com',
-      avatarUrl: 'https://test.com/avatar.jpg',
+      avatarId: 'https://test.com/avatar.jpg',
     });
     expect(result).toBeDefined();
     expect(result.username).toBe('test_user_updated');
     expect(result.email).toBe('test_user_updated@email.com');
-    expect(result.avatarUrl).toBe('https://test.com/avatar.jpg');
+    expect(result.avatarId).toBe('https://test.com/avatar.jpg');
   });
 
   it('应该增加用户积分', async () => {

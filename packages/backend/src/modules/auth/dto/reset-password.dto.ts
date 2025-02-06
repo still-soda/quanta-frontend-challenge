@@ -5,6 +5,7 @@ import { IsString, MinLength } from 'class-validator';
 export class ResetPasswordDto {
   @ApiProperty({
     description: '用户名',
+    required: true,
     example: 'admin',
   })
   @IsString()
@@ -13,6 +14,7 @@ export class ResetPasswordDto {
 
   @ApiProperty({
     description: '新密码',
+    required: true,
     example: '123456',
   })
   @IsString()

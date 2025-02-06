@@ -9,7 +9,7 @@ import mongoose from 'mongoose';
 import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 import { createJwtModule } from '../../../utils/create-jwt.utils';
 
-describe('AuthMiddleware', () => {
+describe('AuthGuard', () => {
   let authGuard: AuthGuard;
   let authService: AuthService;
   let mongodb: MongoMemoryServer;
@@ -86,7 +86,7 @@ describe('AuthMiddleware', () => {
 
     authGuard.canActivate(context);
 
-    expect(req).toHaveProperty('body.user', { username, id: 'id' });
+    expect(req).toHaveProperty('user', { username, id: 'id' });
   });
 
   it('没有令牌应该报 401 Unauthorized', async () => {
@@ -112,10 +112,7 @@ describe('AuthMiddleware', () => {
       getResponse: () => res,
     });
 
-    authGuard.canActivate(context);
-
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: '需要身份令牌' });
+    expect(() => authGuard.canActivate(context)).toThrow('需要身份令牌');
   });
 
   it('验证失败应该报 401 Unauthorized', async () => {
@@ -158,9 +155,6 @@ describe('AuthMiddleware', () => {
       getResponse: () => res,
     });
 
-    authGuard.canActivate(context);
-
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: '无效的身份令牌' });
+    expect(() => authGuard.canActivate(context)).toThrow('无效的身份令牌');
   });
 });

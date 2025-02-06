@@ -207,11 +207,10 @@ describe('AuthController', () => {
         Promise.resolve(data),
       );
 
-      const result = await authController.resetPassword({
-        username: 'test',
-        newPassword: 'test',
-        user: { username: 'test', id: 'test' },
-      });
+      const result = await authController.resetPassword(
+        { username: 'test', newPassword: 'test' },
+        { username: 'test', id: 'test' },
+      );
 
       expect(result.code).toBe(200);
       expect(result.message).toBe('重置成功');
@@ -222,11 +221,10 @@ describe('AuthController', () => {
         throw new Error('请求参数错误');
       });
 
-      const result = authController.resetPassword({
-        username: 'test',
-        newPassword: 'test',
-        user: { username: 'test', id: 'test' },
-      });
+      const result = authController.resetPassword(
+        { username: 'test', newPassword: 'test' },
+        { username: 'test', id: 'test' },
+      );
 
       await expect(result).rejects.toThrow('请求参数错误');
     });
@@ -236,11 +234,10 @@ describe('AuthController', () => {
         Promise.resolve(data),
       );
 
-      const result = authController.resetPassword({
-        username: 'test',
-        newPassword: 'test',
-        user: { username: 'test2', id: 'test' },
-      });
+      const result = authController.resetPassword(
+        { username: 'test', newPassword: 'test' },
+        { username: 'test2', id: 'test' },
+      );
 
       await expect(result).rejects.toThrow('无权限');
     });
@@ -254,11 +251,10 @@ describe('AuthController', () => {
         Promise.resolve(data),
       );
 
-      const result = authController.resetPassword({
-        username: 'test',
-        newPassword: 'test',
-        user: { username: 'test', id: 'test' },
-      });
+      const result = authController.resetPassword(
+        { username: 'test', newPassword: 'test' },
+        { username: 'test', id: 'test' },
+      );
 
       await expect(result).rejects.toThrow('用户不存在');
     });

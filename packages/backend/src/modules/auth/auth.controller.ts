@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import validateData from '../../utils/validate-data.utils';
 import { LoginDto } from './dto/login.dto';
@@ -11,7 +11,7 @@ import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Auth } from '../../common/decorators/auth.decorator';
-import { UserInfo } from '../../common/guards/auth.guard';
+import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -47,6 +47,7 @@ export class AuthController {
     description: '密码错误',
     schema: responseSchema('unauthorized', '密码错误'),
   })
+  @HttpCode(200)
   @Post('login')
   async login(@Body() body: LoginDto) {
     try {
@@ -93,6 +94,7 @@ export class AuthController {
     description: '用户名重复',
     schema: responseSchema('conflict', '用户名重复'),
   })
+  @HttpCode(200)
   @Post('register')
   async register(@Body() body: RegisterDto) {
     try {
@@ -140,8 +142,12 @@ export class AuthController {
     schema: responseSchema('forbidden', '无权限'),
   })
   @Auth()
+  @HttpCode(200)
   @Post('reset-password')
-  async resetPassword(@Body() body: ResetPasswordDto & UserInfo) {
+  async resetPassword(
+    @Body() body: ResetPasswordDto,
+    @CurrentUser() user: UserData,
+  ) {
     let validatedBody: ResetPasswordDto;
     try {
       validatedBody = await validateData(ResetPasswordDto, body);
@@ -149,7 +155,7 @@ export class AuthController {
       throw responseError('bad request', { msg: error.message });
     }
 
-    if (body.user.username !== validatedBody.username) {
+    if (user.username !== validatedBody.username) {
       throw responseError('forbidden', { msg: '无权限' });
     }
 

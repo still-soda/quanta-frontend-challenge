@@ -66,12 +66,12 @@ export class Users extends Document {
   totalSubmissions: number;
 
   @ApiProperty({
-    example: 'https://www.gravatar.com/avatar/',
+    example: 'xxxxxxxxxxxxxxxxx',
     default: '',
-    description: '头像URL',
+    description: '头像文件 ID',
   })
   @Prop({ default: '' })
-  avatarUrl: string;
+  avatarId: string;
 
   @ApiProperty({
     example: 'signature',
