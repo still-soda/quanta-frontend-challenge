@@ -40,6 +40,7 @@ import { memoryStorage } from 'multer';
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 import { MulterFile } from '../assets/assets.service';
+import { IpLimit } from 'src/common/decorators/ip-limit.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -188,7 +189,10 @@ export class UsersController {
    * 上传头像文件并保存，图片文件最大为 5MB。
    * @param file 头像文件
    */
-  @ApiOperation({ summary: '上传头像并保存' })
+  @ApiOperation({
+    summary: '上传头像并保存',
+    description: '上传成功后会自动设置到当前用户，图片文件最大为 5MB',
+  })
   @ApiNeedAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -214,6 +218,7 @@ export class UsersController {
       },
     }),
   )
+  @IpLimit()
   @Auth()
   @HttpCode(200)
   @Post('upload-avatar')
@@ -227,6 +232,7 @@ export class UsersController {
       if (ok) {
         return responseSuccess('ok', {}, '上传并保存成功');
       }
+
       throw responseError('internal server error', {
         msg: '保存失败',
         withoutStack: true,

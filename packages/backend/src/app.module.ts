@@ -13,6 +13,8 @@ import { BullModule } from '@nestjs/bull';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from './common/guards/auth.guard';
+import { CachesModule } from './modules/caches/caches.module';
+import { IpLimitGuard } from './common/guards/ip-limit.guard';
 
 @Module({
   imports: [
@@ -38,8 +40,12 @@ import { AuthGuard } from './common/guards/auth.guard';
     AssetsModule,
     AuthModule,
     TasksModule,
+    CachesModule,
   ],
   controllers: [],
-  providers: [{ provide: 'APP_GUARD', useClass: AuthGuard }],
+  providers: [
+    { provide: 'AUTH_GUARD', useClass: AuthGuard },
+    { provide: 'IP_LIMIT_GUARD', useClass: IpLimitGuard },
+  ],
 })
 export class AppModule {}
