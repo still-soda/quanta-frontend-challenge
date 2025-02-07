@@ -16,6 +16,7 @@ import { AuthGuard } from './common/guards/auth.guard';
 import { CachesModule } from './modules/caches/caches.module';
 import { IpLimitGuard } from './common/guards/ip-limit.guard';
 import { CacheInterceptor } from './common/interceptors/cache.interceptor';
+import { CommitHeatmapModule } from './modules/commit-heatmap/commit-heatmap.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CacheInterceptor } from './common/interceptors/cache.interceptor';
     AuthModule,
     TasksModule,
     CachesModule,
+    CommitHeatmapModule,
   ],
   controllers: [],
   providers: [
