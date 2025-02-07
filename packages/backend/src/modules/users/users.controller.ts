@@ -40,7 +40,6 @@ import {
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersService } from './users.service';
-import { UseCache } from '../../common/decorators/cache.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -80,13 +79,11 @@ export class UsersController {
     schema: responseSchema('bad request', '请求参数错误'),
   })
   @HttpCode(200)
-  @UseCache()
   @Get('/find-one')
   async findOne(
     @Query('id') id?: string,
     @Query('username') username?: string,
   ) {
-    console.log('Find one user');
     if (id) {
       const one = await this.usersService.findOne(id);
 

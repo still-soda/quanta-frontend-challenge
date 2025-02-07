@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
-import { UsersDocument } from 'src/schemas/users.schema';
+import { Role, UsersDocument } from 'src/schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -75,19 +75,24 @@ export class AuthService {
    * @returns Token
    */
   private generateToken(user: UsersDocument): string {
-    const { id, username } = user;
-    return this.jwtService.sign({ id, username });
+    const { id, username, role } = user;
+    return this.jwtService.sign({ id, username, role });
   }
 
   /**
    * 验证 Token。
    * @param token Token
-   * @returns 用户 ID
+   * @returns Token 解析后的信息
+   * - `id`: 用户 ID
+   * - `username`: 用户名
+   * - `role`: 用户角色
+   * @throws Token 无效时抛出异常
    */
   verifyToken(token: string) {
     return this.jwtService.verify<{
       id: string;
       username: string;
+      role: Role;
     }>(token);
   }
 

@@ -8,6 +8,7 @@ import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 import { createJwtModule } from '../../../utils/create-jwt.utils';
 import mongoose from 'mongoose';
 import { AuthService } from '../auth.service';
+import { ROLE } from '../../../common/decorators/auth.decorator';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -148,7 +149,7 @@ describe('AuthController', () => {
 
       const result = await authController.resetPassword(
         { username: 'test', newPassword: 'test' },
-        { username: 'test', id: 'test' },
+        { username: 'test', id: 'test', role: ROLE.USER },
       );
 
       expect(result.code).toBe(200);
@@ -164,7 +165,7 @@ describe('AuthController', () => {
 
       const result = authController.resetPassword(
         { username: 'test', newPassword: 'test' },
-        { username: 'test', id: 'test' },
+        { username: 'test', id: 'test', role: ROLE.USER },
       );
 
       await expect(result).rejects.toThrow('请求参数错误');
@@ -177,7 +178,7 @@ describe('AuthController', () => {
 
       const result = authController.resetPassword(
         { username: 'test', newPassword: 'test' },
-        { username: 'test', id: 'test' },
+        { username: 'test', id: 'test', role: ROLE.USER },
       );
 
       await expect(result).rejects.toThrow('用户不存在');

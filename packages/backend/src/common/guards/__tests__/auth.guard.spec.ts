@@ -8,6 +8,7 @@ import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import mongoose from 'mongoose';
 import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
 import { createJwtModule } from '../../../utils/create-jwt.utils';
+import { ROLE } from '../../../common/decorators/auth.decorator';
 
 describe('AuthGuard', () => {
   let authGuard: AuthGuard;
@@ -50,11 +51,12 @@ describe('AuthGuard', () => {
     const number = '12345678901';
     const phone = '12345678901';
 
-    jest.spyOn(authGuard['reflector'], 'get').mockReturnValueOnce(true);
+    jest.spyOn(authGuard['reflector'], 'get').mockReturnValueOnce(ROLE.USER);
     jest.spyOn(authService, 'register').mockImplementation(async () => 'token');
     jest.spyOn(authService, 'verifyToken').mockImplementation(() => ({
       username,
       id: 'id',
+      role: ROLE.USER,
     }));
 
     const token = await authService.register({
@@ -86,7 +88,7 @@ describe('AuthGuard', () => {
 
     authGuard.canActivate(context);
 
-    expect(req).toHaveProperty('user', { username, id: 'id' });
+    expect(req).toHaveProperty('user', { username, id: 'id', role: ROLE.USER });
   });
 
   it('没有令牌应该报 401 Unauthorized', async () => {
@@ -156,5 +158,51 @@ describe('AuthGuard', () => {
     });
 
     expect(() => authGuard.canActivate(context)).toThrow('无效的身份令牌');
+  });
+
+  it('权限不足应该报 403 Forbidden', async () => {
+    const username = 'test3';
+    const password = 'test';
+    const email = 'test@test.com';
+    const number = '12345678901';
+    const phone = '12345678901';
+
+    jest.spyOn(authGuard['reflector'], 'get').mockReturnValueOnce(ROLE.ADMIN);
+    jest.spyOn(authService, 'register').mockImplementation(async () => 'token');
+    jest.spyOn(authService, 'verifyToken').mockImplementation(() => ({
+      username,
+      id: 'id',
+      role: ROLE.USER,
+    }));
+
+    const token = await authService.register({
+      username,
+      password,
+      email,
+      number,
+      phone,
+    });
+    const req = {
+      headers: { authorization: token },
+      route: {},
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    const context = {
+      switchToHttp: () => ({
+        getRequest: () => req,
+        getResponse: () => res,
+      }),
+      getHandler: () => {},
+    } as any;
+
+    jest.spyOn(context, 'switchToHttp').mockReturnValue({
+      getRequest: () => req,
+      getResponse: () => res,
+    });
+
+    expect(() => authGuard.canActivate(context)).toThrow('权限不足');
   });
 });

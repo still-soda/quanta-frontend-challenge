@@ -39,8 +39,8 @@ export class Notifications extends Document {
     example: '2021-01-01T00:00:00.000Z',
     description: '创建时间',
   })
-  @Prop()
-  createdAt: Date;
+  @Prop({ default: Date.now })
+  createdAt?: Date;
 }
 
 export const NotificationsSchema = SchemaFactory.createForClass(Notifications);

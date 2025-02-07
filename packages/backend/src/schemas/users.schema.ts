@@ -4,6 +4,15 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 export type UsersDocument = Users & Document;
 
+/**
+ * 用户角色
+ *
+ * - 0: 用户
+ * - 1: 管理员
+ * - 2: 超级管理员
+ */
+export type Role = 0 | 1 | 2;
+
 @Schema()
 @ApiSchema({ description: '用户' })
 export class Users extends Document {
@@ -123,6 +132,13 @@ export class Users extends Document {
   })
   @Prop()
   updatedAt: Date;
+
+  @ApiProperty({
+    example: 0,
+    description: '用户身份，0-普通用户，1-管理员，2-超级管理员',
+  })
+  @Prop({ default: 0 })
+  identity?: Role;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

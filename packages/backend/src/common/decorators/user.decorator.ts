@@ -1,4 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { ROLE } from './auth.decorator';
 
 /**
  * 用户信息接口，用于被 `@Auth()` 装饰器标记的路由。
@@ -7,10 +8,12 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  *
  * - `username` 用户名
  * - `id` 用户 ID
+ * - `role` 用户角色
  */
 export interface UserData {
   username: string;
   id: string;
+  role: ROLE;
 }
 
 /**
