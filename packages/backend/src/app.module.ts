@@ -15,6 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from './common/guards/auth.guard';
 import { CachesModule } from './modules/caches/caches.module';
 import { IpLimitGuard } from './common/guards/ip-limit.guard';
+import { CacheInterceptor } from './common/interceptors/cache.interceptor';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { IpLimitGuard } from './common/guards/ip-limit.guard';
   providers: [
     { provide: 'APP_GUARD', useClass: AuthGuard },
     { provide: 'APP_GUARD', useClass: IpLimitGuard },
+    { provide: 'APP_INTERCEPTOR', useClass: CacheInterceptor },
   ],
 })
 export class AppModule {}

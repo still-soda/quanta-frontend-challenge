@@ -1,21 +1,16 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Query,
-  HttpStatus,
   HttpCode,
-  UseInterceptors,
-  UploadedFile,
   HttpException,
+  HttpStatus,
+  Post,
+  Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import {
-  responseError,
-  responseSchema,
-  responseSuccess,
-} from '../../utils/http-response.utils';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
@@ -23,24 +18,29 @@ import {
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
+import { memoryStorage } from 'multer';
+import { ApiNeedAuth, Auth } from '../../common/decorators/auth.decorator';
+import { IpLimit } from '../../common/decorators/ip-limit.decorator';
+import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
+import { filterData } from '../../utils/filter-data.utils';
+import {
+  responseError,
+  responseSchema,
+  responseSuccess,
+} from '../../utils/http-response.utils';
+import { MulterFile } from '../assets/assets.service';
 import {
   GuestGetUserDto,
   guestGetUserDtoProps,
 } from './dto/guest-get-user.dto';
-import { ApiNeedAuth, Auth } from '../../common/decorators/auth.decorator';
 import {
   OwnerGetUserDto,
   ownerGetUserDtoProps,
 } from './dto/onwer-get-user.dto';
-import { filterData } from '../../utils/filter-data.utils';
-import { UserUpdateDto } from './dto/user-update.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
-import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
-import { MulterFile } from '../assets/assets.service';
-import { IpLimit } from '../../common/decorators/ip-limit.decorator';
-import validateData from '../../utils/validate-data.utils';
+import { UserUpdateDto } from './dto/user-update.dto';
+import { UsersService } from './users.service';
+import { UseCache } from 'src/common/decorators/cache.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -80,11 +80,13 @@ export class UsersController {
     schema: responseSchema('bad request', '请求参数错误'),
   })
   @HttpCode(200)
+  @UseCache()
   @Get('/find-one')
   async findOne(
     @Query('id') id?: string,
     @Query('username') username?: string,
   ) {
+    console.log('Find one user');
     if (id) {
       const one = await this.usersService.findOne(id);
 
