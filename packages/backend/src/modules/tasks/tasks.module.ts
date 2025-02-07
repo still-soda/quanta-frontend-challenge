@@ -6,6 +6,7 @@ import { JudgementsModule } from '../judgements/judgements.module';
 import { BullModule } from '@nestjs/bull';
 import { UsersModule } from '../users/users.module';
 import { ChallengesModule } from '../challenges/challenges.module';
+import { CommitHeatmapModule } from '../commit-heatmap/commit-heatmap.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ChallengesModule } from '../challenges/challenges.module';
     JudgementsModule,
     UsersModule,
     ChallengesModule,
+    CommitHeatmapModule,
     BullModule.registerQueue({
       name: 'tasks',
       defaultJobOptions: {

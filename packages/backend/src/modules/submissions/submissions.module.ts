@@ -6,12 +6,14 @@ import {
   Submissions,
   SubmissionsSchema,
 } from '../../schemas/submissions.schema';
+import { CommitHeatmapModule } from '../commit-heatmap/commit-heatmap.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Submissions.name, schema: SubmissionsSchema },
     ]),
+    CommitHeatmapModule,
   ],
   controllers: [SubmissionsController],
   providers: [SubmissionsService],

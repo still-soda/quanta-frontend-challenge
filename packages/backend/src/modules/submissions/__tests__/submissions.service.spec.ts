@@ -3,6 +3,7 @@ import { SubmissionsService } from '../submissions.service';
 import { SubmissionsModule } from '../submissions.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { CommitHeatmapModule } from '../../../modules/commit-heatmap/commit-heatmap.module';
 
 describe('SubmissionsService', () => {
   let service: SubmissionsService;
@@ -13,7 +14,7 @@ describe('SubmissionsService', () => {
     mongodb = mockDb.mongodb;
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [SubmissionsModule, mockDb.module],
+      imports: [SubmissionsModule, CommitHeatmapModule, mockDb.module],
       providers: [SubmissionsService],
     }).compile();
 

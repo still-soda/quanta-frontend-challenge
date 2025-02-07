@@ -40,7 +40,7 @@ import {
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersService } from './users.service';
-import { UseCache } from 'src/common/decorators/cache.decorator';
+import { UseCache } from '../../common/decorators/cache.decorator';
 
 @Controller('users')
 export class UsersController {

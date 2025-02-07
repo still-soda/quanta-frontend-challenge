@@ -100,7 +100,7 @@ export class CommitHeatmapService {
       throw responseError('bad request', { msg: error.message });
     }
 
-    const { userId, date, count } = dto;
+    const { userId, date, count = 1 } = dto;
     const dateObj = new Date(date);
 
     dateObj.setHours(0, 0, 0, 0);

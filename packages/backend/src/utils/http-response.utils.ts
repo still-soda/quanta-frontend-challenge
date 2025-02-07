@@ -110,7 +110,13 @@ export function responseError(
 export function responseSchema(
   type: HttpResponseMessage,
   msg?: string,
-  data?: { type?: any; schema?: any; example?: any; properties?: any },
+  data?: {
+    type?: any;
+    schema?: any;
+    example?: any;
+    properties?: any;
+    items?: any;
+  },
 ) {
   return {
     type: 'object',

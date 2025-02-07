@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsDateString, IsNumber, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class IncreaseHeatmapCountDto {
   @ApiProperty({ description: '用户 ID' })
@@ -14,7 +20,9 @@ export class IncreaseHeatmapCountDto {
   date: string;
 
   @ApiProperty({ description: '增加的提交次数' })
+  @IsOptional()
   @IsNumber()
+  @Min(1)
   @Expose()
-  count: number;
+  count?: number;
 }
