@@ -42,12 +42,12 @@ export class CacheInterceptor implements NestInterceptor {
   ) {}
 
   async intercept(context: ExecutionContext, next: CallHandler) {
-    const useCache = this.reflector.get<boolean>(
+    const useCacheTTL = this.reflector.get<number>(
       'use-cache',
       context.getHandler(),
     );
 
-    if (!useCache) {
+    if (useCacheTTL === undefined) {
       return next.handle();
     }
 
@@ -75,7 +75,7 @@ export class CacheInterceptor implements NestInterceptor {
           return;
         }
         const json = JSON.stringify(response);
-        this.cachesService.set(key, json, this.ttl);
+        this.cachesService.set(key, json, useCacheTTL ? useCacheTTL : this.ttl);
       }),
     );
   }

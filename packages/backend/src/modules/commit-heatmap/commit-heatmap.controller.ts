@@ -22,9 +22,9 @@ export class CommitHeatmapController {
       items: {
         type: 'object',
         properties: {
-          date: { type: 'string', example: '2021-01-01' },
-          count: { type: 'number', example: 123 },
-          userId: { type: 'string', example: '123' },
+          date: { type: 'string', example: '2021-01-01', description: '日期' },
+          count: { type: 'number', example: 123, description: '提交次数' },
+          userId: { type: 'string', example: '123', description: '用户 ID' },
         },
       },
     }),

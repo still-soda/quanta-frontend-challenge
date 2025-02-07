@@ -5,7 +5,7 @@ import { Document } from 'mongoose';
 export type CommitHeatmapDocument = CommitHeatmap & Document;
 
 @Schema()
-export class CommitHeatmap {
+export class CommitHeatmap extends Document {
   @ApiProperty({
     example: '2021-01-01',
     description: '日期',
