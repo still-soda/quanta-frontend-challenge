@@ -72,7 +72,8 @@ export type TextMimeType =
   | 'text/html'
   | 'text/javascript'
   | 'text/plain'
-  | 'text/xml';
+  | 'text/xml'
+  | 'text/markdown';
 
 export type VideoMimeType =
   | 'video/mpeg'

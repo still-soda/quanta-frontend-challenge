@@ -29,11 +29,21 @@ export const Auth = (role: ROLE = ROLE.USER) =>
 /**
  * 标记该接口需要在请求头中携带验证消息，用于 Swagger 文档。
  * @param options 可选配置项
- * - require 是否必须，默认为 true
+ * - `required` 是否必须，默认为 `true`
+ * - `level` 最低权限要求，默认为 `ROLE.USER`
  **/
-export const ApiNeedAuth = (options?: { require: boolean }) =>
-  ApiHeader({
+export const ApiNeedAuth = (options?: { required?: boolean; level?: ROLE }) => {
+  const level = options?.level ?? ROLE.USER;
+  const levelStr =
+    level === ROLE.USER
+      ? '普通用户'
+      : level === ROLE.ADMIN
+        ? '管理员'
+        : '超级管理员';
+
+  return ApiHeader({
     name: 'authorization',
-    description: '身份验证令牌',
-    required: options?.require ?? true,
+    description: `身份验证令牌，${levelStr}及以上权限可访问`,
+    required: options?.required ?? true,
   });
+};

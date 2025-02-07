@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { SchemaProp } from '../../../utils/schema-prop.util';
 
 export class OwnerGetUserDto {
   @ApiProperty({
@@ -98,7 +99,7 @@ export class OwnerGetUserDto {
 /**
  * 用户信息 Schema，用于 Swagger 文档
  */
-export const ownerGetUserDtoProps = {
+export const ownerGetUserDtoProps: SchemaProp = {
   username: {
     type: 'string',
     example: 'username',
@@ -107,19 +108,19 @@ export const ownerGetUserDtoProps = {
   },
   number: {
     type: 'string',
-    example: 'number',
+    example: '20231003059',
     required: true,
     description: '学号',
   },
   email: {
     type: 'string',
-    example: 'email',
+    example: 'email@qq.com',
     required: true,
     description: '邮箱',
   },
   phone: {
     type: 'string',
-    example: 'phone',
+    example: '13411100000',
     required: true,
     description: '手机号',
   },

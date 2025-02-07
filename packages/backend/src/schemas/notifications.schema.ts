@@ -4,6 +4,8 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 export type NotificationsDocument = Notifications & Document;
 
+export type NotificationStatus = 'draft' | 'published';
+
 @Schema()
 @ApiSchema({ description: '公告' })
 export class Notifications extends Document {
@@ -29,11 +31,25 @@ export class Notifications extends Document {
   authorId: string;
 
   @ApiProperty({
+    example: '123456',
+    description: '内容文件元数据ID',
+  })
+  @Prop()
+  contentId: string;
+
+  @ApiProperty({
     example: 'https://www.gravatar.com/avatar/',
     description: '封面链接',
   })
   @Prop()
   coverUrl: string;
+
+  @ApiProperty({
+    example: 'draft',
+    description: '状态：draft 草稿，published 已发布',
+  })
+  @Prop({ default: 'draft' })
+  status: NotificationStatus;
 
   @ApiProperty({
     example: '2021-01-01T00:00:00.000Z',

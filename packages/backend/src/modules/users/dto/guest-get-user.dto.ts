@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { SchemaProp } from '../../../utils/schema-prop.util';
 
 export class GuestGetUserDto {
   @ApiProperty({
@@ -58,7 +59,7 @@ export class GuestGetUserDto {
 /**
  * 用户信息 Schema，用于 Swagger 文档
  */
-export const guestGetUserDtoProps = {
+export const guestGetUserDtoProps: SchemaProp = {
   username: {
     type: 'string',
     required: true,

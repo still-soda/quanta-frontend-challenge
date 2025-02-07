@@ -36,7 +36,7 @@ import {
 import {
   OwnerGetUserDto,
   ownerGetUserDtoProps,
-} from './dto/onwer-get-user.dto';
+} from './dto/owner-get-user.dto';
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersService } from './users.service';
