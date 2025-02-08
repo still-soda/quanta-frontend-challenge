@@ -13,7 +13,7 @@ import {
 } from '../../schemas/notifications.schema';
 import { UserData } from '../../common/decorators/user.decorator';
 import { ROLE } from '../../common/decorators/auth.decorator';
-import { SwitchStatusDto } from './dto/switch-status.dto';
+import { NotificationSwitchStatusDto } from './dto/switch-status.dto';
 import { isMongoId } from 'class-validator';
 
 @Injectable()
@@ -41,10 +41,7 @@ export class NotificationsService {
    * - `internal server error` 保存文章文件失败
    * - `forbidden` 非超级管理员无法代替他人创建公告
    */
-  async create(
-    user: UserData,
-    createNotificationDto: CreateNotificationDto,
-  ) {
+  async create(user: UserData, createNotificationDto: CreateNotificationDto) {
     try {
       createNotificationDto = await validateData(
         CreateNotificationDto,
@@ -152,9 +149,9 @@ export class NotificationsService {
    * - `forbidden` 非超级管理员无法代替他人更新公告
    * - `bad request` DTO数据校验失败
    */
-  async switchStatus(user: UserData, dto: SwitchStatusDto) {
+  async switchStatus(user: UserData, dto: NotificationSwitchStatusDto) {
     try {
-      dto = await validateData(SwitchStatusDto, dto);
+      dto = await validateData(NotificationSwitchStatusDto, dto);
     } catch (error) {
       throw responseError('bad request', { msg: error.message });
     }

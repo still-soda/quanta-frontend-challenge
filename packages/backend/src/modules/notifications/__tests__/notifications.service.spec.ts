@@ -17,6 +17,7 @@ const mockValidateData = validateData as jest.MockedFunction<
   typeof validateData
 >;
 
+// 这个测试文件代码量较大，建议使用编辑器的代码折叠功能查看
 describe('NotificationsService', () => {
   let notificationsService: NotificationsService;
   let assetsService: AssetsService;

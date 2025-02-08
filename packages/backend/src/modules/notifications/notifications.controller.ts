@@ -22,7 +22,7 @@ import {
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 import { notifacationProp } from './dto/notification.dto';
-import { SwitchStatusDto } from './dto/switch-status.dto';
+import { NotificationSwitchStatusDto } from './dto/switch-status.dto';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -187,7 +187,7 @@ export class NotificationsController {
   @Auth(ROLE.ADMIN)
   @Post('/switch-status')
   async switchStatus(
-    @Body() body: SwitchStatusDto,
+    @Body() body: NotificationSwitchStatusDto,
     @CurrentUser() user: UserData,
   ) {
     const result = await this.notificationsService.switchStatus(user, body);

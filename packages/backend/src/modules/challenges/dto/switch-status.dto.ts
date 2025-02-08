@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsMongoId, IsEnum } from 'class-validator';
-import { NotificationStatus } from '../../../schemas/notifications.schema';
+import { ChallengeStatus } from '../../../schemas/challenges.schema';
 
-export class NotificationSwitchStatusDto {
+export class ChallengeSwitchStatusDto {
   @ApiProperty({
     description: '公告ID',
     example: '60b9f4f4c8c9d7c0e6b9a0b4',
@@ -17,9 +17,9 @@ export class NotificationSwitchStatusDto {
     description: '新的状态',
     example: true,
     required: true,
-    enum: ['draft', 'published'],
+    enum: ['ready', 'published', 'closed'],
   })
-  @IsEnum(['draft', 'published'] as NotificationStatus[])
+  @IsEnum(['ready', 'published', 'closed'] as ChallengeStatus[])
   @Expose()
-  status: NotificationStatus;
+  status: ChallengeStatus;
 }
