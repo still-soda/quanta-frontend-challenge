@@ -15,6 +15,7 @@ import {
 } from '../core/flow-data/index';
 import { uuidFileNameRegEndWith } from '../../../utils/testing.utils';
 import { AssetsModule } from '../../assets/assets.module';
+import { CHALLENGE_STATUS } from '../../../schemas/challenges.schema';
 
 describe('JudgementsService', () => {
   let judgementsService: JudgementsService;
@@ -326,7 +327,7 @@ describe('JudgementsService', () => {
 
       const updatedChallenge = await challengeService.findOne(challenge.id);
       expect(updatedChallenge.screenshots).toHaveProperty('length', 1);
-      expect(updatedChallenge).toHaveProperty('status', 'ready');
+      expect(updatedChallenge).toHaveProperty('status', CHALLENGE_STATUS.READY);
       expect(updatedChallenge.flowdataId).toBe(serializeResult.id);
     });
 
@@ -409,7 +410,7 @@ describe('JudgementsService', () => {
 
       const updatedChallenge = await challengeService.findOne(chllenge.id);
       expect(updatedChallenge.screenshots).toHaveProperty('length', 1);
-      expect(updatedChallenge).toHaveProperty('status', 'draft');
+      expect(updatedChallenge).toHaveProperty('status', CHALLENGE_STATUS.DRAFT);
       expect(updatedChallenge.flowdataId).toBe(serializeResult.id);
     });
 
@@ -501,7 +502,7 @@ describe('JudgementsService', () => {
 
       const updatedChallenge = await challengeService.findOne(chllenge.id);
       expect(updatedChallenge.screenshots).toHaveProperty('length', 0);
-      expect(updatedChallenge).toHaveProperty('status', 'draft');
+      expect(updatedChallenge).toHaveProperty('status', CHALLENGE_STATUS.DRAFT);
       expect(updatedChallenge.flowdataId).toBe(serializeResult.id);
     });
   });
@@ -661,7 +662,7 @@ describe('JudgementsService', () => {
       expect(passed).toBe(true);
 
       const result = await challengeService.setStatusToPublished(challengeId);
-      expect(result.status).toBe('published');
+      expect(result.status).toBe(CHALLENGE_STATUS.PUBLISHED);
 
       const testPage = `
         <html>
@@ -762,7 +763,7 @@ describe('JudgementsService', () => {
       expect(passed).toBe(true);
 
       const result = await challengeService.setStatusToPublished(challengeId);
-      expect(result.status).toBe('published');
+      expect(result.status).toBe(CHALLENGE_STATUS.PUBLISHED);
 
       const testPage = page;
       const { id } = await assetsService.saveTextFile({
@@ -854,7 +855,7 @@ describe('JudgementsService', () => {
       expect(passed).toBe(true);
 
       const result = await challengeService.setStatusToPublished(challengeId);
-      expect(result.status).toBe('published');
+      expect(result.status).toBe(CHALLENGE_STATUS.PUBLISHED);
 
       const testPage = `
         <html>

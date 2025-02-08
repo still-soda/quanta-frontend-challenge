@@ -1,9 +1,29 @@
-import { Controller, Get, Post, Body, Param, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
-import { ApiNeedAuth, Auth, ROLE } from 'src/common/decorators/auth.decorator';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import { CurrentUser, UserData } from 'src/common/decorators/user.decorator';
+import {
+  ApiNeedAuth,
+  Auth,
+  ROLE,
+} from '../../common/decorators/auth.decorator';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 import { ChallengeSwitchStatusDto } from './dto/switch-status.dto';
+import {
+  CreateChallengeDto,
+  createChallengeProps,
+} from './dto/create-challenge.dto';
+import {
+  responseSchema,
+  responseSuccess,
+} from '../../utils/http-response.utils';
 
 @Controller('challenges')
 export class ChallengesController {
@@ -77,11 +97,33 @@ export class ChallengesController {
     description: '创建挑战',
   })
   @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiBody({ type: ChallengeSwitchStatusDto })
+  @ApiBody({ type: CreateChallengeDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '创建成功',
+    schema: responseSchema('ok', '创建成功', {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: createChallengeProps,
+      },
+    }),
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '数据验证失败',
+    schema: responseSchema('bad request', '数据验证失败'),
+  })
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Post('/create')
-  async create(@Body() body: any, @CurrentUser() user: UserData) {}
+  async create(
+    @Body() body: CreateChallengeDto,
+    @CurrentUser() user: UserData,
+  ) {
+    const result = await this.challengesService.adminCreate(user, body);
+    return responseSuccess('ok', result, '创建成功');
+  }
 
   /**
    * 管理员删除挑战，需要管理员及以上的权限，超级管理员可以删除所有挑战。

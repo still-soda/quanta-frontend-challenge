@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsMongoId, IsEnum } from 'class-validator';
-import { ChallengeStatus } from '../../../schemas/challenges.schema';
+import { CHALLENGE_STATUS } from '../../../schemas/challenges.schema';
 
 export class ChallengeSwitchStatusDto {
   @ApiProperty({
@@ -14,12 +14,20 @@ export class ChallengeSwitchStatusDto {
   id: string;
 
   @ApiProperty({
-    description: '新的状态',
+    description: '新的状态，可选值为 1:ready, 2:published, 3:closed',
     example: true,
     required: true,
-    enum: ['ready', 'published', 'closed'],
+    enum: [
+      CHALLENGE_STATUS.READY,
+      CHALLENGE_STATUS.PUBLISHED,
+      CHALLENGE_STATUS.CLOSED,
+    ],
   })
-  @IsEnum(['ready', 'published', 'closed'] as ChallengeStatus[])
+  @IsEnum([
+    CHALLENGE_STATUS.READY,
+    CHALLENGE_STATUS.PUBLISHED,
+    CHALLENGE_STATUS.CLOSED,
+  ])
   @Expose()
-  status: ChallengeStatus;
+  status: CHALLENGE_STATUS;
 }

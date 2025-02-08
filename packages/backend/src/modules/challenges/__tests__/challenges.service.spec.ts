@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
 import { ChallengesModule } from '../challenges.module';
+import { CHALLENGE_STATUS } from '../../../schemas/challenges.schema';
 
 describe('ChallengesService', () => {
   let service: ChallengesService;
@@ -181,24 +182,24 @@ describe('ChallengesService', () => {
     it('应该正确设置为 ready 状态', async () => {
       const created = await createOne();
       const updated = await service.setStatusToReady(created.id);
-      expect(updated.status).toBe('ready');
+      expect(updated.status).toBe(CHALLENGE_STATUS.READY);
     });
 
     it('如果状态不是 draft，不应该设置为 ready 状态', async () => {
       const created = await createOne();
       const updated = await service.setStatusToReady(created.id);
-      expect(updated.status).toBe('ready');
+      expect(updated.status).toBe(CHALLENGE_STATUS.READY);
       const updated2 = await service.setStatusToReady(created.id);
       expect(updated2).toBeNull();
       const found = await service.findOne(created.id);
-      expect(found.status).toBe('ready');
+      expect(found.status).toBe(CHALLENGE_STATUS.READY);
     });
 
     it('应该正确设置为 published 状态', async () => {
       const created = await createOne();
       await service.setStatusToReady(created.id);
       const updated = await service.setStatusToPublished(created.id);
-      expect(updated.status).toBe('published');
+      expect(updated.status).toBe(CHALLENGE_STATUS.PUBLISHED);
     });
 
     it('如果状态不是 ready，不应该设置为 published 状态', async () => {
@@ -206,7 +207,7 @@ describe('ChallengesService', () => {
       const updated = await service.setStatusToPublished(created.id);
       expect(updated).toBeNull();
       const found = await service.findOne(created.id);
-      expect(found.status).toBe('draft');
+      expect(found.status).toBe(CHALLENGE_STATUS.DRAFT);
     });
 
     it('应该正确设置为 closed 状态', async () => {
@@ -214,7 +215,7 @@ describe('ChallengesService', () => {
       await service.setStatusToReady(created.id);
       await service.setStatusToPublished(created.id);
       const updated = await service.setStatusToClosed(created.id);
-      expect(updated.status).toBe('closed');
+      expect(updated.status).toBe(CHALLENGE_STATUS.CLOSED);
     });
 
     it('如果状态不是 published，不应该设置为 closed 状态', async () => {
@@ -222,7 +223,7 @@ describe('ChallengesService', () => {
       const updated = await service.setStatusToClosed(created.id);
       expect(updated).toBeNull();
       const found = await service.findOne(created.id);
-      expect(found.status).toBe('draft');
+      expect(found.status).toBe(CHALLENGE_STATUS.DRAFT);
     });
   });
 

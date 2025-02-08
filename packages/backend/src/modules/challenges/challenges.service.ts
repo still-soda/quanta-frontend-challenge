@@ -2,20 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import {
+  CHALLENGE_STATUS,
   Challenges,
   ChallengesDocument,
-  ChallengeStatus,
 } from '../../schemas/challenges.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import validateData from '../../utils/validate-data.utils';
-
-const statusOrder: ChallengeStatus[] = [
-  'draft',
-  'ready',
-  'published',
-  'closed',
-];
+import { UserData } from '../../common/decorators/user.decorator';
+import { responseError } from '../../utils/http-response.utils';
+import { isMongoId } from 'class-validator';
 
 @Injectable()
 export class ChallengesService {
@@ -26,25 +22,48 @@ export class ChallengesService {
 
   /**
    * 创建挑战
+   * @private 仅供内部调用，接口请使用 `adminCreate`
    * @param createChallengeDto 创建挑战数据
    * @returns 创建的挑战数据
    */
-  async create(createChallengeDto: CreateChallengeDto) {
-    createChallengeDto = await validateData(
-      CreateChallengeDto,
-      createChallengeDto,
-    );
+  async create(createChallengeDto: CreateChallengeDto & { authorId: string }) {
     const createdChallenge = new this.challengeModel(createChallengeDto);
     return createdChallenge.save();
   }
 
   /**
-   * 查找所有挑战
+   * 管理员创建挑战
+   * @param user 当前用户
+   * @param createChallengeDto 创建挑战数据
+   * @returns 创建的挑战数据
+   * @throws
+   * - `bad request` 数据验证失败
+   */
+  async adminCreate(user: UserData, createChallengeDto: CreateChallengeDto) {
+    try {
+      createChallengeDto = await validateData(
+        CreateChallengeDto,
+        createChallengeDto,
+      );
+    } catch (error) {
+      return responseError('bad request', { msg: error.message });
+    }
+
+    return this.create({
+      ...createChallengeDto,
+      authorId: user.id,
+    });
+  }
+
+  /**
+   * 用户查找所有挑战
    * @returns 挑战列表
    */
   async findAll() {
-    return await this.challengeModel.find().exec();
+    return await this.challengeModel.find();
   }
+
+  async adminFindAll() {}
 
   /**
    * 查找一个挑战
@@ -60,7 +79,7 @@ export class ChallengesService {
    * @param status 挑战状态
    * @returns 挑战列表
    */
-  async findByStatus(status: ChallengeStatus) {
+  async findByStatus(status: CHALLENGE_STATUS) {
     return await this.challengeModel.find({ status }).exec();
   }
 
@@ -98,14 +117,12 @@ export class ChallengesService {
    */
   async setStatusToReady(id: string) {
     const challenge = await this.findOne(id);
-    const currentStatusIndex = statusOrder.indexOf(challenge.status);
-    const readyStatusIndex = statusOrder.indexOf('ready');
-    if (readyStatusIndex - currentStatusIndex !== 1) {
+    if (CHALLENGE_STATUS.READY - challenge.status !== 1) {
       return null;
     }
     return await this.challengeModel.findByIdAndUpdate(
       { _id: id },
-      { status: 'ready' as ChallengeStatus },
+      { status: CHALLENGE_STATUS.READY },
       { new: true },
     );
   }
@@ -117,14 +134,12 @@ export class ChallengesService {
    */
   async setStatusToPublished(id: string) {
     const challenge = await this.findOne(id);
-    const currentStatusIndex = statusOrder.indexOf(challenge.status);
-    const publishedStatusIndex = statusOrder.indexOf('published');
-    if (publishedStatusIndex - currentStatusIndex !== 1) {
+    if (CHALLENGE_STATUS.PUBLISHED - challenge.status !== 1) {
       return null;
     }
     return await this.challengeModel.findByIdAndUpdate(
       { _id: id },
-      { status: 'published' as ChallengeStatus },
+      { status: CHALLENGE_STATUS.PUBLISHED },
       { new: true },
     );
   }
@@ -136,14 +151,12 @@ export class ChallengesService {
    */
   async setStatusToClosed(id: string) {
     const challenge = await this.findOne(id);
-    const currentStatusIndex = statusOrder.indexOf(challenge.status);
-    const closedStatusIndex = statusOrder.indexOf('closed');
-    if (closedStatusIndex - currentStatusIndex !== 1) {
+    if (CHALLENGE_STATUS.CLOSED - challenge.status !== 1) {
       return null;
     }
     return await this.challengeModel.findByIdAndUpdate(
       { _id: id },
-      { status: 'closed' as ChallengeStatus },
+      { status: CHALLENGE_STATUS.CLOSED },
       { new: true },
     );
   }

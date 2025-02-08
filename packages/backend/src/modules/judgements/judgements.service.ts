@@ -11,6 +11,7 @@ import { explainOneFlowData, handleOneFlowData } from './core';
 import { dataValidators, FlowData, Validator } from './core/flow-data';
 import { HandlerOptions } from './core/flow-handlers/index.type';
 import { FlowDataDto } from './dto/flow-data.dto';
+import { CHALLENGE_STATUS } from '../../schemas/challenges.schema';
 
 /**
  * 这个接口定义了执行结果的数据结构。
@@ -121,7 +122,7 @@ export class JudgementsService
     if (!challenge) {
       throw new Error('找不到 Challenge');
     }
-    if (challenge.status !== 'published') {
+    if (challenge.status !== CHALLENGE_STATUS.PUBLISHED) {
       throw new Error('挑战未发布');
     }
 
@@ -338,7 +339,7 @@ export class JudgementsService
 
     if (passed) {
       const result = await this.challengesService.setStatusToReady(challengeId);
-      if (!result || result.status !== 'ready') {
+      if (!result || result.status !== CHALLENGE_STATUS.READY) {
         throw new Error('设置挑战为准备发布状态失败');
       }
     }
