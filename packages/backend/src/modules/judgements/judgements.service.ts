@@ -338,7 +338,10 @@ export class JudgementsService
     passed &&= testScore === fullScore;
 
     if (passed) {
-      const result = await this.challengesService.setStatusToReady(challengeId);
+      const result = await this.challengesService.setStatusTo(
+        challengeId,
+        CHALLENGE_STATUS.READY,
+      );
       if (!result || result.status !== CHALLENGE_STATUS.READY) {
         throw new Error('设置挑战为准备发布状态失败');
       }

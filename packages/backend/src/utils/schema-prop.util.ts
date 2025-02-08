@@ -6,8 +6,8 @@ export type SchemaProp = Record<
   {
     description: string;
     type: string;
-    required: boolean;
     example: any;
+    required?: boolean;
     default?: any;
     items?: any;
     properties?: SchemaProp;

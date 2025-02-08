@@ -16,6 +16,14 @@ import {
 import { uuidFileNameRegEndWith } from '../../../utils/testing.utils';
 import { AssetsModule } from '../../assets/assets.module';
 import { CHALLENGE_STATUS } from '../../../schemas/challenges.schema';
+import { CreateChallengeDto } from '../../../modules/challenges/dto/create-challenge.dto';
+import validateData from '../../../utils/validate-data.utils';
+import { ROLE } from '../../../common/decorators/auth.decorator';
+
+jest.mock('../../../utils/validate-data.utils');
+
+const mockValidateData = validateData as jest.Mock;
+mockValidateData.mockImplementation((_, data) => data);
 
 describe('JudgementsService', () => {
   let judgementsService: JudgementsService;
@@ -23,6 +31,15 @@ describe('JudgementsService', () => {
   let challengeService: ChallengesService;
   let mongodb: MongoMemoryServer;
   let module: TestingModule;
+
+  async function createChallenge(
+    options: Omit<CreateChallengeDto, 'content'> & { authorId: string },
+  ) {
+    return await challengeService.create(
+      { id: options.authorId, username: 'test', role: ROLE.ADMIN },
+      { ...options, content: 'test' },
+    );
+  }
 
   beforeAll(async () => {
     const mockDb = await createMockDBModule();
@@ -59,7 +76,7 @@ describe('JudgementsService', () => {
 
   describe('serializeFlowData', () => {
     it('应该正确序列化流程文件', async () => {
-      const challenge = await challengeService.create({
+      const challenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -99,7 +116,7 @@ describe('JudgementsService', () => {
 
     describe('测试流程不合法时，应该抛出错误', () => {
       test('流程验证不通过', async () => {
-        const challenge = await challengeService.create({
+        const challenge = await createChallenge({
           title: 'test',
           type: 'test',
           difficulty: 'test',
@@ -122,7 +139,7 @@ describe('JudgementsService', () => {
       });
 
       test('总分小于等于0', async () => {
-        const challenge = await challengeService.create({
+        const challenge = await createChallenge({
           title: 'test',
           type: 'test',
           difficulty: 'test',
@@ -145,7 +162,7 @@ describe('JudgementsService', () => {
       });
 
       test('没有测试点', async () => {
-        const challenge = await challengeService.create({
+        const challenge = await createChallenge({
           title: 'test',
           type: 'test',
           difficulty: 'test',
@@ -187,7 +204,7 @@ describe('JudgementsService', () => {
 
   describe('uploadStandardAnswer', () => {
     it('应该正确设置标准答案', async () => {
-      const challenge = await challengeService.create({
+      const challenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -226,7 +243,7 @@ describe('JudgementsService', () => {
     });
 
     it('文件为空时，应该抛出错误', async () => {
-      const challenge = await challengeService.create({
+      const challenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -249,7 +266,7 @@ describe('JudgementsService', () => {
 
   describe('preExecute', () => {
     it('应该正确预执行正确的流程文件，返回通过和正确信息', async () => {
-      const challenge = await challengeService.create({
+      const challenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -332,7 +349,7 @@ describe('JudgementsService', () => {
     });
 
     it('预执行不合法的流程文件时，应该中断并返回不通过和错误信息', async () => {
-      const chllenge = await challengeService.create({
+      const chllenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -415,7 +432,7 @@ describe('JudgementsService', () => {
     });
 
     it('流程发生错误时，应该中断并返回不通过和错误信息', async () => {
-      const chllenge = await challengeService.create({
+      const chllenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -509,7 +526,7 @@ describe('JudgementsService', () => {
 
   describe('execute', () => {
     it('如果挑战不在发布状态，应该抛出错误', async () => {
-      const challenge = await challengeService.create({
+      const challenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -588,7 +605,7 @@ describe('JudgementsService', () => {
     });
 
     it('应该正确执行挑战，返回执行结果（部分错误，不通过）', async () => {
-      const challenge = await challengeService.create({
+      const challenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -661,7 +678,10 @@ describe('JudgementsService', () => {
       const { passed } = await judgementsService.preExecute(challenge.id);
       expect(passed).toBe(true);
 
-      const result = await challengeService.setStatusToPublished(challengeId);
+      const result = await challengeService.setStatusTo(
+        challengeId,
+        CHALLENGE_STATUS.PUBLISHED,
+      );
       expect(result.status).toBe(CHALLENGE_STATUS.PUBLISHED);
 
       const testPage = `
@@ -689,7 +709,7 @@ describe('JudgementsService', () => {
     });
 
     it('应该正确执行挑战，返回执行结果（完全正确，通过）', async () => {
-      const challenge = await challengeService.create({
+      const challenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -762,7 +782,10 @@ describe('JudgementsService', () => {
       const { passed } = await judgementsService.preExecute(challenge.id);
       expect(passed).toBe(true);
 
-      const result = await challengeService.setStatusToPublished(challengeId);
+      const result = await challengeService.setStatusTo(
+        challengeId,
+        CHALLENGE_STATUS.PUBLISHED,
+      );
       expect(result.status).toBe(CHALLENGE_STATUS.PUBLISHED);
 
       const testPage = page;
@@ -781,7 +804,7 @@ describe('JudgementsService', () => {
     });
 
     it('如果执行过程中发生错误，应该中断并返回错误信息', async () => {
-      const challenge = await challengeService.create({
+      const challenge = await createChallenge({
         title: 'test',
         type: 'test',
         difficulty: 'test',
@@ -854,7 +877,10 @@ describe('JudgementsService', () => {
       const { passed } = await judgementsService.preExecute(challenge.id);
       expect(passed).toBe(true);
 
-      const result = await challengeService.setStatusToPublished(challengeId);
+      const result = await challengeService.setStatusTo(
+        challengeId,
+        CHALLENGE_STATUS.PUBLISHED,
+      );
       expect(result.status).toBe(CHALLENGE_STATUS.PUBLISHED);
 
       const testPage = `

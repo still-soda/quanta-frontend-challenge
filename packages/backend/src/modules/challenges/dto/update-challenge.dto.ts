@@ -13,6 +13,16 @@ export class UpdateChallengeDto {
   @Expose()
   title?: string;
 
+  @ApiProperty({
+    example: '挑战内容',
+    description: '挑战内容',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Expose()
+  content?: string;
+
   @ApiProperty({ example: 'hard', description: '难度', required: false })
   @IsOptional()
   @IsString()
@@ -40,10 +50,4 @@ export class UpdateChallengeDto {
   @IsArray()
   @Expose()
   tags?: string[];
-
-  @ApiProperty({ example: '1234567', description: '作者ID', required: false })
-  @IsOptional()
-  @IsString()
-  @Expose()
-  authorId?: string;
 }

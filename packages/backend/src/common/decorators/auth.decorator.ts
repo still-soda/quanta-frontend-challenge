@@ -1,5 +1,6 @@
-import { SetMetadata } from '@nestjs/common';
-import { ApiHeader } from '@nestjs/swagger';
+import { applyDecorators, HttpStatus, SetMetadata } from '@nestjs/common';
+import { ApiHeader, ApiResponse } from '@nestjs/swagger';
+import { responseSchema } from '../../utils/http-response.utils';
 
 /**
  * 用户角色
@@ -33,6 +34,7 @@ export const Auth = (role: ROLE = ROLE.USER) =>
  * - `level` 最低权限要求，默认为 `ROLE.USER`
  **/
 export const ApiNeedAuth = (options?: { required?: boolean; level?: ROLE }) => {
+  const required = options?.required === undefined ? true : options.required;
   const level = options?.level ?? ROLE.USER;
   const levelStr =
     level === ROLE.USER
@@ -41,9 +43,30 @@ export const ApiNeedAuth = (options?: { required?: boolean; level?: ROLE }) => {
         ? '管理员'
         : '超级管理员';
 
-  return ApiHeader({
-    name: 'authorization',
-    description: `身份验证令牌，${levelStr}及以上权限可访问`,
-    required: options?.required ?? true,
-  });
+  return applyDecorators(
+    ...[
+      ApiHeader({
+        name: 'authorization',
+        description: `身份验证令牌，${levelStr}及以上权限可访问`,
+        required: options?.required ?? true,
+      }),
+      required
+        ? ApiResponse({
+            status: HttpStatus.UNAUTHORIZED,
+            description: '需要身份令牌 / 无效的身份令牌',
+            schema: responseSchema(
+              'unauthorized',
+              '需要身份令牌 / 无效的身份令牌',
+            ),
+          })
+        : undefined,
+      required && level > ROLE.ADMIN
+        ? ApiResponse({
+            status: HttpStatus.FORBIDDEN,
+            description: '权限不足',
+            schema: responseSchema('forbidden', '权限不足'),
+          })
+        : undefined,
+    ].filter(Boolean),
+  );
 };

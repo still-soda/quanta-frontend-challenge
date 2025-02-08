@@ -41,6 +41,13 @@ export class Challenges extends Document {
   totalSubmissions: number;
 
   @ApiProperty({
+    example: '1234567',
+    description: '内容文件ID',
+  })
+  @Prop()
+  contentId: string;
+
+  @ApiProperty({
     example: 12,
     default: 0,
     description: '总通过次数',
