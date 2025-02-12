@@ -6,7 +6,7 @@
       "lib": ["ES2020", "DOM", "DOM.Iterable"],
       "skipLibCheck": true,
       "declaration": true,
-      "sourceMap": true,
+      "declarationDir": "dist/types",
 
       /* Bundler mode */
       "moduleResolution": "node",
