@@ -93,10 +93,10 @@ export class Users extends Document {
   @ApiProperty({
     example: 0,
     enum: [0, 1, 2],
-    description: '角色：0-用户，1-管理员',
+    description: '角色：0-用户，1-管理员，2-超级管理员',
   })
   @Prop({ default: 0 })
-  role: number;
+  role: Role;
 
   @ApiProperty({
     example: ['1', '2', '3'],
@@ -132,13 +132,6 @@ export class Users extends Document {
   })
   @Prop()
   updatedAt: Date;
-
-  @ApiProperty({
-    example: 0,
-    description: '用户身份，0-普通用户，1-管理员，2-超级管理员',
-  })
-  @Prop({ default: 0 })
-  identity?: Role;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);
