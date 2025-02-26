@@ -5,6 +5,7 @@ import { TaskJobData } from './tasks.processor';
 import { SubmissionsService } from '../submissions/submissions.service';
 import { ChallengesService } from '../challenges/challenges.service';
 import { UsersService } from '../users/users.service';
+import { ActionsService } from '../actions/actions.service';
 
 interface ExecuteTasksOptions {
   challengeId: string;
@@ -25,7 +26,8 @@ export class TasksService {
     private readonly submissionsService: SubmissionsService,
     private readonly challengesService: ChallengesService,
     private readonly usersService: UsersService,
-  ) {}
+    private readonly actionsService: ActionsService
+  ) { }
 
   /**
    * 推送执行任务到队列。
@@ -46,7 +48,8 @@ export class TasksService {
   async pushExecuteJob(options: ExecuteTasksOptions) {
     const { challengeId, userId, submitFileId } = options;
 
-    if (!(await this.challengesService.findOne(challengeId))) {
+    const challenge = await this.challengesService.findOne(challengeId);
+    if (!challenge) {
       throw new Error('找不到 Challenge');
     }
 
@@ -59,6 +62,14 @@ export class TasksService {
       userId,
       type: 'execute',
     });
+
+    // 记录 Action
+    await this.actionsService.create({
+      type: 'commit',
+      title: `提交了 ${challenge.title} 的答案`,
+      payload: { challengeId, submissionId },
+      userId,
+    }, { id: userId, role: 0, username: undefined });
 
     return await this.tasksQueue.add('execute', {
       challengeId,

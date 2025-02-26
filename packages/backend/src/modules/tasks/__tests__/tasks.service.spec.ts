@@ -11,6 +11,7 @@ import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import { createMockRedisModule } from '../../../utils/create-redis.mock.utils';
 import { ChallengesService } from '../../../modules/challenges/challenges.service';
 import { UsersService } from '../../../modules/users/users.service';
+import { ActionsModule } from '../../../modules/actions/actions.module';
 import Redis from 'ioredis';
 import mongoose from 'mongoose';
 
@@ -40,6 +41,7 @@ describe('TasksService', () => {
         JudgementsModule,
         ChallengesModule,
         UsersModule,
+        ActionsModule,
         createEnvConfModule(),
       ],
       providers: [TasksService],
@@ -82,6 +84,10 @@ describe('TasksService', () => {
       .spyOn(tasksService['submissionsService'], 'create')
       .mockImplementationOnce(() => ({ id: submissionId }) as any);
 
+    const createActionSpy = jest
+      .spyOn(tasksService['actionsService'], 'create')
+      .mockImplementationOnce(() => ({}) as any);
+
     const addSpy = jest
       .spyOn(tasksService['tasksQueue'], 'add')
       .mockImplementationOnce(() => ({ id: 'jobId' }) as any);
@@ -93,6 +99,7 @@ describe('TasksService', () => {
     });
 
     expect(findOneChallengeSpy).toHaveBeenCalledWith(challengeId);
+    expect(createActionSpy).toHaveBeenCalledTimes(1);
     expect(findOneUserSpy).toHaveBeenCalledWith(userId);
     expect(createSubmissionSpy).toHaveBeenCalledWith({
       challengeId,
