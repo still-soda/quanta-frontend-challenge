@@ -3,4 +3,8 @@ interface SubmitActionPayload {
     submissionId: string;
 }
 
-interface UploadActionPayload { }
+interface UploadActionPayload {
+    imageId: string;
+}
+
+export type ActionsPayload = SubmitActionPayload | UploadActionPayload;

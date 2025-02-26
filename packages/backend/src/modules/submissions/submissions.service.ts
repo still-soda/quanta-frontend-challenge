@@ -17,7 +17,7 @@ export class SubmissionsService {
     @InjectModel(Submissions.name)
     private readonly submissionModel: Model<SubmissionsDocument>,
     private readonly commitHeatmapService: CommitHeatmapService,
-  ) {}
+  ) { }
 
   async create(createSubmissionDto: CreateSubmissionDto) {
     try {
