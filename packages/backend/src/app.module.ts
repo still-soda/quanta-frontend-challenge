@@ -17,10 +17,13 @@ import { CachesModule } from './modules/caches/caches.module';
 import { IpLimitGuard } from './common/guards/ip-limit.guard';
 import { CacheInterceptor } from './common/interceptors/cache.interceptor';
 import { CommitHeatmapModule } from './modules/commit-heatmap/commit-heatmap.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { RankModule } from './modules/rank/rank.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/quanta-frontend-challenge'),
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', `.env.${process.env.NODE_ENV}`, '.env'],
@@ -44,6 +47,7 @@ import { CommitHeatmapModule } from './modules/commit-heatmap/commit-heatmap.mod
     TasksModule,
     CachesModule,
     CommitHeatmapModule,
+    RankModule,
   ],
   controllers: [],
   providers: [
@@ -52,4 +56,4 @@ import { CommitHeatmapModule } from './modules/commit-heatmap/commit-heatmap.mod
     { provide: 'APP_INTERCEPTOR', useClass: CacheInterceptor },
   ],
 })
-export class AppModule {}
+export class AppModule { }
