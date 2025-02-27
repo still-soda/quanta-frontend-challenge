@@ -5,12 +5,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   Submissions,
   SubmissionsDocument,
+  SubmissionStatus,
+  SubmissionType,
 } from '../../schemas/submissions.schema';
 import { DeleteResult, Model } from 'mongoose';
 import validateData from '../../utils/validate-data.utils';
 import { CommitHeatmapService } from '../commit-heatmap/commit-heatmap.service';
 import { responseError } from '../../utils/http-response.utils';
 import { isMongoId } from 'class-validator';
+import { UserData } from '../../common/decorators/user.decorator';
+import { ROLE } from '../../common/decorators/auth.decorator';
 
 @Injectable()
 export class SubmissionsService {
@@ -28,6 +32,30 @@ export class SubmissionsService {
    */
   async findOne(id: string) {
     return await this.submissionModel.findById(id);
+  }
+
+  /**
+   * 查找指定ID的提交
+   * @param id 提交ID
+   * @param user 当前用户
+   * @returns 查找结果
+   * @throws
+   * - `not found`: 提交记录不存在
+   * - `forbidden`: 非管理员无权查看他人提交记录
+   */
+  async fineOneSubmission(id: string, user: UserData) {
+    const submission = await this.submissionModel.findById(id);
+    if (!submission) {
+      throw responseError('not found', { msg: '提交记录不存在' });
+    }
+
+    const { id: userId, role } = user;
+
+    if (submission.userId !== userId && role < ROLE.ADMIN) {
+      throw responseError('forbidden', { msg: '非管理员无权查看他人提交记录' });
+    }
+
+    return submission;
   }
 
   /**
@@ -73,6 +101,45 @@ export class SubmissionsService {
     }
 
     return await this.submissionModel.find({ userId });
+  }
+
+  /**
+   * 根据挑战ID查找所有提交
+   * @param challengeId 挑战ID
+   * @param filterOptions 过滤选项
+   * - `type`: 提交类型
+   * - `status`: 提交状态
+   * @returns 所有提交
+   */
+  async getSubmissionCountOfChallenge(
+    challengeId: string,
+    filterOptions?: {
+      type?: SubmissionType;
+      status?: SubmissionStatus
+    }
+  ) {
+    return await this.submissionModel.countDocuments({
+      challengeId,
+      ...(filterOptions || {}),
+    });
+  }
+
+  /**
+   * 获取某个挑战的提交记录
+   * @param challengeId 挑战ID
+   * @returns 提交记录
+   */
+  async getSubmissionOfChallenge(
+    challengeId: string,
+    filterOptions?: {
+      type?: SubmissionType;
+      status?: SubmissionStatus
+    }
+  ) {
+    return await this.submissionModel.find({
+      challengeId,
+      ...(filterOptions || {}),
+    });
   }
 
   /**

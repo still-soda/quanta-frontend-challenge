@@ -22,7 +22,7 @@ export class Submissions extends Document {
     example: '123456',
     description: '用户ID',
   })
-  @Prop()
+  @Prop({ index: true })
   userId: string;
 
   @ApiProperty({
