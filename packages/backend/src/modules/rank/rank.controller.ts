@@ -4,7 +4,7 @@ import { ApiNeedAuth, Auth, ROLE } from '../../common/decorators/auth.decorator'
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 import { responseSchema, responseSuccess } from '../../utils/http-response.utils';
 import { UseCache } from '../../common/decorators/cache.decorator';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { getRankDtoProps } from './dto/get-rank.dto';
 
 @Controller('rank')
@@ -16,7 +16,6 @@ export class RankController {
    * @returns 最近一次更新的全体排名
    */
   @ApiOperation({ summary: '获取最近一次更新的全体排名' })
-  @ApiNeedAuth()
   @ApiResponse({
     status: 200,
     description: '成功获取',
@@ -61,6 +60,7 @@ export class RankController {
    */
   @ApiOperation({ summary: '获取某个用户的排名历史' })
   @ApiNeedAuth({ level: ROLE.ADMIN })
+  @ApiQuery({ name: 'userId', type: 'string', description: '用户ID' })
   @ApiResponse({
     status: 200,
     description: '成功获取',
@@ -111,6 +111,10 @@ export class RankController {
    */
   @ApiOperation({ summary: '获取某个时间点的全体排名' })
   @ApiNeedAuth({ level: ROLE.ADMIN })
+  @ApiQuery({
+    name: 'time',
+    description: '时间点，是一个可以被 `Date.parse` 解析的字符串'
+  })
   @ApiResponse({
     status: 200,
     description: '成功获取',

@@ -4,6 +4,7 @@ import { SubmissionsModule } from '../submissions.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import { CommitHeatmapModule } from '../../../modules/commit-heatmap/commit-heatmap.module';
+import { randomMongoId } from '../../../utils/testing.utils';
 
 describe('SubmissionsService', () => {
   let service: SubmissionsService;
@@ -25,7 +26,81 @@ describe('SubmissionsService', () => {
     await mongodb.stop();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  describe('create', () => {
+    it('应该正确创建提交', async () => {
+      const createSubmissionDto: any = {
+        type: 'execute',
+        userId: '123',
+        challengeId: '456',
+      };
+      const submissionModelCreateSpy = jest
+        .spyOn(service['submissionModel'], 'create')
+        .mockImplementationOnce((async () => ({})) as any);
+      const increaseHeatmapCountSpy = jest
+        .spyOn(service['commitHeatmapService'], 'increaseHeatmapCount')
+        .mockImplementationOnce((async () => ({})) as any);
+
+      const res = await service.create(createSubmissionDto);
+      expect(res).toBeDefined();
+      expect(submissionModelCreateSpy).toHaveBeenCalledTimes(1);
+      expect(increaseHeatmapCountSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findOne', () => {
+    it('应该正确查找提交', async () => {
+      const submissionModelFindByIdSpy = jest
+        .spyOn(service['submissionModel'], 'findById')
+        .mockImplementationOnce((async () => ({})) as any);
+
+      const res = await service.findOne('123');
+      expect(res).toBeDefined();
+      expect(submissionModelFindByIdSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findAllByUserId', () => {
+    it('应该正确查找用户的提交', async () => {
+      const submissionModelFindSpy = jest
+        .spyOn(service['submissionModel'], 'find')
+        .mockImplementationOnce((async () => ({})) as any);
+
+      const res = await service.findAllByUserId(randomMongoId());
+      expect(res).toBeDefined();
+      expect(submissionModelFindSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('update', () => {
+    it('应该正确更新提交', async () => {
+      const submissionModelFindByIdAndUpdateSpy = jest
+        .spyOn(service['submissionModel'], 'findByIdAndUpdate')
+        .mockImplementationOnce((async () => ({})) as any);
+
+      const res = await service.update(randomMongoId(), { status: 'passed' });
+      expect(res).toBeDefined();
+      expect(submissionModelFindByIdAndUpdateSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('remove', () => {
+    it('应该正确删除提交', async () => {
+      const id = randomMongoId();
+
+      const submissionModelFindByIdSpy = jest
+        .spyOn(service['submissionModel'], 'findById')
+        .mockImplementationOnce((async () => ({ userId: id })) as any);
+      submissionModelFindByIdSpy.mockClear();
+
+      const submissionModelFindByIdAndDeleteSpy = jest
+        .spyOn(service['submissionModel'], 'findByIdAndDelete')
+        .mockImplementationOnce((async () => ({})) as any);
+
+
+      const res = await service.remove(id, id);
+      expect(res).toBeDefined();
+      expect(submissionModelFindByIdAndDeleteSpy).toHaveBeenCalledTimes(1);
+      expect(submissionModelFindByIdSpy).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -72,7 +72,9 @@ describe('RankService', () => {
       expect(findAllSpy).toHaveBeenCalledTimes(1);
 
       expect(writeFileSyncSpy).toHaveBeenCalledTimes(1);
-      expect(writeFileSyncSpy.mock.calls[0][0]).toBe('./.temp/update-info.json');
+      expect(writeFileSyncSpy.mock.calls[0][0]).toBe(
+        './.temp/update-info.json'
+      );
 
       findAllSpy.mockRestore();
       writeFileSyncSpy.mockRestore();
@@ -127,9 +129,24 @@ describe('RankService', () => {
         .mockImplementationOnce((() => ({
           sort() {
             return [
-              { userId: '2', score: 500, rank: 1, time: new Date('2021-09-01T00:00:00.000Z') },
-              { userId: '2', score: 400, rank: 2, time: new Date('2021-08-01T00:00:00.000Z') },
-              { userId: '2', score: 300, rank: 3, time: new Date('2021-07-01T00:00:00.000Z') },
+              {
+                userId: '2',
+                score: 500,
+                rank: 1,
+                time: new Date('2021-09-01T00:00:00.000Z')
+              },
+              {
+                userId: '2',
+                score: 400,
+                rank: 2,
+                time: new Date('2021-08-01T00:00:00.000Z')
+              },
+              {
+                userId: '2',
+                score: 300,
+                rank: 3,
+                time: new Date('2021-07-01T00:00:00.000Z')
+              },
             ]
           }
         })) as any);

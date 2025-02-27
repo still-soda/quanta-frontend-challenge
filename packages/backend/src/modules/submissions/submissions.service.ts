@@ -10,6 +10,7 @@ import { DeleteResult, Model } from 'mongoose';
 import validateData from '../../utils/validate-data.utils';
 import { CommitHeatmapService } from '../commit-heatmap/commit-heatmap.service';
 import { responseError } from '../../utils/http-response.utils';
+import { isMongoId } from 'class-validator';
 
 @Injectable()
 export class SubmissionsService {
@@ -19,6 +20,26 @@ export class SubmissionsService {
     private readonly commitHeatmapService: CommitHeatmapService,
   ) { }
 
+  /**
+   * 内部函数，查找指定ID的提交
+   * @private
+   * @param id 提交ID
+   * @returns 查找结果 
+   */
+  async findOne(id: string) {
+    return await this.submissionModel.findById(id);
+  }
+
+  /**
+   * 创建提交
+   * @param createSubmissionDto
+   * - `type`: 提交类型 
+   * - `userId`: 用户ID
+   * - `challengeId`: 挑战ID
+   * @returns 创建的提交
+   * @throws
+   * - `bad request`: 请求数据错误
+   */
   async create(createSubmissionDto: CreateSubmissionDto) {
     try {
       createSubmissionDto = await validateData(
@@ -39,23 +60,65 @@ export class SubmissionsService {
     return await this.submissionModel.create(createSubmissionDto);
   }
 
-  async findAll() {
-    return await this.submissionModel.find().exec();
+  /**
+   * 根据用户ID查找所有提交
+   * @param userId 用户ID 
+   * @returns 所有提交
+   * @throws
+   * - `bad request`: 用户ID不合法
+   */
+  async findAllByUserId(userId: string) {
+    if (!isMongoId(userId)) {
+      throw responseError('bad request', { msg: '用户ID不合法' });
+    }
+
+    return await this.submissionModel.find({ userId });
   }
 
-  async findOne(id: string) {
-    return await this.submissionModel.findById(id).exec();
-  }
-
+  /**
+   * 更新指定ID的提交
+   * @param id 提交ID
+   * @param updateSubmissionDto 更新提交数据
+   * - `type`: 提交类型
+   * - `userId`: 用户ID
+   * - `challengeId`: 挑战ID 
+   * @returns 更新结果
+   * @throws
+   * - `bad request`: 请求数据错误
+   */
   async update(id: string, updateSubmissionDto: UpdateSubmissionDto) {
-    updateSubmissionDto = await validateData(
-      UpdateSubmissionDto,
-      updateSubmissionDto,
-    );
-    return this.submissionModel.updateOne({ _id: id }, updateSubmissionDto);
+    try {
+      updateSubmissionDto = await validateData(
+        UpdateSubmissionDto,
+        updateSubmissionDto,
+      );
+    } catch (error) {
+      throw responseError('bad request', { msg: error.message });
+    }
+
+    return this.submissionModel.findByIdAndUpdate(id, updateSubmissionDto);
   }
 
-  async remove(id: string): Promise<DeleteResult> {
-    return await this.submissionModel.deleteOne({ _id: id });
+  /**
+   * 删除指定ID的提交
+   * @param id 提交ID
+   * @param userId 用户ID
+   * @returns 删除结果
+   * @throws
+   * - `not found`: 提交记录不存在
+   * - `forbidden`: 无权删除他人提交记录
+   */
+  async remove(id: string, userId: string): Promise<DeleteResult> {
+    const submission = await this.submissionModel.findById(id);
+
+    if (!submission) {
+      throw responseError('not found', { msg: '提交记录不存在' });
+    }
+
+    if (submission.userId !== userId) {
+      throw responseError('forbidden', { msg: '无权删除他人提交记录' });
+    }
+
+    return await this.submissionModel.findByIdAndDelete(id);
   }
 }
