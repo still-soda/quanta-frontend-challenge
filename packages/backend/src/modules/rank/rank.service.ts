@@ -24,9 +24,8 @@ export class RankService {
    */
   private getRecentRankTime() {
     try {
-      const data = fs.readFileSync('./temp/update-info.json', 'utf-8');
+      const data = fs.readFileSync('./.temp/update-info.json', 'utf-8');
       const { recentRankDate } = JSON.parse(data);
-      console.log(data);
       return new Date(recentRankDate);
     } catch (error) {
       throw responseError('internal server error', {
@@ -45,9 +44,9 @@ export class RankService {
    */
   private updateRecentRankTime(time: Date) {
     try {
-      !fs.existsSync('./temp') && fs.mkdirSync('./temp');
+      !fs.existsSync('./.temp') && fs.mkdirSync('./.temp');
       fs.writeFileSync(
-        `./temp/update-info.json`,
+        `./.temp/update-info.json`,
         JSON.stringify({ recentRankDate: time })
       );
     } catch (error) {

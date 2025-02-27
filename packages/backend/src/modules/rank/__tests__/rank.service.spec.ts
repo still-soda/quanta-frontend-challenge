@@ -72,7 +72,7 @@ describe('RankService', () => {
       expect(findAllSpy).toHaveBeenCalledTimes(1);
 
       expect(writeFileSyncSpy).toHaveBeenCalledTimes(1);
-      expect(writeFileSyncSpy.mock.calls[0][0]).toBe('./temp/update-info.json');
+      expect(writeFileSyncSpy.mock.calls[0][0]).toBe('./.temp/update-info.json');
 
       findAllSpy.mockRestore();
       writeFileSyncSpy.mockRestore();
