@@ -5,7 +5,7 @@ import { SubmissionsModule } from '../../../modules/submissions/submissions.modu
 import { JudgementsService } from '../../judgements/judgements.service';
 import { SubmissionsService } from '../../submissions/submissions.service';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 

@@ -3,7 +3,7 @@ import { NotificationsService } from '../notifications.service';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import { AssetsModule } from '../../../modules/assets/assets.module';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import { AssetsService } from '../../../modules/assets/assets.service';
 import mongoose from 'mongoose';
 import { CreateNotificationDto } from '../dto/create-notification.dto';

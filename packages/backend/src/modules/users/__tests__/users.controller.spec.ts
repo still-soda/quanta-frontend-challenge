@@ -5,7 +5,7 @@ import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import { UsersModule } from '../users.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { AssetsModule } from '../../../modules/assets/assets.module';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import mongoose from 'mongoose';
 
 describe('UsersController', () => {

@@ -4,7 +4,7 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { RankModule } from '../rank.module';
 import { UsersModule } from '../../../modules/users/users.module';
 import { AssetsModule } from '../../../modules/assets/assets.module';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import * as fs from 'fs';
 import mongoose from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -28,7 +28,7 @@ describe('RankService', () => {
         UsersModule,
         AssetsModule,
         createEnvConfModule(),
-        mongoModule
+        mongoModule,
       ],
       providers: [RankService],
     }).compile();
@@ -61,7 +61,7 @@ describe('RankService', () => {
 
       const writeFileSyncSpy = jest
         .spyOn(fs, 'writeFileSync')
-        .mockImplementationOnce(async () => { });
+        .mockImplementationOnce(async () => {});
 
       const result = await rankService.updateRank();
       expect(result).toBeDefined();
@@ -73,7 +73,7 @@ describe('RankService', () => {
 
       expect(writeFileSyncSpy).toHaveBeenCalledTimes(1);
       expect(writeFileSyncSpy.mock.calls[0][0]).toBe(
-        './.temp/update-info.json'
+        './.temp/update-info.json',
       );
 
       findAllSpy.mockRestore();
@@ -100,8 +100,8 @@ describe('RankService', () => {
               { userId: '2', score: 500, rank: 1 },
               { userId: '3', score: 300, rank: 2 },
               { userId: '1', score: 100, rank: 3 },
-            ]
-          }
+            ];
+          },
         })) as any);
 
       const result = await rankService.findRecent();
@@ -112,13 +112,13 @@ describe('RankService', () => {
       expect(result[2].score).toBe(100);
       expect(findSpy).toHaveBeenCalledTimes(1);
       expect(findSpy).toHaveBeenCalledWith({
-        time: new Date('2021-09-01T00:00:00.000Z')
+        time: new Date('2021-09-01T00:00:00.000Z'),
       });
 
       findSpy.mockRestore();
       readFileSyncSpy.mockRestore();
     });
-  })
+  });
 
   describe('findSomeonesHistory', () => {
     it('应该返回某个用户的历史排名', async () => {
@@ -133,22 +133,22 @@ describe('RankService', () => {
                 userId: '2',
                 score: 500,
                 rank: 1,
-                time: new Date('2021-09-01T00:00:00.000Z')
+                time: new Date('2021-09-01T00:00:00.000Z'),
               },
               {
                 userId: '2',
                 score: 400,
                 rank: 2,
-                time: new Date('2021-08-01T00:00:00.000Z')
+                time: new Date('2021-08-01T00:00:00.000Z'),
               },
               {
                 userId: '2',
                 score: 300,
                 rank: 3,
-                time: new Date('2021-07-01T00:00:00.000Z')
+                time: new Date('2021-07-01T00:00:00.000Z'),
               },
-            ]
-          }
+            ];
+          },
         })) as any);
       findSpy.mockClear();
 
@@ -160,7 +160,7 @@ describe('RankService', () => {
       expect(result[2].score).toBe(300);
       expect(findSpy).toHaveBeenCalledTimes(1);
       expect(findSpy).toHaveBeenCalledWith({
-        userId: '2'
+        userId: '2',
       });
 
       findSpy.mockRestore();
@@ -193,27 +193,27 @@ describe('RankService', () => {
                 userId: '2',
                 score: 500,
                 rank: 1,
-                time: new Date('2021-09-01T00:00:00.000Z')
+                time: new Date('2021-09-01T00:00:00.000Z'),
               },
               {
                 userId: '3',
                 score: 400,
                 rank: 2,
-                time: new Date('2021-09-01T00:00:00.000Z')
+                time: new Date('2021-09-01T00:00:00.000Z'),
               },
               {
                 userId: '1',
                 score: 300,
                 rank: 3,
-                time: new Date('2021-09-01T00:00:00.000Z')
+                time: new Date('2021-09-01T00:00:00.000Z'),
               },
-            ]
-          }
+            ];
+          },
         })) as any);
       findSpy.mockClear();
 
       const result = await rankService.findHistorySometime(
-        '2021-09-01T00:00:00.000Z'
+        '2021-09-01T00:00:00.000Z',
       );
       expect(result).toBeDefined();
       expect(result.length).toBe(3);
@@ -222,7 +222,7 @@ describe('RankService', () => {
       expect(result[2].score).toBe(300);
       expect(findSpy).toHaveBeenCalledTimes(1);
       expect(findSpy).toHaveBeenCalledWith({
-        time: new Date('2021-08-31T16:00:00.000Z')
+        time: new Date('2021-08-31T16:00:00.000Z'),
       });
 
       findSpy.mockRestore();

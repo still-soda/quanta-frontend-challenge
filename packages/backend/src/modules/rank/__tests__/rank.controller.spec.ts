@@ -5,7 +5,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { AssetsModule } from '../../../modules/assets/assets.module';
 import { UsersModule } from '../../../modules/users/users.module';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import { RankModule } from '../rank.module';
 import { ROLE } from '../../../common/decorators/auth.decorator';
 
@@ -23,7 +23,7 @@ describe('RankController', () => {
         UsersModule,
         AssetsModule,
         createEnvConfModule(),
-        mockDb.module
+        mockDb.module,
       ],
       providers: [RankService],
     }).compile();
@@ -60,7 +60,7 @@ describe('RankController', () => {
       const res = await controller.findMyHistory({
         id: '123',
         username: 'test',
-        role: ROLE.USER
+        role: ROLE.USER,
       });
       expect(res).toBeDefined();
       expect(findSomeonesHistoryServiceSpy).toHaveBeenCalledTimes(1);
@@ -111,9 +111,11 @@ describe('RankController', () => {
         .spyOn(controller['rankService'], 'findHistorySometime')
         .mockImplementationOnce((async () => ({})) as any);
 
-      const res = await controller.findHistorySometime(new Date().toISOString());
+      const res = await controller.findHistorySometime(
+        new Date().toISOString(),
+      );
       expect(res).toBeDefined();
       expect(findHistorySometimeServiceSpy).toHaveBeenCalledTimes(1);
     });
-  })
+  });
 });

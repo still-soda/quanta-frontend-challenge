@@ -6,7 +6,7 @@ import { JudgementsService } from '../../../modules/judgements/judgements.servic
 import { SubmissionsModule } from '../../../modules/submissions/submissions.module';
 import { SubmissionsService } from '../../../modules/submissions/submissions.service';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import { ActionsModule } from '../../../modules/actions/actions.module';
 import { TasksProcessor } from '../tasks.processor';
 import { TasksModule } from '../tasks.module';
@@ -32,7 +32,7 @@ describe('TasksController', () => {
         createEnvConfModule(),
         mockDb.module,
         TasksModule,
-        ActionsModule
+        ActionsModule,
       ],
       controllers: [TasksController],
     }).compile();

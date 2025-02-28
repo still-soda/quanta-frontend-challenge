@@ -6,7 +6,7 @@ import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import { NotificationsModule } from '../notifications.module';
 import { AssetsModule } from '../../../modules/assets/assets.module';
 import mongoose from 'mongoose';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 
 describe('NotificationsController', () => {
   let notificationsController: NotificationsController;

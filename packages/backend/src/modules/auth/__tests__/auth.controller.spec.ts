@@ -4,7 +4,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import { UsersModule } from '../../../modules/users/users.module';
 import { AuthModule } from '../auth.module';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import { createJwtModule } from '../../../utils/create-jwt.utils';
 import mongoose from 'mongoose';
 import { AuthService } from '../auth.service';

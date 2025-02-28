@@ -8,7 +8,7 @@ import { ChallengesModule } from '../challenges.module';
 import { CHALLENGE_STATUS } from '../../../schemas/challenges.schema';
 import { ROLE } from '../../../common/decorators/auth.decorator';
 import { AssetsModule } from '../../../modules/assets/assets.module';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import { AssetsService } from '../../../modules/assets/assets.service';
 import { randomMongoId } from '../../../utils/testing.utils';
 

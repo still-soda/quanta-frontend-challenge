@@ -6,7 +6,7 @@ import { UsersModule } from '../users.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { AssetsModule } from '../../../modules/assets/assets.module';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 
 describe('UsersService', () => {
   let service: UsersService;

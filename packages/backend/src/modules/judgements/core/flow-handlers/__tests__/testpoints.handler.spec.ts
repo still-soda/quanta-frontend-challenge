@@ -5,7 +5,7 @@ import {
   handleScreenShotTestpointPreAction,
 } from '../testpoints/testpoints.handler';
 import { Browser, chromium } from 'playwright';
-import { createEnvConfModule } from '../../../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../../../utils/create-env.utils';
 
 describe('Testpoints Handler', () => {
   let module: TestingModule;

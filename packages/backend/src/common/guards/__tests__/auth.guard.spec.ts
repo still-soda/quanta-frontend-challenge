@@ -6,7 +6,7 @@ import { AuthGuard } from '../auth.guard';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import mongoose from 'mongoose';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import { createJwtModule } from '../../../utils/create-jwt.utils';
 import { ROLE } from '../../../common/decorators/auth.decorator';
 

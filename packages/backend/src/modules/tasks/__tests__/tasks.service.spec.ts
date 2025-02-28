@@ -5,7 +5,7 @@ import { SubmissionsModule } from '../../../modules/submissions/submissions.modu
 import { JudgementsModule } from '../../../modules/judgements/judgements.module';
 import { UsersModule } from '../../../modules/users/users.module';
 import { ChallengesModule } from '../../../modules/challenges/challenges.module';
-import { createEnvConfModule } from '../../../utils/create-env-conf.utils';
+import { createEnvConfModule } from '../../../utils/create-env.utils';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/create-db.mock.utils';
 import { createMockRedisModule } from '../../../utils/create-redis.mock.utils';
