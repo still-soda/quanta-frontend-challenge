@@ -5,8 +5,8 @@ import { JudgementsModule } from '../../../modules/judgements/judgements.module'
 import { JudgementsService } from '../../../modules/judgements/judgements.service';
 import { SubmissionsModule } from '../../../modules/submissions/submissions.module';
 import { SubmissionsService } from '../../../modules/submissions/submissions.service';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
-import { createEnvConfModule } from '../../../utils/create-env.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import { ActionsModule } from '../../../modules/actions/actions.module';
 import { TasksProcessor } from '../tasks.processor';
 import { TasksModule } from '../tasks.module';

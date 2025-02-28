@@ -4,10 +4,10 @@ import { AuthService } from '../../../modules/auth/auth.service';
 import { UsersModule } from '../../../modules/users/users.module';
 import { AuthGuard } from '../auth.guard';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import mongoose from 'mongoose';
-import { createEnvConfModule } from '../../../utils/create-env.utils';
-import { createJwtModule } from '../../../utils/create-jwt.utils';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
+import { createJwtModule } from '../../../utils/jwt-mock.utils';
 import { ROLE } from '../../../common/decorators/auth.decorator';
 
 describe('AuthGuard', () => {

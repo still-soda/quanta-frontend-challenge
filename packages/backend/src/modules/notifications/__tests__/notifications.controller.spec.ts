@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationsController } from '../notifications.controller';
 import { NotificationsService } from '../notifications.service';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { NotificationsModule } from '../notifications.module';
 import { AssetsModule } from '../../../modules/assets/assets.module';
 import mongoose from 'mongoose';
-import { createEnvConfModule } from '../../../utils/create-env.utils';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
 
 describe('NotificationsController', () => {
   let notificationsController: NotificationsController;

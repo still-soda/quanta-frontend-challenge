@@ -5,8 +5,8 @@ import { ChallengesService } from '../../challenges/challenges.service';
 import { ChallengesModule } from '../../challenges/challenges.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import { createEnvConfModule } from '../../../utils/create-env.utils';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import {
   ClickMouseFlowData,
   ExpectTestpointFlowData,

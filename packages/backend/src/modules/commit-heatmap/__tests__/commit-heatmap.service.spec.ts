@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommitHeatmapService } from '../commit-heatmap.service';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { CommitHeatmapModule } from '../commit-heatmap.module';
 import mongoose from 'mongoose';
 

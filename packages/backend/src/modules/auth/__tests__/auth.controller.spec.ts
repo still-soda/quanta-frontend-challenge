@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { UsersModule } from '../../../modules/users/users.module';
 import { AuthModule } from '../auth.module';
-import { createEnvConfModule } from '../../../utils/create-env.utils';
-import { createJwtModule } from '../../../utils/create-jwt.utils';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
+import { createJwtModule } from '../../../utils/jwt-mock.utils';
 import mongoose from 'mongoose';
 import { AuthService } from '../auth.service';
 import { ROLE } from '../../../common/decorators/auth.decorator';

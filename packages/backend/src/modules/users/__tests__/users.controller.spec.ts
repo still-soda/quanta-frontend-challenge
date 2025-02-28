@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from '../users.controller';
 import { UsersService } from '../users.service';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { UsersModule } from '../users.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { AssetsModule } from '../../../modules/assets/assets.module';
-import { createEnvConfModule } from '../../../utils/create-env.utils';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import mongoose from 'mongoose';
 
 describe('UsersController', () => {

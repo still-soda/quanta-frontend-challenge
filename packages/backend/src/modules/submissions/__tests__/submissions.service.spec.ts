@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SubmissionsService } from '../submissions.service';
 import { SubmissionsModule } from '../submissions.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { CommitHeatmapModule } from '../../../modules/commit-heatmap/commit-heatmap.module';
 import { randomMongoId } from '../../../utils/testing.utils';
 
@@ -95,7 +95,6 @@ describe('SubmissionsService', () => {
       const submissionModelFindByIdAndDeleteSpy = jest
         .spyOn(service['submissionModel'], 'findByIdAndDelete')
         .mockImplementationOnce((async () => ({})) as any);
-
 
       const res = await service.remove(id, id);
       expect(res).toBeDefined();

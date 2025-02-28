@@ -3,7 +3,7 @@ import { AssetsService } from '../assets.service';
 import { ConfigModule } from '@nestjs/config';
 import { AssetsModule } from '../assets.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import mongoose from 'mongoose';
 import { uuidFileNameRegEndWith } from '../../../utils/testing.utils';
 

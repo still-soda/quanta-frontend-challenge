@@ -3,7 +3,7 @@ import { SubmissionsController } from '../submissions.controller';
 import { SubmissionsService } from '../submissions.service';
 import { SubmissionsModule } from '../submissions.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { CommitHeatmapModule } from '../../../modules/commit-heatmap/commit-heatmap.module';
 import mongoose from 'mongoose';
 import { ROLE } from '../../../common/decorators/auth.decorator';
@@ -57,13 +57,16 @@ describe('SubmissionsController', () => {
     it('应该返回我的某个提交', async () => {
       const findOneByIdSpy = jest
         .spyOn(controller['submissionsService'], 'fineOneSubmission')
-        .mockImplementationOnce(async () => ({ id: '1' } as any));
+        .mockImplementationOnce(async () => ({ id: '1' }) as any);
 
-      const result = await controller.findMySubmissionById({
-        id: '1',
-        username: 'test',
-        role: ROLE.USER,
-      }, '1');
+      const result = await controller.findMySubmissionById(
+        {
+          id: '1',
+          username: 'test',
+          role: ROLE.USER,
+        },
+        '1',
+      );
       expect(result).toBeDefined();
       expect(result.data).toEqual({ id: '1' });
       expect(findOneByIdSpy).toHaveBeenCalledTimes(1);
@@ -90,7 +93,10 @@ describe('SubmissionsController', () => {
   describe('getSubmissionCountByChallengeId', () => {
     it('应该返回挑战的提交数量', async () => {
       const getSubmissionCountOfChallengeSpy = jest
-        .spyOn(controller['submissionsService'], 'getSubmissionCountOfChallenge')
+        .spyOn(
+          controller['submissionsService'],
+          'getSubmissionCountOfChallenge',
+        )
         .mockImplementationOnce(async () => 1);
 
       const result = await controller.getSubmissionCountByChallengeId('1');
@@ -107,7 +113,7 @@ describe('SubmissionsController', () => {
       const getPassedRateOfChallengeSpy = jest
         .spyOn(
           controller['submissionsService'],
-          'getSubmissionCountOfChallenge'
+          'getSubmissionCountOfChallenge',
         )
         .mockImplementation(async (_, { status }) => {
           return status === 'passed' ? 1 : 2;
@@ -120,7 +126,7 @@ describe('SubmissionsController', () => {
 
       getPassedRateOfChallengeSpy.mockRestore();
     });
-  })
+  });
 
   describe('getSubmissionRecordsByChallengeId', () => {
     it('应该返回挑战的提交记录', async () => {
@@ -135,5 +141,5 @@ describe('SubmissionsController', () => {
 
       getSubmissionRecordsSpy.mockRestore();
     });
-  })
+  });
 });

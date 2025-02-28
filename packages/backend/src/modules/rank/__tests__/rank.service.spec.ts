@@ -4,7 +4,7 @@ import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { RankModule } from '../rank.module';
 import { UsersModule } from '../../../modules/users/users.module';
 import { AssetsModule } from '../../../modules/assets/assets.module';
-import { createEnvConfModule } from '../../../utils/create-env.utils';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import * as fs from 'fs';
 import mongoose from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';

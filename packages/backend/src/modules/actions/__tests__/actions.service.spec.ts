@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ActionsService } from '../actions.service';
 import { ActionsModule } from '../actions.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { CreateActionDto } from '../dto/create-action.dto';
 import { randomMongoId } from '../../../utils/testing.utils';
 
@@ -36,7 +36,7 @@ describe('ActionsService', () => {
         type: 'test',
         title: 'test',
         userId,
-        payload
+        payload,
       };
 
       const result = await service.create(createActionDto, {
@@ -59,14 +59,16 @@ describe('ActionsService', () => {
         userId: randomMongoId(),
         payload: {
           imageId: 'test_image_id',
-        }
+        },
       };
 
-      await expect(service.create(createActionDto, {
-        id: randomMongoId(),
-        role: 0,
-        username: 'test',
-      })).rejects.toThrow('非超级管理员不能代替别人创建 Action');
+      await expect(
+        service.create(createActionDto, {
+          id: randomMongoId(),
+          role: 0,
+          username: 'test',
+        }),
+      ).rejects.toThrow('非超级管理员不能代替别人创建 Action');
     });
   });
 
@@ -79,10 +81,10 @@ describe('ActionsService', () => {
         userId,
         payload: {
           imageId: 'test_image_id',
-        }
+        },
       };
 
-      const promise = []
+      const promise = [];
       for (let i = 0; i < 3; i++) {
         const p = service.create(createActionDto, {
           id: userId,
@@ -108,7 +110,7 @@ describe('ActionsService', () => {
         userId,
         payload: {
           imageId: 'test_image_id',
-        }
+        },
       };
 
       const action = await service.create(createActionDto, {
@@ -136,11 +138,13 @@ describe('ActionsService', () => {
         title: 'update title',
       };
 
-      await expect(service.update(randomMongoId(), updateActionDto, {
-        id: randomMongoId(),
-        role: 0,
-        username: 'test',
-      })).rejects.toThrow('不存在 Action');
+      await expect(
+        service.update(randomMongoId(), updateActionDto, {
+          id: randomMongoId(),
+          role: 0,
+          username: 'test',
+        }),
+      ).rejects.toThrow('不存在 Action');
     });
 
     it('应该在 id 与 userId 不一致时抛出错误', async () => {
@@ -151,7 +155,7 @@ describe('ActionsService', () => {
         userId,
         payload: {
           imageId: 'test_image_id',
-        }
+        },
       };
 
       const action = await service.create(createActionDto, {
@@ -164,11 +168,13 @@ describe('ActionsService', () => {
         title: 'update title',
       };
 
-      await expect(service.update(action.id, updateActionDto, {
-        id: randomMongoId(),
-        role: 0,
-        username: 'test',
-      })).rejects.toThrow('非超级管理员不能代替别人创建 Action');
+      await expect(
+        service.update(action.id, updateActionDto, {
+          id: randomMongoId(),
+          role: 0,
+          username: 'test',
+        }),
+      ).rejects.toThrow('非超级管理员不能代替别人创建 Action');
     });
   });
 
@@ -181,7 +187,7 @@ describe('ActionsService', () => {
         userId,
         payload: {
           imageId: 'test_image_id',
-        }
+        },
       };
 
       const action = await service.create(createActionDto, {
@@ -201,11 +207,13 @@ describe('ActionsService', () => {
     });
 
     it('应该在 id 不存在时抛出错误', async () => {
-      await expect(service.remove(randomMongoId(), {
-        id: randomMongoId(),
-        role: 0,
-        username: 'test',
-      })).rejects.toThrow('不存在 Action');
+      await expect(
+        service.remove(randomMongoId(), {
+          id: randomMongoId(),
+          role: 0,
+          username: 'test',
+        }),
+      ).rejects.toThrow('不存在 Action');
     });
 
     it('应该在 id 与 userId 不一致时抛出错误', async () => {
@@ -216,7 +224,7 @@ describe('ActionsService', () => {
         userId,
         payload: {
           imageId: 'test_image_id',
-        }
+        },
       };
 
       const action = await service.create(createActionDto, {
@@ -225,11 +233,13 @@ describe('ActionsService', () => {
         username: 'test',
       });
 
-      await expect(service.remove(action.id, {
-        id: randomMongoId(),
-        role: 0,
-        username: 'test',
-      })).rejects.toThrow('非超级管理员不能代替别人创建 Action');
+      await expect(
+        service.remove(action.id, {
+          id: randomMongoId(),
+          role: 0,
+          username: 'test',
+        }),
+      ).rejects.toThrow('非超级管理员不能代替别人创建 Action');
     });
   });
 });

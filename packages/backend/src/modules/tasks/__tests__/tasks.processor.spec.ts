@@ -4,8 +4,8 @@ import { JudgementsModule } from '../../../modules/judgements/judgements.module'
 import { SubmissionsModule } from '../../../modules/submissions/submissions.module';
 import { JudgementsService } from '../../judgements/judgements.service';
 import { SubmissionsService } from '../../submissions/submissions.service';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
-import { createEnvConfModule } from '../../../utils/create-env.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 

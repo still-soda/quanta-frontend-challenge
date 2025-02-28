@@ -3,7 +3,7 @@ import { ActionsController } from '../actions.controller';
 import { ActionsService } from '../actions.service';
 import { ActionsModule } from '../actions.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { ROLE } from '../../../common/decorators/auth.decorator';
 
 describe('ActionsController', () => {
@@ -31,7 +31,7 @@ describe('ActionsController', () => {
     it('应该正确返回用户的所有 Action', async () => {
       const actionService = controller['actionsService'];
       const mockResult = [
-        { id: 'test_id', type: 'test', title: 'test', payload: '{}' }
+        { id: 'test_id', type: 'test', title: 'test', payload: '{}' },
       ];
 
       const mockFind = jest
@@ -51,13 +51,13 @@ describe('ActionsController', () => {
       });
       expect(mockFind).toHaveBeenCalledTimes(1);
     });
-  })
+  });
 
   describe('getAction', () => {
     it('应该正确返回 Action 信息', async () => {
       const actionService = controller['actionsService'];
       const mockResult = [
-        { id: 'test_id', type: 'test', title: 'test', payload: '{}' }
+        { id: 'test_id', type: 'test', title: 'test', payload: '{}' },
       ];
 
       const mockFind = jest
@@ -74,5 +74,5 @@ describe('ActionsController', () => {
       });
       expect(mockFind).toHaveBeenCalledTimes(1);
     });
-  })
+  });
 });

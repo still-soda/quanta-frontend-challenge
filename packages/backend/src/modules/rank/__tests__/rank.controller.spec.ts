@@ -4,8 +4,8 @@ import { RankService } from '../rank.service';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { AssetsModule } from '../../../modules/assets/assets.module';
 import { UsersModule } from '../../../modules/users/users.module';
-import { createMockDBModule } from '../../../utils/create-db.mock.utils';
-import { createEnvConfModule } from '../../../utils/create-env.utils';
+import { createMockDBModule } from '../../../utils/db-mock.utils';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import { RankModule } from '../rank.module';
 import { ROLE } from '../../../common/decorators/auth.decorator';
 
