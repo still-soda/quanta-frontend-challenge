@@ -189,4 +189,23 @@ describe('TasksService', () => {
       tasksService.pushPreExecuteJob(options as any),
     ).rejects.toThrow(msg);
   });
+
+  it('应该正确上传流程数据', async () => {
+    const challengeId = 'challengeId';
+    const userId = 'userId';
+    const data = 'data';
+
+    const uploadFlowDataSpy = jest
+      .spyOn(tasksService, 'uploadFlowData')
+      .mockImplementationOnce(() => true as any);
+
+    const response = await tasksService.uploadFlowData(
+      challengeId,
+      userId,
+      data,
+    );
+
+    expect(uploadFlowDataSpy).toHaveBeenCalledWith(challengeId, userId, data);
+    expect(response).toBeTruthy();
+  });
 });

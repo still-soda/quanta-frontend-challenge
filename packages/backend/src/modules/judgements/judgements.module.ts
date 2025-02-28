@@ -6,5 +6,6 @@ import { ChallengesModule } from '../challenges/challenges.module';
 @Module({
   imports: [AssetsModule, ChallengesModule],
   providers: [JudgementsService],
+  exports: [JudgementsService],
 })
 export class JudgementsModule {}

@@ -6,14 +6,16 @@ import { SubmissionsService } from '../submissions/submissions.service';
 import { ChallengesService } from '../challenges/challenges.service';
 import { UsersService } from '../users/users.service';
 import { ActionsService } from '../actions/actions.service';
+import { responseError } from '../../utils/http-response.utils';
+import { JudgementsService } from '../judgements/judgements.service';
 
-interface ExecuteTasksOptions {
+export interface ExecuteTasksOptions {
   challengeId: string;
   submitFileId: string;
   userId: string;
 }
 
-interface PreExecuteTasksOptions {
+export interface PreExecuteTasksOptions {
   challengeId: string;
   userId: string;
 }
@@ -26,8 +28,55 @@ export class TasksService {
     private readonly submissionsService: SubmissionsService,
     private readonly challengesService: ChallengesService,
     private readonly usersService: UsersService,
-    private readonly actionsService: ActionsService
-  ) { }
+    private readonly actionsService: ActionsService,
+    private readonly judgementsService: JudgementsService,
+  ) {}
+
+  /**
+   * 上传 Flow 数据。
+   *
+   * 会对挑战 ID 和用户 ID 进行校验，如果找不到对应的 Challenge 或
+   * userId 不等于 Challenge 的 authorId，会抛出异常。
+   *
+   * @param challengeId 挑战 ID
+   * @param userId 用户 ID
+   * @param flowData Flow 数据
+   * @returns 是否上传成功
+   * @throws
+   * - `not found`: 找不到 Challenge
+   * - `forbidden`: 无权上传数据
+   * - `bad request`: 数据格式错误
+   * - `internal server error`: 上传失败
+   */
+  async uploadFlowData(challengeId: string, userId: string, flowData: any) {
+    const challenge = await this.challengesService.findOne(challengeId);
+    if (!challenge) {
+      throw responseError('not found', { msg: '找不到 Challenge' });
+    }
+
+    if (challenge.authorId !== userId) {
+      throw responseError('forbidden', { msg: '无权上传数据' });
+    }
+
+    let result: Awaited<ReturnType<JudgementsService['serializeFlowData']>>;
+    try {
+      result = await this.judgementsService.serializeFlowData(
+        challengeId,
+        flowData,
+      );
+    } catch (error) {
+      throw responseError('bad request', { msg: error.message });
+    }
+
+    if (!result.ok) {
+      throw responseError('internal server error', {
+        msg: '序列化数据失败',
+        withoutStack: false,
+      });
+    }
+
+    return result.ok;
+  }
 
   /**
    * 推送执行任务到队列。
@@ -42,19 +91,19 @@ export class TasksService {
    * - `userId`: 用户 ID
    * @returns 任务 ID
    * @throws
-   * - `Error`: 找不到 Challenge
-   * - `Error`: 找不到 User
+   * - `not found`: 找不到 Challenge
+   * - `not found`: 找不到 User
    */
   async pushExecuteJob(options: ExecuteTasksOptions) {
     const { challengeId, userId, submitFileId } = options;
 
     const challenge = await this.challengesService.findOne(challengeId);
     if (!challenge) {
-      throw new Error('找不到 Challenge');
+      throw responseError('not found', { msg: '找不到 Challenge' });
     }
 
     if (!(await this.usersService.findOne(userId))) {
-      throw new Error('找不到 User');
+      throw responseError('not found', { msg: '找不到 User' });
     }
 
     const { id: submissionId } = await this.submissionsService.create({
@@ -64,12 +113,15 @@ export class TasksService {
     });
 
     // 记录 Action
-    await this.actionsService.create({
-      type: 'commit',
-      title: `提交了 ${challenge.title} 的答案`,
-      payload: { challengeId, submissionId },
-      userId,
-    }, { id: userId, role: 0, username: undefined });
+    await this.actionsService.create(
+      {
+        type: 'commit',
+        title: `提交了 ${challenge.title} 的答案`,
+        payload: { challengeId, submissionId },
+        userId,
+      },
+      { id: userId, role: 0, username: undefined },
+    );
 
     return await this.tasksQueue.add('execute', {
       challengeId,
@@ -90,18 +142,18 @@ export class TasksService {
    * - `userId`: 用户 ID
    * @returns 任务 ID
    * @throws
-   * - `Error`: 找不到 Challenge
-   * - `Error`: 找不到 User
+   * - `not found`: 找不到 Challenge
+   * - `not found`: 找不到 User
    */
   async pushPreExecuteJob(options: PreExecuteTasksOptions) {
     const { challengeId, userId } = options;
 
     if (!(await this.challengesService.findOne(challengeId))) {
-      throw new Error('找不到 Challenge');
+      throw responseError('not found', { msg: '找不到 Challenge' });
     }
 
     if (!(await this.usersService.findOne(userId))) {
-      throw new Error('找不到 User');
+      throw responseError('not found', { msg: '找不到 User' });
     }
 
     const { id: submissionId } = await this.submissionsService.create({

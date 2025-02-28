@@ -10,6 +10,8 @@ import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import { ActionsModule } from '../../../modules/actions/actions.module';
 import { TasksProcessor } from '../tasks.processor';
 import { TasksModule } from '../tasks.module';
+import { ROLE } from '../../../common/decorators/auth.decorator';
+import mongoose from 'mongoose';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -45,7 +47,55 @@ describe('TasksController', () => {
     processor = new TasksProcessor(judgementsService, submissionService);
   });
 
+  afterAll(async () => {
+    await module.close();
+    await mongoose.disconnect();
+    await mongodb.stop();
+  });
+
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('应该正确调用 service 的 uploadFlowData 方法', async () => {
+    const service = controller['tasksService'];
+    const uploadFlowDataSpy = jest
+      .spyOn(service, 'uploadFlowData')
+      .mockImplementationOnce(async () => {
+        return { id: 123 } as any;
+      });
+    const user = { id, username: 'test', role: ROLE.USER };
+    const body = { challengeId: '1', data: {} };
+    const res = await controller.uploadFlowData(user, body);
+    expect(res).toHaveProperty('code', 200);
+    expect(uploadFlowDataSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('应该正确调用 service 的 launchPreExecute', async () => {
+    const service = controller['tasksService'];
+    const launchPreExecuteSpy = jest
+      .spyOn(service, 'pushPreExecuteJob')
+      .mockImplementationOnce(async () => {
+        return { id: 123 } as any;
+      });
+    const user = { id, username: 'test', role: ROLE.USER };
+    const body = { challengeId: '1' };
+    const res = await controller.launchPreExecute(user, body);
+    expect(res).toHaveProperty('data.jobId', '123');
+    expect(launchPreExecuteSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('应该正确调用 service 的 launchExecute', async () => {
+    const service = controller['tasksService'];
+    const launchExecuteSpy = jest
+      .spyOn(service, 'pushExecuteJob')
+      .mockImplementationOnce(async () => {
+        return { id: 123 } as any;
+      });
+    const user = { id, username: 'test', role: ROLE.USER };
+    const body = { challengeId: '1', submitFileId: '2' };
+    const res = await controller.launchExecute(user, body);
+    expect(res).toHaveProperty('data.jobId', '123');
+    expect(launchExecuteSpy).toHaveBeenCalledTimes(1);
   });
 });
