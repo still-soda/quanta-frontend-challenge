@@ -8,7 +8,7 @@ import * as crypto from 'crypto';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { of, tap } from 'rxjs';
-import { CachesService } from 'src/modules/caches/caches.service';
+import { CachesService } from '../../modules/caches/caches.service';
 import { ConfigService } from '@nestjs/config';
 
 interface Response {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { SchemaProp } from 'src/utils/schema-prop.util';
+import { SchemaProp } from '../../../utils/schema-prop.util';
 
 /**
  * 用户获取挑战的 DTO，比完整的文档的少一些字段

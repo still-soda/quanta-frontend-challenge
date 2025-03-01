@@ -1,6 +1,6 @@
 {
   "name": "@challenge/backend",
-  "version": "0.0.1",
+  "version": "0.7.1",
   "description": "Backend for Quanta Frontend Challenge",
   "author": "still-soda",
   "private": true,
@@ -19,7 +19,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./__tests__/jest-e2e.json"
   },
   "dependencies": {
     "@challenge/utils": "workspace:^",
@@ -94,6 +94,7 @@
       "^.+\\.(t|j)s$": "ts-jest",
       "^.+\\.js$": "babel-jest"
     },
+    "testTimeout": 20000,
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],

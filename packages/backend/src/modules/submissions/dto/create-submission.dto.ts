@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsEnum, IsString } from 'class-validator';
-import { SubmissionType } from 'src/schemas/submissions.schema';
+import { SubmissionType } from '../../../schemas/submissions.schema';
 
 export class CreateSubmissionDto {
   @ApiProperty({ example: '1234556', description: '挑战ID' })

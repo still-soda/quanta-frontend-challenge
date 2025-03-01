@@ -11,7 +11,7 @@ import {
 } from '../judgements/judgements.service';
 import { Logger } from '@nestjs/common';
 import { SubmissionsService } from '../submissions/submissions.service';
-import { SubmissionType } from 'src/schemas/submissions.schema';
+import { SubmissionType } from '../../schemas/submissions.schema';
 
 export type TaskJob = Job<{
   challengeId: string;

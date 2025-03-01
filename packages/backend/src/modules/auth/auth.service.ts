@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
-import { Role, UsersDocument } from 'src/schemas/users.schema';
+import { Role, UsersDocument } from '../../schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';

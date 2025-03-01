@@ -3,7 +3,7 @@ import { AuthService } from '../../modules/auth/auth.service';
 import { Reflector } from '@nestjs/core';
 import { responseError } from '../../utils/http-response.utils';
 import { ROLE } from '../decorators/auth.decorator';
-import { Role } from 'src/schemas/users.schema';
+import { Role } from '../../schemas/users.schema';
 
 /**
  * 验证用户身份令牌的守卫，需要在控制器方法上添加 `@Auth()` 装饰器。
