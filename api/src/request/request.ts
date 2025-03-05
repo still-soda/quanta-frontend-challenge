@@ -25,8 +25,11 @@ export function setBaseUrl(url: string) {
  * @param query Query 参数
  * @returns URL
  */
-const constructURL = (baseUrl: string, query: Map<string, any>): string => {
-   const entries = Array.from(query.entries());
+const constructURL = (
+   baseUrl: string,
+   query: { [key: string]: string | number }
+): string => {
+   const entries = Object.entries(query);
 
    let url = baseUrl;
    entries.length > 0 && (url += '?');
@@ -50,7 +53,7 @@ export async function request(
    const token = getToken();
    options.headers = {
       ...options.headers,
-      Authorization: token ?? '',
+      authorization: token ?? '',
    };
 
    const response = await fetch(`${BASE_URL}${url}`, options)
@@ -80,7 +83,7 @@ export async function request(
  * @param options 请求配置
  * @returns Promise
  */
-export async function get<T extends { [k: string]: string } = any>(
+export async function get<T extends { [k: string]: any } = any>(
    url: string,
    options: RequestOptions = {}
 ): Promise<T> {
@@ -96,7 +99,7 @@ export async function get<T extends { [k: string]: string } = any>(
  * @param options 请求配置
  * @returns Promise
  */
-export async function post<T extends { [k: string]: string } = any>(
+export async function post<T extends { [k: string]: any } = any>(
    url: string,
    options: RequestOptions = {}
 ): Promise<T> {
@@ -112,7 +115,7 @@ export async function post<T extends { [k: string]: string } = any>(
  * @param options 请求配置
  * @returns Promise
  */
-export async function put<T extends { [k: string]: string } = any>(
+export async function put<T extends { [k: string]: any } = any>(
    url: string,
    options: RequestOptions = {}
 ): Promise<T> {
@@ -128,7 +131,7 @@ export async function put<T extends { [k: string]: string } = any>(
  * @param options 请求配置
  * @returns Promise
  */
-export async function del<T extends { [k: string]: string } = any>(
+export async function del<T extends { [k: string]: any } = any>(
    url: string,
    options: RequestOptions = {}
 ): Promise<T> {

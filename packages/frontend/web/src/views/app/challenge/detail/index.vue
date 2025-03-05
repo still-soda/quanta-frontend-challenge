@@ -25,12 +25,25 @@
                </div>
             </SlideTabItem>
          </SlideTabContainer>
-         <Transition name="main" mode="out-in" :duration="300">
-            <KeepAlive>
-               <Content v-if="activeIndex === 0" />
-               <History v-else />
-            </KeepAlive>
-         </Transition>
+         <div
+            class="overflow-hidden ease-out"
+            :class="{
+               'transition-all duration-500': enableTransition,
+            }"
+            :style="{ height: containerHeight + 'px' }">
+            <div ref="container">
+               <Transition
+                  name="main"
+                  mode="out-in"
+                  :duration="300"
+                  @enter="onEnter">
+                  <KeepAlive>
+                     <Content v-if="activeIndex === 0" />
+                     <History v-else />
+                  </KeepAlive>
+               </Transition>
+            </div>
+         </div>
       </BaseContainer>
       <div>
          <Transition name="aside" mode="out-in" :duration="300">
@@ -42,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { nextTick, onBeforeMount, onMounted, ref, useTemplateRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { BaseContainer, SlideTabContainer, SlideTabItem } from '@/components';
@@ -62,6 +75,23 @@ onBeforeMount(() => {
       router.push('/error/404');
    }
 });
+
+const container = useTemplateRef<HTMLDivElement>('container');
+const containerHeight = ref(0);
+const enableTransition = ref(false);
+
+onMounted(async () => {
+   onEnter();
+   await nextTick();
+   onEnter();
+   await nextTick();
+   enableTransition.value = true;
+});
+
+const onEnter = () => {
+   container.value &&
+      (containerHeight.value = container.value.getBoundingClientRect().height);
+};
 </script>
 
 <style scoped>
@@ -69,7 +99,10 @@ onBeforeMount(() => {
 .main-leave-active,
 .aside-enter-active,
 .aside-leave-active {
-   transition: opacity 0.3s, transform 0.3s, filter 0.3s;
+   transition:
+      opacity 0.3s,
+      transform 0.3s,
+      filter 0.3s;
 }
 
 .main-enter-from,
