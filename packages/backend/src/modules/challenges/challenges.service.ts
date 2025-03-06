@@ -13,7 +13,7 @@ import { UserData } from '../../common/decorators/user.decorator';
 import { responseError } from '../../utils/http-response.utils';
 import { isMongoId } from 'class-validator';
 import { ROLE } from '../../common/decorators/auth.decorator';
-import { AssetsService } from '../assets/assets.service';
+import { AssetsService, MulterFile } from '../assets/assets.service';
 import { ChallengeSwitchStatusDto } from './dto/switch-status.dto';
 
 @Injectable()
@@ -417,6 +417,69 @@ export class ChallengesService {
     return this.challengeModel.findByIdAndUpdate(
       challengeId,
       { $push: { fastestSolvers: userId } },
+      { new: true },
+    );
+  }
+
+  /**
+   * 上传用户作答模板
+   * @param options 上传用户作答模板数据
+   * - `challengeId` 挑战ID
+   * - `answerTemplates` 用户作答模板文件列表
+   * - `user` 当前用户
+   * @returns 更新后的挑战数据
+   * @throws
+   * - `not found` 挑战不存在
+   * - `forbidden` 非超级管理员不能代替作者上传用户作答模板
+   * - `internal server error` 上传用户作答模板失败
+   */
+  async uploadAnswerTemplate(options: {
+    challengeId: string;
+    answerTemplates: MulterFile[];
+    user: UserData;
+  }) {
+    const { challengeId, answerTemplates, user } = options;
+    const challenge = await this.findOne(challengeId);
+
+    if (!challenge) {
+      throw responseError('not found', { msg: '挑战不存在' });
+    }
+
+    if (challenge.authorId !== user.id && user.role < ROLE.SUPER_ADMIN) {
+      throw responseError('forbidden', {
+        msg: '非超级管理员不能代替作者上传用户作答模板',
+      });
+    }
+
+    const promises: Promise<string>[] = [];
+    answerTemplates.forEach(async (file) => {
+      promises.push(
+        new Promise(async (resolve, reject) => {
+          const { ok, id } = await this.assetsService.saveFileAsStatic({
+            file: file.buffer,
+            mimeType: file.mimetype as any,
+            name: file.originalname,
+          });
+
+          ok
+            ? resolve(id)
+            : reject(
+                responseError('internal server error', {
+                  msg: '上传用户作答模板失败',
+                  withoutStack: false,
+                }),
+              );
+        }),
+      );
+    });
+
+    const answerTemplateIds = await Promise.all(promises).catch((error) => {
+      throw error;
+    });
+
+    return await this.challengeModel.findByIdAndUpdate(
+      challengeId,
+      { answerTemplate: answerTemplateIds },
       { new: true },
     );
   }

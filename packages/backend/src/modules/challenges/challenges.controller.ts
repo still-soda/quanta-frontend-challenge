@@ -6,6 +6,8 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
 import {
@@ -27,6 +29,9 @@ import {
   UserGetChallengeDto,
   userGetChallengeProps,
 } from './dto/user-get-challenge.dto';
+import { MulterFile } from '../assets/assets.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @Controller('challenges')
 export class ChallengesController {
@@ -417,6 +422,84 @@ export class ChallengesController {
     const result = await this.challengesService.uploadStandardAnswer({
       challengeId: body.challengeId,
       standardAnswer: body.content,
+      user,
+    });
+    return responseSuccess('ok', result, '上传成功');
+  }
+
+  /**
+   * 上传用户作答模板。
+   *
+   * 调用该接口会覆盖性地上传用户作答模板。
+   *
+   * 文件大小限制为 2MB，只能上传文本文件。
+   *
+   * @param body 挑战ID
+   * - `challengeId` 挑战ID
+   * @param user 当前用户
+   * @param files 用户作答模板文件
+   */
+  @ApiOperation({
+    summary: '上传用户作答模板',
+    description:
+      '调用该接口会覆盖性地上传用户作答模板。\n' +
+      '文件大小限制为 2MB，只能上传文本文件。',
+  })
+  @ApiNeedAuth({ level: ROLE.ADMIN })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        challengeId: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '上传成功',
+    schema: responseSchema('ok', '上传成功'),
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: '挑战不存在',
+    schema: responseSchema('not found', '挑战不存在'),
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: '非超级管理员不能代替作者上传用户作答模板',
+    schema: responseSchema(
+      'forbidden',
+      '非超级管理员不能代替作者上传用户作答模板',
+    ),
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: '上传用户作答模板失败',
+    schema: responseSchema('internal server error', '上传用户作答模板失败'),
+  })
+  @UseInterceptors(
+    FileInterceptor('files', {
+      limits: { fileSize: 2 * 1024 * 1024 }, // 最大文件大小 2MB
+      fileFilter: (_, file, callback) => {
+        if (!file.mimetype.startsWith('text/')) {
+          return callback(new Error('只能上传图片文件'), false);
+        }
+        callback(null, true);
+      },
+      storage: memoryStorage(),
+    }),
+  )
+  @HttpCode(200)
+  @Auth(ROLE.ADMIN)
+  @Post('/upload-answer-templates')
+  async uploadAnswerTemplates(
+    @CurrentUser() user: UserData,
+    @UploadedFiles() files: MulterFile[],
+    @Body() body: { challengeId: string },
+  ) {
+    const result = await this.challengesService.uploadAnswerTemplate({
+      answerTemplates: files,
+      challengeId: body.challengeId,
       user,
     });
     return responseSuccess('ok', result, '上传成功');

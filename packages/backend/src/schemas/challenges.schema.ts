@@ -85,12 +85,20 @@ export class Challenges extends Document {
   flowdataId?: string;
 
   @ApiProperty({
-    example: ['1.html', '2.html', '3.html'],
+    example: ['1bxxx1', '2bxxx2', '3bxxx3'],
     default: [],
-    description: '标准答案文件名列表',
+    description: '标准答案文件 ID 列表',
   })
   @Prop({ default: [] })
   standardAnswer: string[];
+
+  @ApiProperty({
+    example: ['1bxxx1', '2bxxx2', '3bxxx3'],
+    default: [],
+    description: '用户作答模板文件 ID 列表',
+  })
+  @Prop({ default: [] })
+  answerTemplate: string[];
 
   @ApiProperty({
     example: ['1bxxx1', '2bxxx2', '3bxxx3'],

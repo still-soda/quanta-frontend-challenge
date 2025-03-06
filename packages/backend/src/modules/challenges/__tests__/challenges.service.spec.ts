@@ -493,4 +493,53 @@ describe('ChallengesService', () => {
       expect(mockSaveTextFile).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('uploadAnswerTemplate', () => {
+    it('应该正确上传用户作答模板', async () => {
+      const created = await createOne();
+      const mockSaveTextFileAsStatic = jest
+        .spyOn(assetsService, 'saveFileAsStatic')
+        .mockImplementation(() => {
+          return Promise.resolve({
+            ok: true,
+            id: 'test_id',
+          }) as any;
+        });
+      mockSaveTextFileAsStatic.mockClear();
+
+      const updated = await challengesService.uploadAnswerTemplate({
+        challengeId: created.id,
+        answerTemplates: [{}, {}] as any,
+        user: {
+          id: 'test author id',
+          role: ROLE.ADMIN,
+          username: 'test author',
+        },
+      });
+      expect(updated.answerTemplate).toEqual(['test_id', 'test_id']);
+      expect(mockSaveTextFileAsStatic).toHaveBeenCalledTimes(2);
+    });
+
+    it('保存模板出错时应该报错', async () => {
+      const created = await createOne();
+      jest.spyOn(assetsService, 'saveFileAsStatic').mockImplementation(() => {
+        return Promise.resolve({
+          ok: false,
+          id: 'test_id',
+        }) as any;
+      });
+
+      await expect(
+        challengesService.uploadAnswerTemplate({
+          challengeId: created.id,
+          answerTemplates: [{}, {}] as any,
+          user: {
+            id: 'test author id',
+            role: ROLE.ADMIN,
+            username: 'test author',
+          },
+        }),
+      ).rejects.toThrow('上传用户作答模板失败');
+    });
+  });
 });
