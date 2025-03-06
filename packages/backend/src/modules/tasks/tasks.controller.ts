@@ -11,18 +11,13 @@ import {
   TasksService,
 } from './tasks.service';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
-import {
-  ApiNeedAuth,
-  Auth,
-  ROLE,
-} from '../../common/decorators/auth.decorator';
+import { Auth, ROLE } from '../../common/decorators/auth.decorator';
 import {
   responseError,
-  responseSchema,
   responseSuccess,
 } from '../../utils/http-response.utils';
 import { IpLimit } from '../../common/decorators/ip-limit.decorator';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { TasksDoc } from './tasks.doc';
 
 interface UploadFlowDataBody {
   challengeId: string;
@@ -49,42 +44,7 @@ export class TasksController {
    * - `bad request`: 数据格式错误
    * - `internal server error`: 上传失败
    */
-  @ApiOperation({
-    summary: '上传 Flow 数据',
-    description:
-      '会对挑战 ID 和用户 ID 进行校验，如果找不到对应的 Challenge 或 userId 不等于 Challenge 的 authorId，会抛出异常。',
-  })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string', description: '挑战 ID' },
-        data: { type: 'object', description: 'Flow 数据' },
-      },
-      required: ['challengeId', 'data'],
-    },
-  })
-  @ApiResponse({
-    status: 200,
-    description: '上传成功',
-    schema: responseSchema('ok', '上传成功'),
-  })
-  @ApiResponse({
-    status: 400,
-    description: '数据格式错误',
-    schema: responseSchema('bad request', '数据格式错误'),
-  })
-  @ApiResponse({
-    status: 403,
-    description: '无权上传数据',
-    schema: responseSchema('forbidden', '无权上传数据'),
-  })
-  @ApiResponse({
-    status: 404,
-    description: '找不到 Challenge',
-    schema: responseSchema('not found', '找不到 Challenge'),
-  })
+  @TasksDoc.forRoute('/upload-flow-data')
   @HttpCode(200)
   @Post('upload-flow-data')
   @Auth(ROLE.ADMIN)
@@ -111,30 +71,7 @@ export class TasksController {
    * - `not found`: 找不到预执行任务
    * - `bad request`: 预执行任务创建失败
    */
-  @ApiOperation({
-    summary: '启动预执行任务',
-    description: '启动预执行任务',
-  })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string', description: '挑战 ID' },
-      },
-      required: ['challengeId'],
-    },
-  })
-  @ApiResponse({
-    status: 201,
-    description: '预执行任务创建成功',
-    schema: responseSchema('created', '预执行任务创建成功'),
-  })
-  @ApiResponse({
-    status: 400,
-    description: '预执行任务创建失败',
-    schema: responseSchema('bad request', '预执行任务创建失败'),
-  })
+  @TasksDoc.forRoute('/launch-pre-execute')
   @HttpCode(201)
   @Post('launch-pre-execute')
   @Auth(ROLE.ADMIN)
@@ -170,30 +107,7 @@ export class TasksController {
    * @throws
    * - `bad request`: 执行任务创建失败
    */
-  @ApiOperation({
-    summary: '启动执行任务',
-    description: '启动执行任务',
-  })
-  @ApiNeedAuth()
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string', description: '挑战 ID' },
-      },
-      required: ['challengeId'],
-    },
-  })
-  @ApiResponse({
-    status: 201,
-    description: '执行任务创建成功',
-    schema: responseSchema('created', '执行任务创建成功'),
-  })
-  @ApiResponse({
-    status: 400,
-    description: '执行任务创建失败',
-    schema: responseSchema('bad request', '执行任务创建失败'),
-  })
+  @TasksDoc.forRoute('/launch-execute')
   @HttpCode(201)
   @Post('launch-execute')
   @Auth()
