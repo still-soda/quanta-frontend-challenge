@@ -358,4 +358,67 @@ export class ChallengesController {
     const filteredResult = filterData(UserGetChallengeDto, result);
     return responseSuccess('ok', filteredResult, '切换成功');
   }
+
+  /**
+   * 上传标准答案。
+   *
+   * 调用该接口会覆盖性地上传标准答案。
+   *
+   * @param body 挑战ID
+   * - `challengeId` 挑战ID
+   * - `content` 标准答案内容
+   * @param user 当前用户
+   */
+  @ApiOperation({
+    summary: '上传标准答案',
+    description: '调用该接口会覆盖性地上传标准答案。',
+  })
+  @ApiNeedAuth({ level: ROLE.ADMIN })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        challengeId: { type: 'string' },
+        content: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '上传成功',
+    schema: responseSchema('ok', '上传成功'),
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: '挑战不存在',
+    schema: responseSchema('not found', '挑战不存在'),
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: '非超级管理员不能代替作者上传标准答案',
+    schema: responseSchema('forbidden', '非超级管理员不能代替作者上传标准答案'),
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: '上传标准答案失败',
+    schema: responseSchema('internal server error', '上传标准答案失败'),
+  })
+  @HttpCode(200)
+  @Auth(ROLE.ADMIN)
+  @Post('/upload-standard-answer')
+  async uploadStandardAnswer(
+    @CurrentUser() user: UserData,
+    @Body()
+    body: {
+      challengeId: string;
+      content: string;
+    },
+  ) {
+    const result = await this.challengesService.uploadStandardAnswer({
+      challengeId: body.challengeId,
+      standardAnswer: body.content,
+      user,
+    });
+    return responseSuccess('ok', result, '上传成功');
+  }
 }

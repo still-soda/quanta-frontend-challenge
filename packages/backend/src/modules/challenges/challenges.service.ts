@@ -354,6 +354,54 @@ export class ChallengesService {
   }
 
   /**
+   * 上传挑战标准答案（覆盖性上传）
+   * @todo 测试
+   * @todo 上传多个标准答案文件
+   * @param options 上传标准答案数据
+   * - `challengeId` 挑战ID
+   * - `standardAnswer` 标准答案内容
+   * - `user` 当前用户
+   * @returns 更新后的挑战数据
+   * @throws
+   * - `not found` 挑战不存在
+   * - `forbidden` 非超级管理员不能代替作者上传截图
+   * - `internal server error` 上传标准答案失败
+   */
+  async uploadStandardAnswer(options: {
+    challengeId: string;
+    standardAnswer: string;
+    user: UserData;
+  }) {
+    const { challengeId, standardAnswer, user } = options;
+    const challenge = await this.findOne(challengeId);
+
+    if (!challenge) {
+      throw responseError('not found', { msg: '挑战不存在' });
+    }
+
+    if (challenge.authorId !== user.id && user.role < ROLE.SUPER_ADMIN) {
+      throw responseError('forbidden', {
+        msg: '非超级管理员不能代替作者上传标准答案',
+      });
+    }
+
+    const { ok, id } = await this.assetsService.saveTextFile({
+      content: standardAnswer,
+      mimeType: 'text/html',
+      name: `std-ans-${challengeId}.html`,
+    });
+
+    if (!ok) {
+      throw responseError('internal server error', {
+        msg: '上传标准答案失败',
+        withoutStack: false,
+      });
+    }
+
+    return this.setStandardAnswer(challengeId, [id]);
+  }
+
+  /**
    * 解决挑战
    * @private 仅供内部调用
    * @param challengeId 挑战id

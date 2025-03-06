@@ -85,7 +85,7 @@ export class AssetsService {
     const { content, name, mimeType } = options;
 
     if (content === '' || !content) {
-      return { ok: false, fileName: '' };
+      return { ok: false, fileName: '', id: '' };
     }
 
     const fileName = convertNameToUuid(name);
@@ -98,7 +98,7 @@ export class AssetsService {
         mimeType: mimeType,
         isStatic: false,
       });
-      return { ok: true, fileName, id };
+      return { ok: true, fileName, id: id as string };
     } catch (error) {
       console.error(error, content);
       return { ok: false, fileName: '', id: '' };
