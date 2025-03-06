@@ -476,4 +476,14 @@ export class AssetsService {
 
     return { exists, isStatic };
   }
+
+  /**
+   * 获取文件元数据列表
+   * @param idList 文件元数据 Id 列表
+   * @returns 文件元数据列表
+   */
+  async getFileMataDataByIdList(idList: string[]) {
+    const promises = idList.map((id) => this.getFileMetadataById(id));
+    return await Promise.all(promises);
+  }
 }

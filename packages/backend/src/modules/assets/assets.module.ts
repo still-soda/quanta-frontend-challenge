@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Assets, AssetsSchema } from '../../schemas/assets.schema';
+import { AssetsController } from './assets.controller';
 
 @Module({
   imports: [
@@ -9,5 +10,6 @@ import { Assets, AssetsSchema } from '../../schemas/assets.schema';
   ],
   providers: [AssetsService],
   exports: [AssetsService, MongooseModule],
+  controllers: [AssetsController, MongooseModule],
 })
 export class AssetsModule {}

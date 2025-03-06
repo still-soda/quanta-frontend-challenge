@@ -8,9 +8,7 @@ import {
   Post,
   Query,
   UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
   ApiConsumes,
@@ -18,7 +16,6 @@ import {
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
-import { memoryStorage } from 'multer';
 import { ApiNeedAuth, Auth } from '../../common/decorators/auth.decorator';
 import { IpLimit } from '../../common/decorators/ip-limit.decorator';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
@@ -40,6 +37,7 @@ import {
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersService } from './users.service';
+import { UseFileInceptor } from '../../common/decorators/file.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -204,15 +202,7 @@ export class UsersController {
     description: '保存失败或其他报错',
     schema: responseSchema('internal server error', '${error.message}'),
   })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: memoryStorage(),
-      limits: {
-        // 最大图片大小为 5MB
-        fileSize: 5 * 1024 * 1024,
-      },
-    }),
-  )
+  @UseFileInceptor('file')
   @IpLimit(5)
   @Auth()
   @HttpCode(200)

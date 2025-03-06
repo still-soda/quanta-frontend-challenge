@@ -7,7 +7,6 @@ import {
   HttpCode,
   HttpStatus,
   UploadedFiles,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
 import {
@@ -30,8 +29,7 @@ import {
   userGetChallengeProps,
 } from './dto/user-get-challenge.dto';
 import { MulterFile } from '../assets/assets.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
+import { UseFileInceptor } from '../../common/decorators/file.decorator';
 
 @Controller('challenges')
 export class ChallengesController {
@@ -477,18 +475,7 @@ export class ChallengesController {
     description: '上传用户作答模板失败',
     schema: responseSchema('internal server error', '上传用户作答模板失败'),
   })
-  @UseInterceptors(
-    FileInterceptor('files', {
-      limits: { fileSize: 2 * 1024 * 1024 }, // 最大文件大小 2MB
-      fileFilter: (_, file, callback) => {
-        if (!file.mimetype.startsWith('text/')) {
-          return callback(new Error('只能上传图片文件'), false);
-        }
-        callback(null, true);
-      },
-      storage: memoryStorage(),
-    }),
-  )
+  @UseFileInceptor('files', 2, 'text/')
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Post('/upload-answer-templates')
