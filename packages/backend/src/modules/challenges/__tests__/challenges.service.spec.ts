@@ -465,4 +465,32 @@ describe('ChallengesService', () => {
       ).rejects.toThrow('挑战不存在');
     });
   });
+
+  describe('uploadStandardAnswer', () => {
+    it('应该正确上传标准答案', async () => {
+      const created = await createOne();
+      const mockSaveTextFile = jest
+        .spyOn(assetsService, 'saveTextFile')
+        .mockImplementation(() => {
+          return Promise.resolve({
+            ok: true,
+            id: 'test_id',
+          }) as any;
+        });
+      mockSaveTextFile.mockClear();
+
+      const updated = await challengesService.uploadStandardAnswer({
+        challengeId: created.id,
+        standardAnswer: 'test content',
+        user: {
+          id: 'test author id',
+          role: ROLE.ADMIN,
+          username: 'test author',
+        },
+      });
+      expect(updated.standardAnswer).toHaveLength(1);
+      expect(updated.standardAnswer.includes('test_id')).toBeTruthy();
+      expect(mockSaveTextFile).toHaveBeenCalledTimes(1);
+    });
+  });
 });

@@ -355,7 +355,6 @@ export class ChallengesService {
 
   /**
    * 上传挑战标准答案（覆盖性上传）
-   * @todo 测试
    * @todo 上传多个标准答案文件
    * @param options 上传标准答案数据
    * - `challengeId` 挑战ID
