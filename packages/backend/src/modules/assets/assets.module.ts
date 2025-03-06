@@ -9,7 +9,7 @@ import { AssetsController } from './assets.controller';
     MongooseModule.forFeature([{ name: Assets.name, schema: AssetsSchema }]),
   ],
   providers: [AssetsService],
+  controllers: [AssetsController],
   exports: [AssetsService, MongooseModule],
-  controllers: [AssetsController, MongooseModule],
 })
 export class AssetsModule {}
