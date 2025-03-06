@@ -1,31 +1,21 @@
-import { Controller, Get, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { SubmissionsService } from './submissions.service';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
-import { ApiNeedAuth, Auth, ROLE } from '../../common/decorators/auth.decorator';
-import { responseSchema, responseSuccess } from '../../utils/http-response.utils';
+import { Auth, ROLE } from '../../common/decorators/auth.decorator';
+import { responseSuccess } from '../../utils/http-response.utils';
 import { UseCache } from '../../common/decorators/cache.decorator';
-import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { getSubmissionDtoProps } from './dto/get-submission.dto';
+import { SubmissionsDoc } from './submissions.doc';
 
 @Controller('submissions')
 export class SubmissionsController {
-  constructor(private readonly submissionsService: SubmissionsService) { }
+  constructor(private readonly submissionsService: SubmissionsService) {}
 
   /**
    * 获取我的提交
    * @param user 当前用户
    * @returns 我的提交
    */
-  @ApiOperation({ summary: '获取我的提交' })
-  @ApiNeedAuth()
-  @ApiResponse({
-    status: 200,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'array',
-      items: { type: 'object', properties: getSubmissionDtoProps }
-    })
-  })
+  @SubmissionsDoc.forRoute('/my-submissions')
   @Get('/my-submissions')
   @Auth()
   async findMySubmissions(@CurrentUser() user: UserData) {
@@ -42,31 +32,16 @@ export class SubmissionsController {
    * - `forbidden`: 非管理员无权查看他人提交记录
    * - `not found`: 提交记录不存在
    */
-  @ApiOperation({ summary: '根据ID获取我的某个提交' })
-  @ApiNeedAuth()
-  @ApiQuery({ name: 'submissionId', type: 'string', description: '提交 ID' })
-  @ApiResponse({
-    status: 200,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'object',
-      properties: getSubmissionDtoProps
-    })
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: '非管理员无权查看他人提交记录',
-    schema: responseSchema('forbidden', '非管理员无权查看他人提交记录')
-  })
+  @SubmissionsDoc.forRoute('/one-submission')
   @Get('/one-submission')
   @Auth()
   async findMySubmissionById(
     @CurrentUser() user: UserData,
-    @Query('submissionId') submissionId: string
+    @Query('submissionId') submissionId: string,
   ) {
     const result = await this.submissionsService.fineOneSubmission(
       submissionId,
-      user
+      user,
     );
     return responseSuccess('ok', result, '获取成功');
   }
@@ -76,17 +51,7 @@ export class SubmissionsController {
    * @param userId 用户 ID
    * @returns 用户的提交
    */
-  @ApiOperation({ summary: '获取某个用户的提交' })
-  @ApiNeedAuth()
-  @ApiQuery({ name: 'userId', type: 'string', description: '用户 ID' })
-  @ApiResponse({
-    status: 200,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'array',
-      items: { type: 'object', properties: getSubmissionDtoProps }
-    })
-  })
+  @SubmissionsDoc.forRoute('/someones-submissions')
   @Get('/someones-submissions')
   @Auth(ROLE.ADMIN)
   async findSomeonesSubmissions(@Query('userId') userId: string) {
@@ -99,27 +64,15 @@ export class SubmissionsController {
    * @param challengeId 挑战 ID
    * @returns 提交数量
    */
-  @ApiOperation({
-    summary: '获取某个挑战的提交数量',
-    description: '缓存 2 分钟'
-  })
-  @ApiQuery({ name: 'challengeId', type: 'string', description: '挑战 ID' })
-  @ApiResponse({
-    status: 200,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'object',
-      properties: { count: { type: 'number' } }
-    })
-  })
+  @SubmissionsDoc.forRoute('/count')
   @Get('/count')
   @UseCache(120)
   async getSubmissionCountByChallengeId(
-    @Query('challengeId') challengeId: string
+    @Query('challengeId') challengeId: string,
   ) {
     const count = await this.submissionsService.getSubmissionCountOfChallenge(
       challengeId,
-      { type: 'execute' }
+      { type: 'execute' },
     );
     return responseSuccess('ok', { count }, '获取成功');
   }
@@ -129,35 +82,19 @@ export class SubmissionsController {
    * @param challengeId 挑战 ID
    * @returns 通过率
    */
-  @ApiOperation({
-    summary: '获取某个挑战的通过率',
-    description: '通过率 = 通过的提交数量 / 总提交数量；缓存 2 分钟'
-  })
-  @ApiQuery({ name: 'challengeId', type: 'string', description: '挑战 ID' })
-  @ApiResponse({
-    status: 200,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'object',
-      properties: { rate: { type: 'number' } },
-      example: { rate: 0.5 }
-    })
-  })
+  @SubmissionsDoc.forRoute('/passed-rate')
   @Get('/passed-rate')
   @UseCache(120)
-  async getPassedRateByChallengeId(
-    @Query('challengeId') challengeId: string
-  ) {
+  async getPassedRateByChallengeId(@Query('challengeId') challengeId: string) {
     const passedCount =
-      await this.submissionsService.getSubmissionCountOfChallenge(
-        challengeId,
-        { type: 'execute', status: 'passed' }
-      );
+      await this.submissionsService.getSubmissionCountOfChallenge(challengeId, {
+        type: 'execute',
+        status: 'passed',
+      });
     const totalCount =
-      await this.submissionsService.getSubmissionCountOfChallenge(
-        challengeId,
-        { type: 'execute' }
-      );
+      await this.submissionsService.getSubmissionCountOfChallenge(challengeId, {
+        type: 'execute',
+      });
     const rate = totalCount === 0 ? 0 : passedCount / totalCount;
 
     return responseSuccess('ok', { rate }, '获取成功');
@@ -168,24 +105,14 @@ export class SubmissionsController {
    * @param challengeId 挑战 ID
    * @returns 提交记录
    */
-  @ApiOperation({ summary: '获取某个挑战的提交记录' })
-  @ApiQuery({ name: 'challengeId', type: 'string', description: '挑战 ID' })
-  @ApiResponse({
-    status: 200,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'array',
-      items: { type: 'object', properties: getSubmissionDtoProps }
-    })
-  })
+  @SubmissionsDoc.forRoute('/records')
   @Get('/records')
   @Auth(ROLE.ADMIN)
   async getSubmissionRecordsByChallengeId(
-    @Query('challengeId') challengeId: string
+    @Query('challengeId') challengeId: string,
   ) {
-    const records = await this.submissionsService.getSubmissionOfChallenge(
-      challengeId
-    );
+    const records =
+      await this.submissionsService.getSubmissionOfChallenge(challengeId);
     return responseSuccess('ok', records, '获取成功');
   }
 }
