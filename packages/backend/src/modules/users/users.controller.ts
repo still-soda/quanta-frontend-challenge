@@ -4,40 +4,25 @@ import {
   Get,
   HttpCode,
   HttpException,
-  HttpStatus,
   Post,
   Query,
   UploadedFile,
 } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-} from '@nestjs/swagger';
-import { ApiNeedAuth, Auth } from '../../common/decorators/auth.decorator';
+import { Auth } from '../../common/decorators/auth.decorator';
 import { IpLimit } from '../../common/decorators/ip-limit.decorator';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 import { filterData } from '../../utils/filter-data.utils';
 import {
   responseError,
-  responseSchema,
   responseSuccess,
 } from '../../utils/http-response.utils';
 import { MulterFile } from '../assets/assets.service';
-import {
-  GuestGetUserDto,
-  guestGetUserDtoProps,
-} from './dto/guest-get-user.dto';
-import {
-  OwnerGetUserDto,
-  ownerGetUserDtoProps,
-} from './dto/owner-get-user.dto';
-import { UploadAvatarDto } from './dto/upload-avatar.dto';
+import { GuestGetUserDto } from './dto/guest-get-user.dto';
+import { OwnerGetUserDto } from './dto/owner-get-user.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersService } from './users.service';
 import { UseFileInceptor } from '../../common/decorators/file.decorator';
+import { UserDoc } from './users.doc';
 
 @Controller('users')
 export class UsersController {
@@ -52,30 +37,7 @@ export class UsersController {
    * - `not found` 用户不存在
    * - `bad request` 请求参数错误
    */
-  @ApiOperation({
-    summary: '根据用户ID或用户名查找用户',
-    description: '必须携带一个 Query 参数，两个都有的情况下优先 ID 查找',
-  })
-  @ApiQuery({ name: 'id', required: false, description: '用户ID' })
-  @ApiQuery({ name: 'username', required: false, description: '用户名' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '成功查找用户',
-    schema: responseSchema('ok', '成功查找用户', {
-      type: 'object',
-      properties: guestGetUserDtoProps,
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '用户不存在',
-    schema: responseSchema('not found', '用户不存在'),
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: '请求参数错误，必须提供 id 或 username',
-    schema: responseSchema('bad request', '请求参数错误'),
-  })
+  @UserDoc.forRoute('/find-one')
   @HttpCode(200)
   @Get('/find-one')
   async findOne(
@@ -113,21 +75,7 @@ export class UsersController {
    * @throws
    * - `not found` 用户不存在
    */
-  @ApiOperation({ summary: '查找自己的用户信息' })
-  @ApiNeedAuth()
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '成功查找用户',
-    schema: responseSchema('ok', '成功查找用户', {
-      type: 'object',
-      properties: guestGetUserDtoProps,
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '用户不存在',
-    schema: responseSchema('not found', '用户不存在'),
-  })
+  @UserDoc.forRoute('/find-self')
   @Auth()
   @HttpCode(200)
   @Get('/find-self')
@@ -149,22 +97,7 @@ export class UsersController {
    * - `bad request` 请求参数错误，验证失败
    * - `ok` 更新成功
    **/
-  @ApiOperation({ summary: '更新自己的用户信息' })
-  @ApiNeedAuth()
-  @ApiBody({ type: UserUpdateDto })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '更新成功',
-    schema: responseSchema('ok', '更新成功', {
-      type: 'object',
-      properties: ownerGetUserDtoProps,
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: '请求参数错误，验证失败',
-    schema: responseSchema('bad request', '${error.message}'),
-  })
+  @UserDoc.forRoute('/update-self')
   @Auth()
   @HttpCode(200)
   @Post('/update-self')
@@ -181,27 +114,7 @@ export class UsersController {
    * 上传头像文件并保存，图片文件最大为 5MB。
    * @param file 头像文件
    */
-  @ApiOperation({
-    summary: '上传头像并保存',
-    description:
-      '上传成功后会自动设置到当前用户，图片文件最大为 5MB，每分钟限制调用 5 次',
-  })
-  @ApiNeedAuth()
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    type: UploadAvatarDto,
-    description: '头像文件，大小不超过 5MB',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '成功上传并保存',
-    schema: responseSchema('ok', '成功上传并保存'),
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: '保存失败或其他报错',
-    schema: responseSchema('internal server error', '${error.message}'),
-  })
+  @UserDoc.forRoute('/upload-avatar')
   @UseFileInceptor('file')
   @IpLimit(5)
   @Auth()
