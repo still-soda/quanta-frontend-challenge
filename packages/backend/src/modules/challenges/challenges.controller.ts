@@ -5,31 +5,20 @@ import {
   Body,
   Param,
   HttpCode,
-  HttpStatus,
   UploadedFiles,
 } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
-import {
-  ApiNeedAuth,
-  Auth,
-  ROLE,
-} from '../../common/decorators/auth.decorator';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Auth, ROLE } from '../../common/decorators/auth.decorator';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 import { ChallengeSwitchStatusDto } from './dto/switch-status.dto';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
-import {
-  responseSchema,
-  responseSuccess,
-} from '../../utils/http-response.utils';
+import { responseSuccess } from '../../utils/http-response.utils';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import { filterData } from '../../utils/filter-data.utils';
-import {
-  UserGetChallengeDto,
-  userGetChallengeProps,
-} from './dto/user-get-challenge.dto';
+import { UserGetChallengeDto } from './dto/user-get-challenge.dto';
 import { MulterFile } from '../assets/assets.service';
 import { UseFileInceptor } from '../../common/decorators/file.decorator';
+import { ChallengeDoc } from './challenges.doc';
 
 @Controller('challenges')
 export class ChallengesController {
@@ -38,18 +27,7 @@ export class ChallengesController {
   /**
    * 用户获取所有发布的挑战。
    */
-  @ApiOperation({
-    summary: '获取所有发布的挑战',
-    description: '用户获取所有挑战',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'array',
-      items: { type: 'object', properties: userGetChallengeProps },
-    }),
-  })
+  @ChallengeDoc.forRoute('/find-all')
   @HttpCode(200)
   @Get('/find-all')
   async findAll() {
@@ -67,20 +45,7 @@ export class ChallengesController {
    *
    * @param user 当前用户
    */
-  @ApiOperation({
-    summary: '获取所有挑战',
-    description:
-      '管理员获取所有挑战，需要管理员及以上的权限，超级管理员可以获取所有挑战',
-  })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'array',
-      items: { type: 'object', properties: userGetChallengeProps },
-    }),
-  })
+  @ChallengeDoc.forRoute('/admin-find-all')
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Get('/admin-find-all')
@@ -96,28 +61,7 @@ export class ChallengesController {
    * 用户获取挑战详情。
    * @param id 挑战ID
    */
-  @ApiOperation({
-    summary: '获取挑战详情',
-    description: '用户获取挑战详情',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'string',
-      example: '挑战内容',
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'ID 无效',
-    schema: responseSchema('bad request', 'ID 无效'),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '挑战不存在',
-    schema: responseSchema('not found', '挑战不存在'),
-  })
+  @ChallengeDoc.forRoute('/detail/:id')
   @HttpCode(200)
   @Get('/detail/:id')
   async getDetail(@Param('id') id: string) {
@@ -133,35 +77,7 @@ export class ChallengesController {
    * @param id 挑战ID
    * @param user 当前用户
    */
-  @ApiOperation({
-    summary: '获取挑战详情',
-    description:
-      '管理员获取挑战详情，需要管理员及以上的权限，超级管理员可以获取所有详情',
-  })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '获取成功',
-    schema: responseSchema('ok', '获取成功', {
-      type: 'string',
-      example: '挑战内容',
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'ID 无效',
-    schema: responseSchema('bad request', 'ID 无效'),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '挑战不存在',
-    schema: responseSchema('not found', '挑战不存在'),
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: '非超级管理员不能代替别人获取挑战详情',
-    schema: responseSchema('forbidden', '非超级管理员不能代替别人获取挑战详情'),
-  })
+  @ChallengeDoc.forRoute('/admin-detail/:id')
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Get('/admin-detail/:id')
@@ -176,28 +92,7 @@ export class ChallengesController {
    * @param user 当前用户
    * @returns 创建的挑战数据
    */
-  @ApiOperation({
-    summary: '创建挑战',
-    description: '创建挑战',
-  })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiBody({ type: CreateChallengeDto })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '创建成功',
-    schema: responseSchema('ok', '创建成功', {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: userGetChallengeProps,
-      },
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: '数据验证失败',
-    schema: responseSchema('bad request', '数据验证失败'),
-  })
+  @ChallengeDoc.forRoute('/create')
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Post('/create')
@@ -219,32 +114,7 @@ export class ChallengesController {
    * @param user 当前用户
    * @returns 删除结果
    */
-  @ApiOperation({
-    summary: '删除挑战',
-    description:
-      '管理员删除挑战，需要管理员及以上的权限，超级管理员可以删除所有挑战',
-  })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '删除成功',
-    schema: responseSchema('ok', '删除成功'),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '挑战不存在',
-    schema: responseSchema('not found', '挑战不存在'),
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: '非超级管理员不能代替别人删除挑战',
-    schema: responseSchema('forbidden', '非超级管理员不能代替别人删除挑战'),
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'ID 无效',
-    schema: responseSchema('bad request', 'ID 无效'),
-  })
+  @ChallengeDoc.forRoute('/remove/:id')
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Post('/remove/:id')
@@ -260,35 +130,7 @@ export class ChallengesController {
    * @param user 当前用户
    * @returns 更新后的挑战数据
    */
-  @ApiOperation({
-    summary: '更新挑战',
-    description: '更新挑战，需要管理员及以上的权限，超级管理员可以更新所有挑战',
-  })
-  @ApiBody({ type: UpdateChallengeDto })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '更新成功',
-    schema: responseSchema('ok', '更新成功', {
-      type: 'array',
-      items: { type: 'object', properties: userGetChallengeProps },
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: '数据验证失败',
-    schema: responseSchema('bad request', '数据验证失败'),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '挑战不存在',
-    schema: responseSchema('not found', '挑战不存在'),
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: '非超级管理员不能代替别人更新挑战',
-    schema: responseSchema('forbidden', '非超级管理员不能代替别人更新挑战'),
-  })
+  @ChallengeDoc.forRoute('/update/:id')
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Post('/update/:id')
@@ -314,42 +156,7 @@ export class ChallengesController {
    * - `published` 发布
    * - `closed` 关闭
    */
-  @ApiOperation({
-    summary: '切换挑战状态',
-    description:
-      '管理员切换挑战状态，需要管理员及以上的权限，超级管理员可以切换所有挑战状态。\n' +
-      '要求挑战状态必须在 `ready` 以上才能被设置。',
-  })
-  @ApiBody({ type: ChallengeSwitchStatusDto })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '切换成功',
-    schema: responseSchema('ok', '切换成功', {
-      type: 'array',
-      items: { type: 'object', properties: userGetChallengeProps },
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: '数据验证失败',
-    schema: responseSchema('bad request', '${error.message}'),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '挑战不存在',
-    schema: responseSchema('not found', '挑战不存在'),
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description:
-      '1. 非超级管理员不能代替别人切换挑战状态\n' +
-      '2. 挑战未就绪，挑战状态必须在 `ready` 及以上才能被设置',
-    schema: responseSchema(
-      'forbidden',
-      '非超级管理员不能代替别人切换挑战状态 / 挑战未就绪',
-    ),
-  })
+  @ChallengeDoc.forRoute('/switch-status')
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Post('/switch-status')
@@ -372,40 +179,7 @@ export class ChallengesController {
    * - `content` 标准答案内容
    * @param user 当前用户
    */
-  @ApiOperation({
-    summary: '上传标准答案',
-    description: '调用该接口会覆盖性地上传标准答案。',
-  })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string' },
-        content: { type: 'string' },
-      },
-    },
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '上传成功',
-    schema: responseSchema('ok', '上传成功'),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '挑战不存在',
-    schema: responseSchema('not found', '挑战不存在'),
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: '非超级管理员不能代替作者上传标准答案',
-    schema: responseSchema('forbidden', '非超级管理员不能代替作者上传标准答案'),
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: '上传标准答案失败',
-    schema: responseSchema('internal server error', '上传标准答案失败'),
-  })
+  @ChallengeDoc.forRoute('/upload-standard-answer')
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Post('/upload-standard-answer')
@@ -437,44 +211,7 @@ export class ChallengesController {
    * @param user 当前用户
    * @param files 用户作答模板文件
    */
-  @ApiOperation({
-    summary: '上传用户作答模板',
-    description:
-      '调用该接口会覆盖性地上传用户作答模板。\n' +
-      '文件大小限制为 2MB，只能上传文本文件。',
-  })
-  @ApiNeedAuth({ level: ROLE.ADMIN })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        challengeId: { type: 'string' },
-      },
-    },
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '上传成功',
-    schema: responseSchema('ok', '上传成功'),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '挑战不存在',
-    schema: responseSchema('not found', '挑战不存在'),
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: '非超级管理员不能代替作者上传用户作答模板',
-    schema: responseSchema(
-      'forbidden',
-      '非超级管理员不能代替作者上传用户作答模板',
-    ),
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: '上传用户作答模板失败',
-    schema: responseSchema('internal server error', '上传用户作答模板失败'),
-  })
+  @ChallengeDoc.forRoute('/upload-answer-templates')
   @UseFileInceptor('files', 2, 'text/')
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
