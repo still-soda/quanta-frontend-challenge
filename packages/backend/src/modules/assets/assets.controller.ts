@@ -2,13 +2,10 @@ import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { UseCache } from '../../common/decorators/cache.decorator';
-import {
-  responseSchema,
-  responseSuccess,
-} from '../../utils/http-response.utils';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { GetFileMetaDto, getFileMetaDtoProps } from './dto/get-file-meta.dto';
+import { responseSuccess } from '../../utils/http-response.utils';
+import { GetFileMetaDto } from './dto/get-file-meta.dto';
 import { filterData } from '../../utils/filter-data.utils';
+import { AssetsDoc } from './assets.doc';
 
 @Controller('assets')
 export class AssetsController {
@@ -19,16 +16,7 @@ export class AssetsController {
    * @param fileIdList 文件ID列表
    * @returns 文件的静态信息
    */
-  @ApiOperation({ summary: '获取文件的静态信息' })
-  @ApiBody({
-    description: '文件ID列表',
-    type: [String],
-  })
-  @ApiResponse({
-    status: 200,
-    description: '成功',
-    schema: responseSchema('ok', '获取成功', { schema: getFileMetaDtoProps }),
-  })
+  @AssetsDoc.forRoute('/static-metadata')
   @Auth()
   @UseCache()
   @HttpCode(200)
