@@ -8,6 +8,9 @@ import { userGetChallengeProps } from './dto/user-get-challenge.dto';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 
+/**
+ * 挑战模块的 Swagger 接口文档。
+ */
 export const ChallengeDoc = new ApiDocumentHelper({
   '/upload-answer-templates': () => {
     return [
