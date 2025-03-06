@@ -1,17 +1,15 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import validateData from '../../utils/validate-data.utils';
 import { LoginDto } from './dto/login.dto';
 import {
   responseError,
-  responseSchema,
   responseSuccess,
 } from '../../utils/http-response.utils';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
+import { AuthDoc } from './auth.doc';
 
 @Controller('auth')
 export class AuthController {
@@ -27,26 +25,7 @@ export class AuthController {
    * - `not found` 用户不存在
    * - `unauthorized` 密码错误
    */
-  @ApiOperation({ summary: '用户登录' })
-  @ApiBody({ type: LoginDto })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '成功登录',
-    schema: responseSchema('ok', '登录成功', {
-      type: 'object',
-      properties: { token: { type: 'string', description: '令牌' } },
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '用户不存在',
-    schema: responseSchema('not found', '用户不存在'),
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: '密码错误',
-    schema: responseSchema('unauthorized', '密码错误'),
-  })
+  @AuthDoc.forRoute('/login')
   @HttpCode(200)
   @Post('login')
   async login(@Body() body: LoginDto) {
@@ -75,21 +54,7 @@ export class AuthController {
    * - `bad request` 请求参数错误
    * - `conflict` 用户名重复
    **/
-  @ApiOperation({ summary: '用户注册' })
-  @ApiBody({ type: RegisterDto })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '注册成功',
-    schema: responseSchema('ok', '注册成功', {
-      type: 'object',
-      properties: { token: { type: 'string', description: '令牌' } },
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: '用户名重复',
-    schema: responseSchema('conflict', '用户名重复'),
-  })
+  @AuthDoc.forRoute('/register')
   @HttpCode(200)
   @Post('register')
   async register(@Body() body: RegisterDto) {
@@ -112,26 +77,7 @@ export class AuthController {
    * - `not found` 用户不存在
    * - `forbidden` 无权限
    **/
-  @ApiOperation({ summary: '重置密码' })
-  @ApiBody({ type: ResetPasswordDto })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '重置成功',
-    schema: responseSchema('ok', '重置成功', {
-      type: 'object',
-      properties: { success: { type: 'boolean', description: '是否成功' } },
-    }),
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: '用户不存在',
-    schema: responseSchema('not found', '用户不存在'),
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: '无权限',
-    schema: responseSchema('forbidden', '无权限'),
-  })
+  @AuthDoc.forRoute('/reset-password')
   @Auth()
   @HttpCode(200)
   @Post('reset-password')
