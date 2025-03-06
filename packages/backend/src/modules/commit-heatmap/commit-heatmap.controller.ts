@@ -1,34 +1,15 @@
-import { Controller, Get, HttpStatus } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { CommitHeatmapService } from './commit-heatmap.service';
-import { ApiNeedAuth, Auth } from '../../common/decorators/auth.decorator';
+import { Auth } from '../../common/decorators/auth.decorator';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import {
-  responseSchema,
-  responseSuccess,
-} from '../../utils/http-response.utils';
+import { responseSuccess } from '../../utils/http-response.utils';
+import { CommitHeatmapDoc } from './commit-heatmap.doc';
 
 @Controller('commit-heatmap')
 export class CommitHeatmapController {
   constructor(private readonly commitHeatmapService: CommitHeatmapService) {}
 
-  @ApiOperation({ summary: '获取用户的提交热力图数据' })
-  @ApiNeedAuth()
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '获取用户的提交热力图数据',
-    schema: responseSchema('ok', '成功获取[${username}]的提交热力图数据', {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          date: { type: 'string', example: '2021-01-01', description: '日期' },
-          count: { type: 'number', example: 123, description: '提交次数' },
-          userId: { type: 'string', example: '123', description: '用户 ID' },
-        },
-      },
-    }),
-  })
+  @CommitHeatmapDoc.forRoute('/get-heatmap')
   @Auth()
   @Get('get-heatmap')
   async getHeatmap(@CurrentUser() user: UserData) {
