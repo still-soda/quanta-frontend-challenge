@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { Module } from '@nestjs/common';
 import { UsersModule } from './modules/users/users.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
@@ -19,6 +20,7 @@ import { CacheInterceptor } from './common/interceptors/cache.interceptor';
 import { CommitHeatmapModule } from './modules/commit-heatmap/commit-heatmap.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RankModule } from './modules/rank/rank.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -27,6 +29,9 @@ import { RankModule } from './modules/rank/rank.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', `.env.${process.env.NODE_ENV}`, '.env'],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, process.env.STATIC_ROOT),
     }),
     BullModule.forRoot({
       redis: { host: 'localhost', port: 6379 },
@@ -56,4 +61,4 @@ import { RankModule } from './modules/rank/rank.module';
     { provide: 'APP_INTERCEPTOR', useClass: CacheInterceptor },
   ],
 })
-export class AppModule { }
+export class AppModule {}
