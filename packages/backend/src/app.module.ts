@@ -21,6 +21,7 @@ import { CommitHeatmapModule } from './modules/commit-heatmap/commit-heatmap.mod
 import { ScheduleModule } from '@nestjs/schedule';
 import { RankModule } from './modules/rank/rank.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { CounterModule } from './modules/counter/counter.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     CachesModule,
     CommitHeatmapModule,
     RankModule,
+    CounterModule,
   ],
   controllers: [],
   providers: [

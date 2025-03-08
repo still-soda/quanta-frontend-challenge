@@ -72,6 +72,9 @@ export class Submissions extends Document {
   })
   @Prop()
   createdAt: Date;
+
+  @Prop({ default: 0 })
+  taskOrder: number;
 }
 
 export const SubmissionsSchema = SchemaFactory.createForClass(Submissions);
