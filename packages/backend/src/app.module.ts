@@ -32,6 +32,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     }),
     ServeStaticModule.forRoot({
       rootPath: path.resolve(__dirname, process.env.STATIC_ROOT),
+      serveRoot: '/static',
     }),
     BullModule.forRoot({
       redis: { host: 'localhost', port: 6379 },
