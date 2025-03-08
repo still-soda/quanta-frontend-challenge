@@ -15,6 +15,7 @@ import { responseError } from '../../utils/http-response.utils';
 import { isMongoId } from 'class-validator';
 import { UserData } from '../../common/decorators/user.decorator';
 import { ROLE } from '../../common/decorators/auth.decorator';
+import { CounterService } from '../counter/counter.service';
 
 @Injectable()
 export class SubmissionsService {
@@ -22,13 +23,14 @@ export class SubmissionsService {
     @InjectModel(Submissions.name)
     private readonly submissionModel: Model<SubmissionsDocument>,
     private readonly commitHeatmapService: CommitHeatmapService,
-  ) { }
+    private readonly counterService: CounterService,
+  ) {}
 
   /**
    * 内部函数，查找指定ID的提交
    * @private
    * @param id 提交ID
-   * @returns 查找结果 
+   * @returns 查找结果
    */
   async findOne(id: string) {
     return await this.submissionModel.findById(id);
@@ -61,7 +63,7 @@ export class SubmissionsService {
   /**
    * 创建提交
    * @param createSubmissionDto
-   * - `type`: 提交类型 
+   * - `type`: 提交类型
    * - `userId`: 用户ID
    * - `challengeId`: 挑战ID
    * @returns 创建的提交
@@ -85,12 +87,14 @@ export class SubmissionsService {
       });
     }
 
-    return await this.submissionModel.create(createSubmissionDto);
+    const order = await this.counterService.nextValue(Submissions.name);
+
+    return await this.submissionModel.create({ ...createSubmissionDto, order });
   }
 
   /**
    * 根据用户ID查找所有提交
-   * @param userId 用户ID 
+   * @param userId 用户ID
    * @returns 所有提交
    * @throws
    * - `bad request`: 用户ID不合法
@@ -115,8 +119,8 @@ export class SubmissionsService {
     challengeId: string,
     filterOptions?: {
       type?: SubmissionType;
-      status?: SubmissionStatus
-    }
+      status?: SubmissionStatus;
+    },
   ) {
     return await this.submissionModel.countDocuments({
       challengeId,
@@ -133,8 +137,8 @@ export class SubmissionsService {
     challengeId: string,
     filterOptions?: {
       type?: SubmissionType;
-      status?: SubmissionStatus
-    }
+      status?: SubmissionStatus;
+    },
   ) {
     return await this.submissionModel.find({
       challengeId,
@@ -148,7 +152,7 @@ export class SubmissionsService {
    * @param updateSubmissionDto 更新提交数据
    * - `type`: 提交类型
    * - `userId`: 用户ID
-   * - `challengeId`: 挑战ID 
+   * - `challengeId`: 挑战ID
    * @returns 更新结果
    * @throws
    * - `bad request`: 请求数据错误

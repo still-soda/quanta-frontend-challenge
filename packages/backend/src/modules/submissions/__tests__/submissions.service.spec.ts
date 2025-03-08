@@ -5,6 +5,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { CommitHeatmapModule } from '../../../modules/commit-heatmap/commit-heatmap.module';
 import { randomMongoId } from '../../../utils/testing.utils';
+import { CounterModule } from '../../../modules/counter/counter.module';
 
 describe('SubmissionsService', () => {
   let service: SubmissionsService;
@@ -15,7 +16,12 @@ describe('SubmissionsService', () => {
     mongodb = mockDb.mongodb;
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [SubmissionsModule, CommitHeatmapModule, mockDb.module],
+      imports: [
+        SubmissionsModule,
+        CommitHeatmapModule,
+        CounterModule,
+        mockDb.module,
+      ],
       providers: [SubmissionsService],
     }).compile();
 
@@ -39,11 +45,15 @@ describe('SubmissionsService', () => {
       const increaseHeatmapCountSpy = jest
         .spyOn(service['commitHeatmapService'], 'increaseHeatmapCount')
         .mockImplementationOnce((async () => ({})) as any);
+      const nextValueSpy = jest
+        .spyOn(service['counterService'], 'nextValue')
+        .mockImplementationOnce((async () => 1) as any);
 
       const res = await service.create(createSubmissionDto);
       expect(res).toBeDefined();
       expect(submissionModelCreateSpy).toHaveBeenCalledTimes(1);
       expect(increaseHeatmapCountSpy).toHaveBeenCalledTimes(1);
+      expect(nextValueSpy).toHaveBeenCalledTimes(1);
     });
   });
 

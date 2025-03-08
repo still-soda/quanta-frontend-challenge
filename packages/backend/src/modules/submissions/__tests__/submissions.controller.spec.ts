@@ -7,6 +7,7 @@ import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { CommitHeatmapModule } from '../../../modules/commit-heatmap/commit-heatmap.module';
 import mongoose from 'mongoose';
 import { ROLE } from '../../../common/decorators/auth.decorator';
+import { CounterModule } from '../../../modules/counter/counter.module';
 
 describe('SubmissionsController', () => {
   let controller: SubmissionsController;
@@ -17,7 +18,12 @@ describe('SubmissionsController', () => {
     mongodb = mockDb.mongodb;
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [SubmissionsModule, CommitHeatmapModule, mockDb.module],
+      imports: [
+        SubmissionsModule,
+        CommitHeatmapModule,
+        CounterModule,
+        mockDb.module,
+      ],
       controllers: [SubmissionsController],
       providers: [SubmissionsService],
     }).compile();

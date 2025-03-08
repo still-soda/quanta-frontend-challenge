@@ -7,6 +7,7 @@ import {
   SubmissionsSchema,
 } from '../../schemas/submissions.schema';
 import { CommitHeatmapModule } from '../commit-heatmap/commit-heatmap.module';
+import { CounterModule } from '../counter/counter.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CommitHeatmapModule } from '../commit-heatmap/commit-heatmap.module';
       { name: Submissions.name, schema: SubmissionsSchema },
     ]),
     CommitHeatmapModule,
+    CounterModule,
   ],
   controllers: [SubmissionsController],
   providers: [SubmissionsService],
