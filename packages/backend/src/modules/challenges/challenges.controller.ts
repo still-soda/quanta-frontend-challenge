@@ -6,6 +6,7 @@ import {
   Param,
   HttpCode,
   UploadedFiles,
+  Query,
 } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
 import { Auth, ROLE } from '../../common/decorators/auth.decorator';
@@ -19,6 +20,7 @@ import { UserGetChallengeDto } from './dto/user-get-challenge.dto';
 import { MulterFile } from '../assets/assets.service';
 import { UseFileInceptor } from '../../common/decorators/file.decorator';
 import { ChallengeDoc } from './challenges.doc';
+import { UseCache } from '../../common/decorators/cache.decorator';
 
 @Controller('challenges')
 export class ChallengesController {
@@ -29,6 +31,7 @@ export class ChallengesController {
    */
   @ChallengeDoc.forRoute('/find-all')
   @HttpCode(200)
+  @UseCache()
   @Get('/find-all')
   async findAll() {
     const result = await this.challengesService.findAll();
@@ -63,6 +66,7 @@ export class ChallengesController {
    */
   @ChallengeDoc.forRoute('/detail/:id')
   @HttpCode(200)
+  @UseCache()
   @Get('/detail/:id')
   async getDetail(@Param('id') id: string) {
     const content = await this.challengesService.getDetail(id);
@@ -227,5 +231,24 @@ export class ChallengesController {
       user,
     });
     return responseSuccess('ok', result, '上传成功');
+  }
+
+  /**
+   * 获取挑战 ID 获取所有作答模板的下载地址。
+   * @param challengeId 挑战ID
+   * @throws
+   * - `not found` 挑战不存在
+   * - `internal server error` 获取用户作答模板URL失败
+   */
+  @ChallengeDoc.forRoute('/download-answer-template')
+  @HttpCode(200)
+  @Auth()
+  @Get('/download-answer-template')
+  async getAnswerTemplateDownloadUrl(
+    @Query('challengeId') challengeId: string,
+  ) {
+    const result =
+      await this.challengesService.getAnswerTemplateUrl(challengeId);
+    return responseSuccess('ok', result, '获取成功');
   }
 }

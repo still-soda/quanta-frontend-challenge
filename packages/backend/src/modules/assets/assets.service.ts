@@ -20,6 +20,7 @@ export interface MulterFile {
 export class AssetsService {
   private readonly FILE_ROOT: string;
   private readonly STATIC_ROOT: string;
+  private readonly STATIC_URL: string;
 
   constructor(
     @InjectModel(Assets.name)
@@ -28,6 +29,7 @@ export class AssetsService {
   ) {
     this.FILE_ROOT = this.configService.getOrThrow('FILE_ROOT');
     this.STATIC_ROOT = this.configService.getOrThrow('STATIC_ROOT');
+    this.STATIC_URL = this.configService.getOrThrow('STATIC_URL');
   }
 
   /**
@@ -485,5 +487,19 @@ export class AssetsService {
   async getFileMataDataByIdList(idList: string[]) {
     const promises = idList.map((id) => this.getFileMetadataById(id));
     return await Promise.all(promises);
+  }
+
+  /**
+   * 获取文件路径
+   * @param fileId 文件元数据 Id
+   * @returns 文件路径
+   */
+  async resolveStaticFilePath(fileId: string) {
+    const metadata = await this.getFileMetadataById(fileId);
+    if (!metadata || !metadata.isStatic) {
+      return '';
+    }
+
+    return `${this.STATIC_URL}${metadata.localName}`;
   }
 }
