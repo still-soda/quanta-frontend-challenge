@@ -75,12 +75,12 @@ describe('UsersService', () => {
     const result = await service.update(userId, {
       username: 'test_user_updated',
       email: 'test_user_updated@email.com',
-      avatarId: 'https://test.com/avatar.jpg',
+      avatarUrl: 'https://test.com/avatar.jpg',
     });
     expect(result).toBeDefined();
     expect(result.username).toBe('test_user_updated');
     expect(result.email).toBe('test_user_updated@email.com');
-    expect(result.avatarId).toBe('https://test.com/avatar.jpg');
+    expect(result.avatarUrl).toBe('https://test.com/avatar.jpg');
   });
 
   it('应该增加用户积分', async () => {

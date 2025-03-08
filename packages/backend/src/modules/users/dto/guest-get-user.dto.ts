@@ -44,7 +44,7 @@ export class GuestGetUserDto {
     description: '头像文件 ID',
   })
   @Expose()
-  avatarId: string;
+  avatarUrl: string;
 
   @ApiProperty({
     example: 'signature',
@@ -86,7 +86,7 @@ export const guestGetUserDtoProps: SchemaProp = {
     required: true,
     description: '总提交次数',
   },
-  avatarId: {
+  avatarUrl: {
     type: 'string',
     example: 'https://www.gravatar.com/avatar/',
     default: '',

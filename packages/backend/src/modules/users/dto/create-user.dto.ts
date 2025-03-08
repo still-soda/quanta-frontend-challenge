@@ -68,7 +68,7 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   @Expose()
-  avatarId?: string;
+  avatarUrl?: string;
 
   @ApiProperty({
     example: 'signature',

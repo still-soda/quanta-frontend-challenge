@@ -75,12 +75,12 @@ export class Users extends Document {
   totalSubmissions: number;
 
   @ApiProperty({
-    example: 'xxxxxxxxxxxxxxxxx',
+    example: '/static/avatar.png',
     default: '',
-    description: '头像文件 ID',
+    description: '头像文件URL',
   })
   @Prop({ default: '' })
-  avatarId: string;
+  avatarUrl: string;
 
   @ApiProperty({
     example: 'signature',

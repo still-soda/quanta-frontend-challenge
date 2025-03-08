@@ -101,7 +101,7 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @Expose()
-  avatarId?: string;
+  avatarUrl?: string;
 
   @ApiProperty({
     example: '你好世界',

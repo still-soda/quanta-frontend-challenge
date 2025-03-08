@@ -77,7 +77,10 @@ export class UsersService {
       return false;
     }
 
-    await this.update(id, { avatarId: metadataId });
+    const avatarUrl =
+      await this.assetsService.resolveStaticFilePath(metadataId);
+
+    await this.update(id, { avatarUrl });
     return true;
   }
 

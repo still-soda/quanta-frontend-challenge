@@ -60,7 +60,7 @@ export class OwnerGetUserDto {
     description: '头像URL',
   })
   @Expose()
-  avatarId: string;
+  avatarUrl: string;
 
   @ApiProperty({
     example: 'signature',
@@ -138,7 +138,7 @@ export const ownerGetUserDtoProps: SchemaProp = {
     required: true,
     description: '总提交次数',
   },
-  avatarId: {
+  avatarUrl: {
     type: 'string',
     example: 'xxxxxxxxxxx',
     default: '',
