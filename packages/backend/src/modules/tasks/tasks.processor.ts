@@ -13,6 +13,8 @@ import { Logger } from '@nestjs/common';
 import { SubmissionsService } from '../submissions/submissions.service';
 import { SubmissionType } from '../../schemas/submissions.schema';
 import { ChallengesService } from '../challenges/challenges.service';
+import { CachesService } from '../caches/caches.service';
+import { DONE_TASK_ORDER_KEY, TasksService } from './tasks.service';
 
 export type TaskJob = Job<{
   challengeId: string;
@@ -46,6 +48,7 @@ export class TasksProcessor {
     private readonly judgementsService: JudgementsService,
     private readonly submissionsService: SubmissionsService,
     private readonly challengeService: ChallengesService,
+    private readonly tasksService: TasksService,
   ) {}
 
   /**
@@ -185,6 +188,7 @@ export class TasksProcessor {
         passed ? 'passed' : 'failed'
       }`,
     );
+    await this.onExecuteFinished();
   }
 
   /**
@@ -214,5 +218,16 @@ export class TasksProcessor {
       correctRate: 0,
       message: error.message,
     });
+    await this.onExecuteFinished();
+  }
+
+  /**
+   * 私有方法，在任务结束时递增已完成任务的数量。
+   *
+   * 无论任务执行成功还是失败，都会调用该方法。
+   *
+   */
+  private async onExecuteFinished() {
+    await this.tasksService.increasePrevTaskCount();
   }
 }

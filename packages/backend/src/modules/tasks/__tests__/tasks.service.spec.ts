@@ -14,6 +14,9 @@ import { UsersService } from '../../../modules/users/users.service';
 import { ActionsModule } from '../../../modules/actions/actions.module';
 import Redis from 'ioredis';
 import mongoose from 'mongoose';
+import { CachesModule } from '../../../modules/caches/caches.module';
+import { CounterModule } from '../../../modules/counter/counter.module';
+import { Subject } from 'rxjs';
 
 describe('TasksService', () => {
   let module: TestingModule;
@@ -37,12 +40,14 @@ describe('TasksService', () => {
           name: 'tasks',
           defaultJobOptions: { timeout: 30000 },
         }),
+        CachesModule,
+        CounterModule,
         SubmissionsModule,
         JudgementsModule,
         ChallengesModule,
         UsersModule,
         ActionsModule,
-        createEnvConfModule(),
+        createEnvConfModule('.env.development'),
       ],
       providers: [TasksService],
     }).compile();
@@ -207,5 +212,60 @@ describe('TasksService', () => {
 
     expect(uploadFlowDataSpy).toHaveBeenCalledWith(challengeId, userId, data);
     expect(response).toBeTruthy();
+  });
+
+  it('应该正确获取前方排队中的任务数量的 Observable 对象', async () => {
+    const submissionId = 'submissionId';
+    const user = { id: 'userId', username: 'test', role: 0 };
+
+    const findOneSubmissionSpy = jest
+      .spyOn(tasksService['submissionsService'], 'findOne')
+      .mockImplementationOnce(() => {
+        return { userId: user.id, order: 1 } as any;
+      });
+
+    const subject = await tasksService.getPrevTaskCountSubject(
+      submissionId,
+      user,
+    );
+
+    expect(subject instanceof Subject).toBeTruthy();
+    expect(findOneSubmissionSpy).toHaveBeenCalledWith(submissionId);
+  });
+
+  it('应该正确增加前方排队中的任务序列', async () => {
+    const submissionId = 'submissionId';
+    const user = { id: 'userId', username: 'test', role: 0 };
+
+    const findOneSubmissionSpy = jest
+      .spyOn(tasksService['submissionsService'], 'findOne')
+      .mockImplementationOnce(() => {
+        return { userId: user.id, order: 2 } as any;
+      });
+    const increaseSpy = jest
+      .spyOn(tasksService['cachesService'], 'incr')
+      .mockImplementationOnce(async () => 1);
+    const setSpy = jest
+      .spyOn(tasksService['cachesService'], 'set')
+      .mockImplementationOnce(async () => 'OK');
+
+    const subject = await tasksService.getPrevTaskCountSubject(
+      submissionId,
+      user,
+    );
+
+    let count = 0;
+    subject.subscribe({
+      next: (value) => {
+        count = value;
+      },
+    });
+
+    await tasksService.increasePrevTaskCount();
+
+    expect(count).toBe(1);
+    expect(findOneSubmissionSpy).toHaveBeenCalledWith(submissionId);
+    expect(increaseSpy).toHaveReturnedTimes(1);
+    expect(setSpy).toHaveBeenCalledTimes(1);
   });
 });

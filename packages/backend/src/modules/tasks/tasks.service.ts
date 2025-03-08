@@ -1,5 +1,5 @@
 import { InjectQueue } from '@nestjs/bull';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Queue } from 'bull';
 import { TaskJobData } from './tasks.processor';
 import { SubmissionsService } from '../submissions/submissions.service';
@@ -8,6 +8,11 @@ import { UsersService } from '../users/users.service';
 import { ActionsService } from '../actions/actions.service';
 import { responseError } from '../../utils/http-response.utils';
 import { JudgementsService } from '../judgements/judgements.service';
+import { CounterService } from '../counter/counter.service';
+import { CachesService } from '../caches/caches.service';
+import { map, Subject } from 'rxjs';
+import { UserData } from '../../common/decorators/user.decorator';
+import { ROLE } from '../../common/decorators/auth.decorator';
 
 export interface ExecuteTasksOptions {
   challengeId: string;
@@ -20,8 +25,12 @@ export interface PreExecuteTasksOptions {
   userId: string;
 }
 
+export const DONE_TASK_ORDER_KEY = 'doneTaskOrder';
+
 @Injectable()
-export class TasksService {
+export class TasksService implements OnModuleInit {
+  private readonly prevTaskCountSubject = new Subject<number>();
+
   constructor(
     @InjectQueue('tasks')
     private readonly tasksQueue: Queue<TaskJobData>,
@@ -30,7 +39,18 @@ export class TasksService {
     private readonly usersService: UsersService,
     private readonly actionsService: ActionsService,
     private readonly judgementsService: JudgementsService,
+    private readonly counterService: CounterService,
+    private readonly cachesService: CachesService,
   ) {}
+
+  /**
+   * 初始化时，将已完成的任务序号存入缓存。
+   */
+  async onModuleInit() {
+    const doneTaskOrder =
+      await this.counterService.currentValue(DONE_TASK_ORDER_KEY);
+    this.cachesService.set(DONE_TASK_ORDER_KEY, doneTaskOrder);
+  }
 
   /**
    * 上传 Flow 数据。
@@ -166,5 +186,42 @@ export class TasksService {
       challengeId,
       submissionId,
     });
+  }
+
+  /**
+   * 获取前方排队中的任务数量的 Observable 对象。
+   * @param submissionId 提交 ID
+   * @param user 用户数据
+   * @returns Observable 对象
+   * @throws
+   * - `not found`: 找不到提交记录
+   * - `forbidden`: 无权订阅
+   */
+  async getPrevTaskCountSubject(submissionId: string, user: UserData) {
+    const submission = await this.submissionsService.findOne(submissionId);
+
+    if (!submission) {
+      throw responseError('not found', { msg: '找不到提交记录' });
+    }
+
+    if (submission.userId !== user.id && user.role < ROLE.ADMIN) {
+      throw responseError('forbidden', { msg: '无权订阅' });
+    }
+
+    const { order } = submission;
+    return this.prevTaskCountSubject.pipe(
+      map((doneTaskCount) => Math.max(order - doneTaskCount, 0)),
+    );
+  }
+
+  /**
+   * 更新前方排队中的任务数量。
+   * @param doneTaskCount 当前任务序号
+   * @returns 前方排队中的任务数量
+   */
+  async increasePrevTaskCount() {
+    const doneTaskCount = await this.cachesService.incr(DONE_TASK_ORDER_KEY);
+    this.prevTaskCountSubject.next(doneTaskCount);
+    await this.cachesService.set(DONE_TASK_ORDER_KEY, doneTaskCount);
   }
 }

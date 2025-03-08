@@ -4,6 +4,8 @@ import {
   HttpCode,
   HttpException,
   Post,
+  Query,
+  Sse,
 } from '@nestjs/common';
 import {
   ExecuteTasksOptions,
@@ -147,5 +149,23 @@ export class TasksController {
       },
       '执行任务创建成功',
     );
+  }
+
+  /**
+   * 订阅获取指定提交记录前排队的任务数量。
+   * @param submissionsId 提交记录 ID
+   * @param user 用户数据
+   * @returns 一个 Observable，每秒发送一次前排队的任务数量
+   * @throws
+   * - `not found`: 找不到提交记录
+   */
+  @TasksDoc.forRoute('/prev-task-count/:submissionsId')
+  @Sse('/prev-task-count/:submissionsId')
+  @Auth()
+  async prevTaskCount(
+    @Query('submissionsId') submissionsId: string,
+    @CurrentUser() user: UserData,
+  ) {
+    return await this.tasksService.getPrevTaskCountSubject(submissionsId, user);
   }
 }

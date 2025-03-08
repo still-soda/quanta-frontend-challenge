@@ -2,26 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TasksController } from '../tasks.controller';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { JudgementsModule } from '../../../modules/judgements/judgements.module';
-import { JudgementsService } from '../../../modules/judgements/judgements.service';
 import { SubmissionsModule } from '../../../modules/submissions/submissions.module';
-import { SubmissionsService } from '../../../modules/submissions/submissions.service';
 import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import { ActionsModule } from '../../../modules/actions/actions.module';
-import { TasksProcessor } from '../tasks.processor';
 import { TasksModule } from '../tasks.module';
 import { ROLE } from '../../../common/decorators/auth.decorator';
 import mongoose from 'mongoose';
-import { ChallengesService } from '../../../modules/challenges/challenges.service';
+import { CounterModule } from '../../../modules/counter/counter.module';
+import { CachesModule } from '../../../modules/caches/caches.module';
 
 describe('TasksController', () => {
   let controller: TasksController;
-  let processor: TasksProcessor;
   let mongodb: MongoMemoryServer;
   let module: TestingModule;
-  let judgementsService: JudgementsService;
-  let submissionService: SubmissionsService;
-  let challengeService: ChallengesService;
 
   const id = '6756f5605fe86d4166703162';
 
@@ -33,7 +27,9 @@ describe('TasksController', () => {
       imports: [
         JudgementsModule,
         SubmissionsModule,
-        createEnvConfModule(),
+        CounterModule,
+        CachesModule,
+        createEnvConfModule('.env.development'),
         mockDb.module,
         TasksModule,
         ActionsModule,
@@ -43,15 +39,7 @@ describe('TasksController', () => {
     module.useLogger(console);
     await module.init();
 
-    judgementsService = module.get<JudgementsService>(JudgementsService);
-    submissionService = module.get<SubmissionsService>(SubmissionsService);
-    challengeService = module.get<ChallengesService>(ChallengesService);
     controller = module.get<TasksController>(TasksController);
-    processor = new TasksProcessor(
-      judgementsService,
-      submissionService,
-      challengeService,
-    );
   });
 
   afterAll(async () => {

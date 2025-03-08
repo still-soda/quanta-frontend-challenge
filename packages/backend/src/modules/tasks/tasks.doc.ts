@@ -1,4 +1,4 @@
-import { ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiBody, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { ApiNeedAuth, ROLE } from '../../common/decorators/auth.decorator';
 import { responseSchema } from '../../utils/http-response.utils';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
@@ -99,6 +99,41 @@ export const TasksDoc = new ApiDocumentHelper({
         status: 400,
         description: '执行任务创建失败',
         schema: responseSchema('bad request', '执行任务创建失败'),
+      }),
+    ];
+  },
+  '/prev-task-count/:submissionsId': () => {
+    return [
+      ApiOperation({
+        summary: '订阅获取指定提交记录前排队的任务数量。',
+        description: '使用 EventSource 订阅获取指定提交记录前排队的任务数量。',
+      }),
+      ApiNeedAuth(),
+      ApiParam({
+        name: 'submissionId',
+        description: '提交记录 ID',
+        required: true,
+        schema: { type: 'string' },
+      }),
+      ApiResponse({
+        status: 200,
+        description: '获取成功',
+        schema: {
+          type: 'object',
+          properties: {
+            count: { type: 'number', description: '排队中的任务数量' },
+          },
+        },
+      }),
+      ApiResponse({
+        status: 400,
+        description: '找不到提交记录',
+        schema: responseSchema('not found', '找不到提交记录'),
+      }),
+      ApiResponse({
+        status: 403,
+        description: '无权订阅',
+        schema: responseSchema('forbidden', '无权订阅'),
       }),
     ];
   },

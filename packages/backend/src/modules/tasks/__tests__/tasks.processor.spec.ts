@@ -10,6 +10,9 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { ChallengesModule } from '../../../modules/challenges/challenges.module';
 import { ChallengesService } from '../../../modules/challenges/challenges.service';
+import { CachesModule } from '../../../modules/caches/caches.module';
+import { TasksModule } from '../tasks.module';
+import { TasksService } from '../tasks.service';
 
 describe('TasksProcessor', () => {
   let processor: TasksProcessor;
@@ -18,6 +21,7 @@ describe('TasksProcessor', () => {
   let judgementsService: JudgementsService;
   let submissionService: SubmissionsService;
   let challengeService: ChallengesService;
+  let tasksService: TasksService;
 
   const id = '6756f5605fe86d4166703162';
 
@@ -30,7 +34,9 @@ describe('TasksProcessor', () => {
         JudgementsModule,
         SubmissionsModule,
         ChallengesModule,
-        createEnvConfModule(),
+        CachesModule,
+        TasksModule,
+        createEnvConfModule('.env.development'),
         mockDb.module,
       ],
     }).compile();
@@ -40,10 +46,12 @@ describe('TasksProcessor', () => {
     judgementsService = module.get<JudgementsService>(JudgementsService);
     submissionService = module.get<SubmissionsService>(SubmissionsService);
     challengeService = module.get<ChallengesService>(ChallengesService);
+    tasksService = module.get<TasksService>(TasksService);
     processor = new TasksProcessor(
       judgementsService,
       submissionService,
       challengeService,
+      tasksService,
     );
   });
 
@@ -203,5 +211,28 @@ describe('TasksProcessor', () => {
     );
 
     errorSpy.mockRestore();
+  });
+
+  it('无论执行成功还是失败都应该调用 onExecuteFinished', async () => {
+    const spyOnExecuteFinished = jest.fn();
+    processor['onExecuteFinished'] = spyOnExecuteFinished;
+
+    const job: TaskJob = {
+      id: '1',
+      name: 'execute',
+      data: { challengeId: id, submissionId: id },
+    } as any;
+
+    await processor.onExecuteCompleted(job, {
+      passed: true,
+      type: 'execute',
+    });
+
+    expect(spyOnExecuteFinished).toHaveBeenCalled();
+    spyOnExecuteFinished.mockClear();
+
+    await processor.onExecuteFailed(job, new Error('error message'));
+
+    expect(spyOnExecuteFinished).toHaveBeenCalled();
   });
 });

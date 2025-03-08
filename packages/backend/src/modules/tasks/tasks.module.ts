@@ -8,6 +8,8 @@ import { UsersModule } from '../users/users.module';
 import { ChallengesModule } from '../challenges/challenges.module';
 import { CommitHeatmapModule } from '../commit-heatmap/commit-heatmap.module';
 import { ActionsModule } from '../actions/actions.module';
+import { CounterModule } from '../counter/counter.module';
+import { CachesModule } from '../caches/caches.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { ActionsModule } from '../actions/actions.module';
     ChallengesModule,
     CommitHeatmapModule,
     ActionsModule,
+    CounterModule,
+    CachesModule,
     BullModule.registerQueue({
       name: 'tasks',
       defaultJobOptions: {
@@ -28,4 +32,4 @@ import { ActionsModule } from '../actions/actions.module';
   providers: [TasksService],
   exports: [TasksService],
 })
-export class TasksModule { }
+export class TasksModule {}
