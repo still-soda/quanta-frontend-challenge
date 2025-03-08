@@ -484,4 +484,31 @@ export class ChallengesService {
       { new: true },
     );
   }
+
+  /**
+   * 获取用户作答模板的URL
+   * @param answerTemplateId 用户作答模板ID
+   * @returns 用户作答模板的URL
+   * @throws
+   * - `not found` 挑战不存在
+   * - `internal server error` 获取用户作答模板URL失败
+   */
+  async getAnswerTemplateUrl(challengeId: string) {
+    const challenge = await this.findOne(challengeId);
+    if (!challenge) {
+      throw responseError('not found', { msg: '挑战不存在' });
+    }
+
+    const promises = challenge.answerTemplate.map(async (id) =>
+      this.assetsService.resolveStaticFilePath(id),
+    );
+    const urls = await Promise.all(promises).catch((error) => {
+      throw responseError('internal server error', {
+        msg: '获取用户作答模板URL失败',
+        withoutStack: false,
+      });
+    });
+
+    return urls;
+  }
 }

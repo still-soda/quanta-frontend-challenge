@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiBody, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { ApiNeedAuth, ROLE } from '../../common/decorators/auth.decorator';
 import { responseSchema } from '../../utils/http-response.utils';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
@@ -318,6 +318,41 @@ export const ChallengeDoc = new ApiDocumentHelper({
           type: 'array',
           items: { type: 'object', properties: userGetChallengeProps },
         }),
+      }),
+    ];
+  },
+  '/download-answer-template': () => {
+    return [
+      ApiOperation({
+        summary: '获取作答模板下载地址',
+        description: '获取挑战 ID 获取所有作答模板的下载地址。',
+      }),
+      ApiNeedAuth(),
+      ApiQuery({
+        name: 'challengeId',
+        type: 'string',
+        description: '挑战 ID',
+      }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'array',
+          items: { type: 'string', example: '/static/example.html' },
+        }),
+      }),
+      ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: '挑战不存在',
+        schema: responseSchema('not found', '挑战不存在'),
+      }),
+      ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: '获取用户作答模板URL失败',
+        schema: responseSchema(
+          'internal server error',
+          '获取用户作答模板URL失败',
+        ),
       }),
     ];
   },

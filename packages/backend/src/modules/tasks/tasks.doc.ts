@@ -56,6 +56,7 @@ export const TasksDoc = new ApiDocumentHelper({
           type: 'object',
           properties: {
             challengeId: { type: 'string', description: '挑战 ID' },
+            submissionId: { type: 'string', description: '提交记录 ID' },
           },
           required: ['challengeId'],
         },
@@ -84,6 +85,7 @@ export const TasksDoc = new ApiDocumentHelper({
           type: 'object',
           properties: {
             challengeId: { type: 'string', description: '挑战 ID' },
+            submitFileId: { type: 'string', description: '提交记录 ID' },
           },
           required: ['challengeId'],
         },

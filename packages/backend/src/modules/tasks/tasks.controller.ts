@@ -81,13 +81,15 @@ export class TasksController {
     @Body() body: WithoutUserId<PreExecuteTasksOptions>,
   ) {
     let jobId: string;
+    let submissionId: string;
 
     try {
-      const { id } = await this.tasksService.pushPreExecuteJob({
+      const result = await this.tasksService.pushPreExecuteJob({
         ...body,
         userId: user.id,
       });
-      jobId = id.toString();
+      jobId = result.id.toString();
+      submissionId = result.data.submissionId;
     } catch (error) {
       if (!(error instanceof HttpException)) {
         throw responseError('bad request', { msg: error.message });
@@ -95,7 +97,11 @@ export class TasksController {
       throw error;
     }
 
-    return responseSuccess('created', { jobId }, '预执行任务创建成功');
+    return responseSuccess(
+      'created',
+      { jobId, submissionId },
+      '预执行任务创建成功',
+    );
   }
 
   /**
@@ -117,13 +123,15 @@ export class TasksController {
     @Body() body: WithoutUserId<ExecuteTasksOptions>,
   ) {
     let jobId: string;
+    let submissionId: string;
 
     try {
-      const { id } = await this.tasksService.pushExecuteJob({
+      const result = await this.tasksService.pushExecuteJob({
         ...body,
         userId: user.id,
       });
-      jobId = id.toString();
+      jobId = result.id.toString();
+      submissionId = result.data.submissionId;
     } catch (error) {
       if (!(error instanceof HttpException)) {
         throw responseError('bad request', { msg: error.message });
@@ -131,6 +139,13 @@ export class TasksController {
       throw error;
     }
 
-    return responseSuccess('created', { jobId }, '执行任务创建成功');
+    return responseSuccess(
+      'created',
+      {
+        jobId,
+        submissionId,
+      },
+      '执行任务创建成功',
+    );
   }
 }

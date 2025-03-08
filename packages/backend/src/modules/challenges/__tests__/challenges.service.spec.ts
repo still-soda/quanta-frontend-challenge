@@ -542,4 +542,52 @@ describe('ChallengesService', () => {
       ).rejects.toThrow('上传用户作答模板失败');
     });
   });
+
+  describe('getAnswerTemplateUrl', () => {
+    it('应该返回用户作答模板 URL', async () => {
+      const created = await createOne();
+      jest.spyOn(challengesService, 'findOne').mockImplementation(() => {
+        return Promise.resolve({
+          answerTemplate: ['test_id'],
+        }) as any;
+      });
+      const mockResolveStaticFilePath = jest
+        .spyOn(assetsService, 'resolveStaticFilePath')
+        .mockImplementation(() => {
+          return Promise.resolve('test_url') as any;
+        });
+
+      const url = await challengesService.getAnswerTemplateUrl(created.id);
+      expect(url).toStrictEqual(['test_url']);
+      expect(mockResolveStaticFilePath).toHaveBeenCalledTimes(1);
+    });
+
+    it('挑战不存在应该报错', async () => {
+      jest.spyOn(challengesService, 'findOne').mockImplementation(() => {
+        return Promise.resolve(null) as any;
+      });
+
+      await expect(
+        challengesService.getAnswerTemplateUrl(randomMongoId()),
+      ).rejects.toThrow('挑战不存在');
+    });
+
+    it('获取用户作答模板URL失败时应该报错', async () => {
+      const created = await createOne();
+      jest.spyOn(challengesService, 'findOne').mockImplementation(() => {
+        return Promise.resolve({
+          answerTemplate: ['test_id'],
+        }) as any;
+      });
+      jest
+        .spyOn(assetsService, 'resolveStaticFilePath')
+        .mockImplementation(() => {
+          return Promise.reject(null) as any;
+        });
+
+      await expect(
+        challengesService.getAnswerTemplateUrl(created.id),
+      ).rejects.toThrow('获取用户作答模板URL失败');
+    });
+  });
 });

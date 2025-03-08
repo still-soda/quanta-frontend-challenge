@@ -83,12 +83,18 @@ describe('TasksController', () => {
     const launchPreExecuteSpy = jest
       .spyOn(service, 'pushPreExecuteJob')
       .mockImplementationOnce(async () => {
-        return { id: 123 } as any;
+        return {
+          id: 123,
+          data: {
+            submissionId: '123',
+          },
+        } as any;
       });
     const user = { id, username: 'test', role: ROLE.USER };
     const body = { challengeId: '1' };
     const res = await controller.launchPreExecute(user, body);
     expect(res).toHaveProperty('data.jobId', '123');
+    expect(res).toHaveProperty('data.submissionId', '123');
     expect(launchPreExecuteSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -97,12 +103,18 @@ describe('TasksController', () => {
     const launchExecuteSpy = jest
       .spyOn(service, 'pushExecuteJob')
       .mockImplementationOnce(async () => {
-        return { id: 123 } as any;
+        return {
+          id: 123,
+          data: {
+            submissionId: '123',
+          },
+        } as any;
       });
     const user = { id, username: 'test', role: ROLE.USER };
     const body = { challengeId: '1', submitFileId: '2' };
     const res = await controller.launchExecute(user, body);
     expect(res).toHaveProperty('data.jobId', '123');
+    expect(res).toHaveProperty('data.submissionId', '123');
     expect(launchExecuteSpy).toHaveBeenCalledTimes(1);
   });
 });
