@@ -3,8 +3,8 @@ import {
   Controller,
   HttpCode,
   HttpException,
+  Param,
   Post,
-  Query,
   Sse,
 } from '@nestjs/common';
 import {
@@ -160,7 +160,7 @@ export class TasksController {
   @Sse('/prev-task-count/:submissionsId')
   @Auth()
   async prevTaskCount(
-    @Query('submissionsId') submissionsId: string,
+    @Param('submissionsId') submissionsId: string,
     @CurrentUser() user: UserData,
   ) {
     return await this.tasksService.getPrevTaskCountSubject(submissionsId, user);
