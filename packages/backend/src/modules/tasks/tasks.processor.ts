@@ -12,6 +12,7 @@ import {
 import { Logger } from '@nestjs/common';
 import { SubmissionsService } from '../submissions/submissions.service';
 import { SubmissionType } from '../../schemas/submissions.schema';
+import { ChallengesService } from '../challenges/challenges.service';
 
 export type TaskJob = Job<{
   challengeId: string;
@@ -44,6 +45,7 @@ export class TasksProcessor {
   constructor(
     private readonly judgementsService: JudgementsService,
     private readonly submissionsService: SubmissionsService,
+    private readonly challengeService: ChallengesService,
   ) {}
 
   /**
@@ -101,6 +103,13 @@ export class TasksProcessor {
       correctRate: result.score / result.totalScore,
       message: resultMsg,
     });
+
+    if (result.passed) {
+      await this.challengeService.solveChallenge(
+        challengeId,
+        submission.userId,
+      );
+    }
 
     return { passed: result.passed, type: submission.type };
   }

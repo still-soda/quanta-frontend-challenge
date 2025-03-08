@@ -12,6 +12,7 @@ import { TasksProcessor } from '../tasks.processor';
 import { TasksModule } from '../tasks.module';
 import { ROLE } from '../../../common/decorators/auth.decorator';
 import mongoose from 'mongoose';
+import { ChallengesService } from '../../../modules/challenges/challenges.service';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -20,6 +21,7 @@ describe('TasksController', () => {
   let module: TestingModule;
   let judgementsService: JudgementsService;
   let submissionService: SubmissionsService;
+  let challengeService: ChallengesService;
 
   const id = '6756f5605fe86d4166703162';
 
@@ -43,8 +45,13 @@ describe('TasksController', () => {
 
     judgementsService = module.get<JudgementsService>(JudgementsService);
     submissionService = module.get<SubmissionsService>(SubmissionsService);
+    challengeService = module.get<ChallengesService>(ChallengesService);
     controller = module.get<TasksController>(TasksController);
-    processor = new TasksProcessor(judgementsService, submissionService);
+    processor = new TasksProcessor(
+      judgementsService,
+      submissionService,
+      challengeService,
+    );
   });
 
   afterAll(async () => {

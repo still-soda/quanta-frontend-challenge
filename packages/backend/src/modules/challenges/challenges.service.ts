@@ -288,7 +288,7 @@ export class ChallengesService {
   }
 
   /**
-   * 设置挑战状态为准备中
+   * 设置挑战状态
    * @private 仅供内部调用
    * @param id 挑战ID
    * @returns 更新后的挑战数据
@@ -423,6 +423,9 @@ export class ChallengesService {
 
   /**
    * 上传用户作答模板
+   *
+   * 通过验证后会将所有文件保存为静态文件，然后返回记录文件ID数组
+   *
    * @param options 上传用户作答模板数据
    * - `challengeId` 挑战ID
    * - `answerTemplates` 用户作答模板文件列表
@@ -451,10 +454,9 @@ export class ChallengesService {
       });
     }
 
-    const promises: Promise<string>[] = [];
-    answerTemplates.forEach(async (file) => {
-      promises.push(
-        new Promise(async (resolve, reject) => {
+    const promises = answerTemplates.map(
+      async (file) =>
+        new Promise<string>(async (resolve, reject) => {
           const { ok, id } = await this.assetsService.saveFileAsStatic({
             file: file.buffer,
             mimeType: file.mimetype as any,
@@ -470,8 +472,7 @@ export class ChallengesService {
                 }),
               );
         }),
-      );
-    });
+    );
 
     const answerTemplateIds = await Promise.all(promises).catch((error) => {
       throw error;

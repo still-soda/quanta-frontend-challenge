@@ -8,6 +8,8 @@ import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
+import { ChallengesModule } from '../../../modules/challenges/challenges.module';
+import { ChallengesService } from '../../../modules/challenges/challenges.service';
 
 describe('TasksProcessor', () => {
   let processor: TasksProcessor;
@@ -15,6 +17,7 @@ describe('TasksProcessor', () => {
   let module: TestingModule;
   let judgementsService: JudgementsService;
   let submissionService: SubmissionsService;
+  let challengeService: ChallengesService;
 
   const id = '6756f5605fe86d4166703162';
 
@@ -26,6 +29,7 @@ describe('TasksProcessor', () => {
       imports: [
         JudgementsModule,
         SubmissionsModule,
+        ChallengesModule,
         createEnvConfModule(),
         mockDb.module,
       ],
@@ -35,7 +39,12 @@ describe('TasksProcessor', () => {
 
     judgementsService = module.get<JudgementsService>(JudgementsService);
     submissionService = module.get<SubmissionsService>(SubmissionsService);
-    processor = new TasksProcessor(judgementsService, submissionService);
+    challengeService = module.get<ChallengesService>(ChallengesService);
+    processor = new TasksProcessor(
+      judgementsService,
+      submissionService,
+      challengeService,
+    );
   });
 
   afterAll(async () => {
@@ -84,6 +93,10 @@ describe('TasksProcessor', () => {
       .spyOn(submissionService, 'update')
       .mockImplementation(async () => ({}) as any);
 
+    const mockSolveChallenge = jest
+      .spyOn(challengeService, 'solveChallenge')
+      .mockImplementation(async () => ({}) as any);
+
     const job: TaskJob = {
       id: '1',
       name: 'execute',
@@ -94,6 +107,7 @@ describe('TasksProcessor', () => {
 
     expect(mockExecute).toHaveBeenCalledWith(id, id);
     expect(mockFindOne).toHaveBeenCalledWith(id);
+    expect(mockSolveChallenge.mock.calls[0][0]).toEqual(id);
     expect(mockUpdate).toHaveBeenCalledWith(id, {
       status: 'passed',
       score: 100,
