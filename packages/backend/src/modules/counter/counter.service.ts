@@ -10,6 +10,11 @@ export class CounterService {
     private readonly counterModel: Model<CounterDocument>,
   ) {}
 
+  /**
+   * 获取下一个自增序列值，如果不存在则创建
+   * @param sequenceName 序列名称
+   * @returns 下一个序列值
+   */
   async nextValue(sequenceName: string) {
     const result = await this.counterModel.findOneAndUpdate(
       { sequenceName },
