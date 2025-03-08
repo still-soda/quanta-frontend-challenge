@@ -23,4 +23,28 @@ export class CounterService {
     );
     return result.sequenceValue;
   }
+
+  /**
+   * 获取当前序列值
+   * @param sequenceName 序列名称
+   * @returns 当前序列值
+   */
+  async currentValue(sequenceName: string) {
+    const result = await this.counterModel.findOne({ sequenceName });
+    return result?.sequenceValue ?? 0;
+  }
+
+  /**
+   * 重置序列值
+   * @param sequenceName 序列名称
+   * @returns 是否重置成功
+   */
+  async reset(sequenceName: string) {
+    await this.counterModel.updateOne(
+      { sequenceName },
+      { sequenceValue: 0 },
+      { upsert: true },
+    );
+    return true;
+  }
 }

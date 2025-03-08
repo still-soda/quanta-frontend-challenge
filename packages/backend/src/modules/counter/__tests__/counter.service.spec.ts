@@ -44,4 +44,21 @@ describe('CounterService', () => {
     expect(value1).toBe(1);
     expect(value2).toBe(1);
   });
+
+  it('应该正确获取当前值', async () => {
+    const sequenceName = 'test4';
+    await service.nextValue(sequenceName);
+    const value = await service.currentValue(sequenceName);
+
+    expect(value).toBe(1);
+  });
+
+  it('应该正确重置数据', async () => {
+    const sequenceName = 'test';
+    await service.nextValue(sequenceName);
+    await service.reset(sequenceName);
+    const value = await service.currentValue(sequenceName);
+
+    expect(value).toBe(0);
+  });
 });
