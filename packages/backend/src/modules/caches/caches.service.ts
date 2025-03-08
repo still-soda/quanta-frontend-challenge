@@ -32,6 +32,7 @@ export class CachesService implements OnModuleInit, OnModuleDestroy {
    * @returns 缓存值
    */
   async get(key: string) {
+    this.redis.set;
     return this.redis.get(key);
   }
 
@@ -39,10 +40,12 @@ export class CachesService implements OnModuleInit, OnModuleDestroy {
    * 设置缓存数据。
    * @param key 缓存键
    * @param value 缓存值
-   * @param ttl 缓存过期时间
+   * @param ttl 缓存过期时间，不传则永不过期
    */
-  async set(key: string, value: string, ttl: number) {
-    return this.redis.set(key, value, 'EX', ttl);
+  async set(key: string, value: string | number, ttl?: number) {
+    return typeof ttl === 'undefined'
+      ? this.redis.set(key, value)
+      : this.redis.set(key, value, 'EX', ttl);
   }
 
   /**
