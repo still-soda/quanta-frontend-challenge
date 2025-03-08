@@ -143,10 +143,7 @@ export class TasksController {
 
     return responseSuccess(
       'created',
-      {
-        jobId,
-        submissionId,
-      },
+      { jobId, submissionId },
       '执行任务创建成功',
     );
   }
