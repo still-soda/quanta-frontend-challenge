@@ -9,13 +9,20 @@ export const AssetsDoc = new ApiDocumentHelper({
       ApiOperation({ summary: '获取文件的静态信息' }),
       ApiBody({
         description: '文件ID列表',
-        type: [String],
+        schema: {
+          type: 'array',
+          items: {
+            type: 'string',
+            description: '文件ID',
+          },
+        },
       }),
       ApiResponse({
         status: 200,
         description: '成功',
         schema: responseSchema('ok', '获取成功', {
-          schema: getFileMetaDtoProps,
+          type: 'object',
+          properties: getFileMetaDtoProps,
         }),
       }),
     ];
