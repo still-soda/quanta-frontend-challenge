@@ -511,4 +511,16 @@ export class ChallengesService {
 
     return urls;
   }
+
+  /**
+   * 获取发布的最新的挑战
+   * @param count 获取数量
+   * @returns 最新的挑战
+   */
+  async getLatestChallenges(count: number) {
+    return await this.challengeModel
+      .find({ status: CHALLENGE_STATUS.PUBLISHED })
+      .sort({ createdAt: -1 })
+      .limit(count);
+  }
 }

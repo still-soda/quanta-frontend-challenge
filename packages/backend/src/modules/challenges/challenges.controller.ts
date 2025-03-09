@@ -251,4 +251,19 @@ export class ChallengesController {
       await this.challengesService.getAnswerTemplateUrl(challengeId);
     return responseSuccess('ok', result, '获取成功');
   }
+
+  /**
+   * 获取最新的挑战。
+   */
+  @ChallengeDoc.forRoute('/get-latest-challenges')
+  @HttpCode(200)
+  @UseCache()
+  @Get('/get-latest-challenges')
+  async getLastestChallenges() {
+    const result = await this.challengesService.getLatestChallenges(5);
+    const filteredResult = result.map((item) =>
+      filterData(UserGetChallengeDto, item),
+    );
+    return responseSuccess('ok', filteredResult, '获取成功');
+  }
 }

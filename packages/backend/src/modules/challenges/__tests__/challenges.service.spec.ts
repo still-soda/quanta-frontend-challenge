@@ -590,4 +590,15 @@ describe('ChallengesService', () => {
       ).rejects.toThrow('获取用户作答模板URL失败');
     });
   });
+
+  describe('getLatestChallenges', () => {
+    it('应该返回最新挑战', async () => {
+      const one = await createOne();
+      const two = await createOne();
+      await challengesService.setStatusTo(one.id, CHALLENGE_STATUS.PUBLISHED);
+      await challengesService.setStatusTo(two.id, CHALLENGE_STATUS.PUBLISHED);
+      const newChallenges = await challengesService.getLatestChallenges(3);
+      expect(newChallenges.length).toBeGreaterThanOrEqual(2);
+    });
+  });
 });

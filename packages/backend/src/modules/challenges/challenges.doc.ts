@@ -356,4 +356,20 @@ export const ChallengeDoc = new ApiDocumentHelper({
       }),
     ];
   },
+  '/get-latest-challenges': () => {
+    return [
+      ApiOperation({
+        summary: '获取最新的挑战',
+        description: '5 个最新的挑战',
+      }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'array',
+          items: { type: 'object', properties: userGetChallengeProps },
+        }),
+      }),
+    ];
+  },
 });
