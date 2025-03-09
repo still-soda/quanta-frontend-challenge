@@ -3,6 +3,7 @@ import {
   Controller,
   HttpCode,
   HttpException,
+  MessageEvent,
   Param,
   Post,
   Sse,
@@ -20,6 +21,7 @@ import {
 } from '../../utils/http-response.utils';
 import { IpLimit } from '../../common/decorators/ip-limit.decorator';
 import { TasksDoc } from './tasks.doc';
+import { defer, from, map, Observable, switchMap } from 'rxjs';
 
 interface UploadFlowDataBody {
   challengeId: string;
@@ -156,13 +158,17 @@ export class TasksController {
    * @throws
    * - `not found`: 找不到提交记录
    */
-  @TasksDoc.forRoute('/prev-task-count/:submissionsId')
-  @Sse('/prev-task-count/:submissionsId')
+  @TasksDoc.forRoute('/subscribe-prev-task-count/:submissionsId')
+  @Sse('/subscribe-prev-task-count/:submissionsId')
   @Auth()
-  async prevTaskCount(
+  async subscribePrevTaskCount(
     @Param('submissionsId') submissionsId: string,
     @CurrentUser() user: UserData,
-  ) {
-    return await this.tasksService.getPrevTaskCountSubject(submissionsId, user);
+  ): Promise<Observable<MessageEvent>> {
+    const subject = await this.tasksService.getPrevTaskCountSubject(
+      submissionsId,
+      user,
+    );
+    return subject.pipe(map((count) => ({ data: count.toString() })));
   }
 }

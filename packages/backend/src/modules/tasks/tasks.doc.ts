@@ -102,7 +102,7 @@ export const TasksDoc = new ApiDocumentHelper({
       }),
     ];
   },
-  '/prev-task-count/:submissionsId': () => {
+  '/subscribe-prev-task-count/:submissionsId': () => {
     return [
       ApiOperation({
         summary: '订阅获取指定提交记录前排队的任务数量。',
@@ -110,7 +110,7 @@ export const TasksDoc = new ApiDocumentHelper({
       }),
       ApiNeedAuth(),
       ApiParam({
-        name: 'submissionId',
+        name: 'submissionsId',
         description: '提交记录 ID',
         required: true,
         schema: { type: 'string' },
@@ -121,7 +121,12 @@ export const TasksDoc = new ApiDocumentHelper({
         schema: {
           type: 'object',
           properties: {
-            count: { type: 'number', description: '排队中的任务数量' },
+            data: {
+              type: 'object',
+              properties: {
+                count: { type: 'string', description: '前排队的任务数量' },
+              },
+            },
           },
         },
       }),

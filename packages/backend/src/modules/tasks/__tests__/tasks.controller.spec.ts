@@ -11,6 +11,7 @@ import { ROLE } from '../../../common/decorators/auth.decorator';
 import mongoose from 'mongoose';
 import { CounterModule } from '../../../modules/counter/counter.module';
 import { CachesModule } from '../../../modules/caches/caches.module';
+import { Subject } from 'rxjs';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -104,5 +105,26 @@ describe('TasksController', () => {
     expect(res).toHaveProperty('data.jobId', '123');
     expect(res).toHaveProperty('data.submissionId', '123');
     expect(launchExecuteSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('应该正确获取指定提交记录前排队的 Observable 对象', async () => {
+    const $subject = new Subject<number>();
+    const spyGetPrevTaskCountSubject = jest
+      .spyOn(controller['tasksService'], 'getPrevTaskCountSubject')
+      .mockImplementationOnce(async () => $subject);
+
+    const user = { id, username: 'test', role: ROLE.USER };
+    const submissionId = '123';
+    const res = await controller.subscribePrevTaskCount(submissionId, user);
+
+    let data = '';
+    res.subscribe((val) => (data = val.data as string));
+
+    $subject.next(1);
+    expect(data).toBe('1');
+    $subject.next(2);
+    expect(data).toBe('2');
+
+    expect(spyGetPrevTaskCountSubject).toHaveBeenCalledTimes(1);
   });
 });
