@@ -10,9 +10,10 @@ import { responseError } from '../../utils/http-response.utils';
 import { JudgementsService } from '../judgements/judgements.service';
 import { CounterService } from '../counter/counter.service';
 import { CachesService } from '../caches/caches.service';
-import { map, Subject } from 'rxjs';
+import { map, Subject, throttleTime } from 'rxjs';
 import { UserData } from '../../common/decorators/user.decorator';
 import { ROLE } from '../../common/decorators/auth.decorator';
+import { ConfigService } from '@nestjs/config';
 
 export interface ExecuteTasksOptions {
   challengeId: string;
@@ -30,6 +31,7 @@ export const DONE_TASK_ORDER_KEY = 'doneTaskOrder';
 @Injectable()
 export class TasksService implements OnModuleInit {
   private readonly prevTaskCountSubject = new Subject<number>();
+  private readonly TASK_COUNT_PUSH_INTERVAL: number;
 
   constructor(
     @InjectQueue('tasks')
@@ -41,7 +43,11 @@ export class TasksService implements OnModuleInit {
     private readonly judgementsService: JudgementsService,
     private readonly counterService: CounterService,
     private readonly cachesService: CachesService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.TASK_COUNT_PUSH_INTERVAL =
+      this.configService.get<number>('TASK_COUNT_PUSH_INTERVAL') ?? 500;
+  }
 
   /**
    * 初始化时，将已完成的任务序号存入缓存。
@@ -209,9 +215,9 @@ export class TasksService implements OnModuleInit {
     }
 
     const { order } = submission;
-    return this.prevTaskCountSubject.pipe(
-      map((doneTaskCount) => Math.max(order - doneTaskCount, 0)),
-    );
+    return this.prevTaskCountSubject
+      .pipe(throttleTime(this.TASK_COUNT_PUSH_INTERVAL))
+      .pipe(map((doneTaskCount: number) => Math.max(order - doneTaskCount, 0)));
   }
 
   /**

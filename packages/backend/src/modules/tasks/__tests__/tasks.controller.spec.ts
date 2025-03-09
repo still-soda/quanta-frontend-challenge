@@ -122,9 +122,6 @@ describe('TasksController', () => {
 
     $subject.next(1);
     expect(data).toBe('1');
-    $subject.next(2);
-    expect(data).toBe('2');
-
     expect(spyGetPrevTaskCountSubject).toHaveBeenCalledTimes(1);
   });
 });
