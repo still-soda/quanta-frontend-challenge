@@ -13,6 +13,7 @@ import { ChallengesService } from '../../../modules/challenges/challenges.servic
 import { CachesModule } from '../../../modules/caches/caches.module';
 import { TasksModule } from '../tasks.module';
 import { TasksService } from '../tasks.service';
+import { CHALLENGE_STATUS } from '../../../schemas/challenges.schema';
 
 describe('TasksProcessor', () => {
   let processor: TasksProcessor;
@@ -142,10 +143,16 @@ describe('TasksProcessor', () => {
 
     const findMock = jest
       .spyOn(submissionService, 'findOne')
-      .mockImplementation(async () => ({ type: 'preExecute' }) as any);
+      .mockImplementation(
+        async () => ({ type: 'preExecute', challengeId: '123' }) as any,
+      );
 
     const updateMock = jest
       .spyOn(submissionService, 'update')
+      .mockImplementation(async () => ({}) as any);
+
+    const setStatusToMock = jest
+      .spyOn(challengeService, 'setStatusTo')
       .mockImplementation(async () => ({}) as any);
 
     const job: TaskJob = {
@@ -164,6 +171,7 @@ describe('TasksProcessor', () => {
       correctRate: 1,
       message: JSON.stringify(mockResult),
     });
+    expect(setStatusToMock).toHaveBeenCalledWith('123', CHALLENGE_STATUS.READY);
     expect(result).toEqual({ passed: true, type: 'preExecute' });
   });
 

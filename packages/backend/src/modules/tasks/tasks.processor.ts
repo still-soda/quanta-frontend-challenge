@@ -13,8 +13,8 @@ import { Logger } from '@nestjs/common';
 import { SubmissionsService } from '../submissions/submissions.service';
 import { SubmissionType } from '../../schemas/submissions.schema';
 import { ChallengesService } from '../challenges/challenges.service';
-import { CachesService } from '../caches/caches.service';
-import { DONE_TASK_ORDER_KEY, TasksService } from './tasks.service';
+import { TasksService } from './tasks.service';
+import { CHALLENGE_STATUS } from '../../schemas/challenges.schema';
 
 export type TaskJob = Job<{
   challengeId: string;
@@ -125,7 +125,7 @@ export class TasksProcessor {
    *
    * 接着调用 `JudgementsService.preExecute` 方法执行预评测，获取评测结果。
    *
-   * 最后更新提交记录的状态、分数、正确率和消息。
+   * 最后更新提交记录的状态、分数、正确率和消息，并根据评测结果更新挑战的状态。
    *
    * @param job 任务
    * - `challengeId`: 挑战 ID
@@ -162,6 +162,13 @@ export class TasksProcessor {
       correctRate: result.score / result.totalScore,
       message: resultMsg,
     });
+
+    if (result.passed) {
+      await this.challengeService.setStatusTo(
+        submission.challengeId,
+        CHALLENGE_STATUS.READY,
+      );
+    }
 
     return { passed: result.passed, type: submission.type };
   }

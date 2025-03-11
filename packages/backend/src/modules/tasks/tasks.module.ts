@@ -10,6 +10,7 @@ import { CommitHeatmapModule } from '../commit-heatmap/commit-heatmap.module';
 import { ActionsModule } from '../actions/actions.module';
 import { CounterModule } from '../counter/counter.module';
 import { CachesModule } from '../caches/caches.module';
+import { TasksProcessor } from './tasks.processor';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { CachesModule } from '../caches/caches.module';
     }),
   ],
   controllers: [TasksController],
-  providers: [TasksService],
+  providers: [TasksService, TasksProcessor],
   exports: [TasksService],
 })
 export class TasksModule {}
