@@ -14,6 +14,7 @@ import { map, Subject, throttleTime } from 'rxjs';
 import { UserData } from '../../common/decorators/user.decorator';
 import { ROLE } from '../../common/decorators/auth.decorator';
 import { ConfigService } from '@nestjs/config';
+import { FlowData } from '../judgements/core/flow-data';
 
 export interface ExecuteTasksOptions {
   challengeId: string;
@@ -74,7 +75,11 @@ export class TasksService implements OnModuleInit {
    * - `bad request`: 数据格式错误
    * - `internal server error`: 上传失败
    */
-  async uploadFlowData(challengeId: string, userId: string, flowData: any) {
+  async uploadFlowData(
+    challengeId: string,
+    userId: string,
+    flowDataJSON: string,
+  ) {
     const challenge = await this.challengesService.findOne(challengeId);
     if (!challenge) {
       throw responseError('not found', { msg: '找不到 Challenge' });
@@ -84,12 +89,18 @@ export class TasksService implements OnModuleInit {
       throw responseError('forbidden', { msg: '无权上传数据' });
     }
 
+    let flowData: FlowData[];
+    try {
+      flowData = JSON.parse(flowDataJSON);
+    } catch (error) {
+      throw responseError('bad request', { msg: error.message });
+    }
+
     let result: Awaited<ReturnType<JudgementsService['serializeFlowData']>>;
     try {
-      result = await this.judgementsService.serializeFlowData(
-        challengeId,
-        flowData,
-      );
+      result = await this.judgementsService.serializeFlowData(challengeId, {
+        data: flowData,
+      });
     } catch (error) {
       throw responseError('bad request', { msg: error.message });
     }

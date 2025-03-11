@@ -21,11 +21,11 @@ import {
 } from '../../utils/http-response.utils';
 import { IpLimit } from '../../common/decorators/ip-limit.decorator';
 import { TasksDoc } from './tasks.doc';
-import { defer, from, map, Observable, switchMap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 interface UploadFlowDataBody {
   challengeId: string;
-  data: any;
+  data: string;
 }
 
 type WithoutUserId<T> = Omit<T, 'userId'>;

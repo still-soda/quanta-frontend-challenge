@@ -61,7 +61,7 @@ describe('TasksController', () => {
         return { id: 123 } as any;
       });
     const user = { id, username: 'test', role: ROLE.USER };
-    const body = { challengeId: '1', data: {} };
+    const body = { challengeId: '1', data: '{}' };
     const res = await controller.uploadFlowData(user, body);
     expect(res).toHaveProperty('code', 200);
     expect(uploadFlowDataSpy).toHaveBeenCalledTimes(1);
