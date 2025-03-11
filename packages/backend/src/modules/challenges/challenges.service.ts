@@ -523,4 +523,42 @@ export class ChallengesService {
       .sort({ createdAt: -1 })
       .limit(count);
   }
+
+  /**
+   * 上传用户作答
+   *
+   * 通过验证后会将所有文件保存为静态文件，然后返回记录文件ID数组
+   *
+   * @param answer 用户作答文件列表
+   * @returns 更新后的挑战数据
+   * @throws
+   * - `internal server error` 上传用户作答失败
+   */
+  async uploadAnswer(answer: MulterFile[]) {
+    const promises = answer.map(
+      async (file) =>
+        new Promise<string>(async (resolve, reject) => {
+          const { ok, id } = await this.assetsService.saveFileAsStatic({
+            file: file.buffer,
+            mimeType: file.mimetype as any,
+            name: file.originalname,
+          });
+
+          ok
+            ? resolve(id)
+            : reject(
+                responseError('internal server error', {
+                  msg: '上传用户作答失败',
+                  withoutStack: false,
+                }),
+              );
+        }),
+    );
+
+    const answerIds = await Promise.all(promises).catch((error) => {
+      throw error;
+    });
+
+    return answerIds;
+  }
 }

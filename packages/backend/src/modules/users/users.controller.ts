@@ -21,7 +21,7 @@ import { GuestGetUserDto } from './dto/guest-get-user.dto';
 import { OwnerGetUserDto } from './dto/owner-get-user.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersService } from './users.service';
-import { UseFileInceptor } from '../../common/decorators/file.decorator';
+import { UseFileInterceptor } from '../../common/decorators/file.decorator';
 import { UserDoc } from './users.doc';
 
 @Controller('users')
@@ -115,7 +115,7 @@ export class UsersController {
    * @param file 头像文件
    */
   @UserDoc.forRoute('/upload-avatar')
-  @UseFileInceptor('file')
+  @UseFileInterceptor('file')
   @IpLimit(5)
   @Auth()
   @HttpCode(200)

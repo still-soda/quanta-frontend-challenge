@@ -13,12 +13,18 @@ import { Auth, ROLE } from '../../common/decorators/auth.decorator';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 import { ChallengeSwitchStatusDto } from './dto/switch-status.dto';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
-import { responseSuccess } from '../../utils/http-response.utils';
+import {
+  responseError,
+  responseSuccess,
+} from '../../utils/http-response.utils';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import { filterData } from '../../utils/filter-data.utils';
 import { UserGetChallengeDto } from './dto/user-get-challenge.dto';
 import { MulterFile } from '../assets/assets.service';
-import { UseFileInceptor } from '../../common/decorators/file.decorator';
+import {
+  UseFileInterceptor,
+  UseFilesInterceptor,
+} from '../../common/decorators/file.decorator';
 import { ChallengeDoc } from './challenges.doc';
 import { UseCache } from '../../common/decorators/cache.decorator';
 
@@ -216,7 +222,12 @@ export class ChallengesController {
    * @param files 用户作答模板文件
    */
   @ChallengeDoc.forRoute('/upload-answer-templates')
-  @UseFileInceptor('files', 2, 'text/')
+  @UseFilesInterceptor({
+    name: 'answerTemplates',
+    maxCount: 5,
+    maxMb: 2,
+    mimetypeLimit: 'text/',
+  })
   @HttpCode(200)
   @Auth(ROLE.ADMIN)
   @Post('/upload-answer-templates')
@@ -225,6 +236,7 @@ export class ChallengesController {
     @UploadedFiles() files: MulterFile[],
     @Body() body: { challengeId: string },
   ) {
+    !Array.isArray(files) && (files = [files]);
     const result = await this.challengesService.uploadAnswerTemplate({
       answerTemplates: files,
       challengeId: body.challengeId,
@@ -265,5 +277,34 @@ export class ChallengesController {
       filterData(UserGetChallengeDto, item),
     );
     return responseSuccess('ok', filteredResult, '获取成功');
+  }
+
+  /**
+   * 上传用户作答。
+   *
+   * 文件大小限制为 2MB，只能上传文本文件。上传成功后会返回一个 `answerId` 数组，用于后续查询作答结果。
+   *
+   * @param user 当前用户
+   * @param files 用户作答文件
+   * @param body 挑战ID
+   * - `challengeId` 挑战ID
+   */
+  @ChallengeDoc.forRoute('/upload-answer')
+  @UseFilesInterceptor({
+    name: 'files',
+    maxCount: 1,
+    maxMb: 2,
+    mimetypeLimit: 'text/',
+  })
+  @HttpCode(200)
+  @Auth()
+  @Post('/upload-answer')
+  async uploadAnswer(@UploadedFiles() files: MulterFile[]) {
+    if (!files) {
+      throw responseError('bad request', { msg: '需要上传文件' });
+    }
+
+    const result = await this.challengesService.uploadAnswer(files);
+    return responseSuccess('ok', result, '上传成功');
   }
 }

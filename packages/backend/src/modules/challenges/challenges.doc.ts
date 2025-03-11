@@ -1,5 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiBody, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiQuery,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { ApiNeedAuth, ROLE } from '../../common/decorators/auth.decorator';
 import { responseSchema } from '../../utils/http-response.utils';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
@@ -21,12 +27,18 @@ export const ChallengeDoc = new ApiDocumentHelper({
           '文件大小限制为 2MB，只能上传文本文件。',
       }),
       ApiNeedAuth({ level: ROLE.ADMIN }),
+      ApiConsumes('multipart/form-data'),
       ApiBody({
         schema: {
           type: 'object',
           properties: {
             challengeId: { type: 'string' },
+            files: {
+              type: 'array',
+              items: { type: 'string', format: 'binary' },
+            },
           },
+          required: ['challengeId', 'files'],
         },
       }),
       ApiResponse({
@@ -369,6 +381,35 @@ export const ChallengeDoc = new ApiDocumentHelper({
           type: 'array',
           items: { type: 'object', properties: userGetChallengeProps },
         }),
+      }),
+    ];
+  },
+  '/upload-answer': () => {
+    return [
+      ApiOperation({
+        summary: '上传用户作答',
+        description:
+          '文件大小限制为 2MB，只能上传文本文件。上传成功后会返回一个 `answerId` 数组，用于后续查询作答结果。',
+      }),
+      ApiNeedAuth(),
+      ApiConsumes('multipart/form-data'),
+      ApiBody({
+        description: '用户作答文件',
+        schema: {
+          type: 'object',
+          properties: {
+            files: {
+              type: 'array',
+              items: { type: 'string', format: 'binary' },
+            },
+          },
+          required: ['files'],
+        },
+      }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '上传成功',
+        schema: responseSchema('ok', '上传成功'),
       }),
     ];
   },
