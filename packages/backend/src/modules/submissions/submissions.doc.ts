@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { ApiNeedAuth } from '../../common/decorators/auth.decorator';
+import { ApiNeedAuth, ROLE } from '../../common/decorators/auth.decorator';
 import { responseSchema } from '../../utils/http-response.utils';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
 import { getSubmissionDtoProps } from './dto/get-submission.dto';
@@ -97,6 +97,7 @@ export const SubmissionsDoc = new ApiDocumentHelper({
   '/records': () => {
     return [
       ApiOperation({ summary: '获取某个挑战的提交记录' }),
+      ApiNeedAuth({ level: ROLE.ADMIN }),
       ApiQuery({ name: 'challengeId', type: 'string', description: '挑战 ID' }),
       ApiResponse({
         status: 200,
@@ -111,6 +112,7 @@ export const SubmissionsDoc = new ApiDocumentHelper({
   '/my-submissions-in-challenge': () => {
     return [
       ApiOperation({ summary: '获取用户在某个挑战的提交记录' }),
+      ApiNeedAuth(),
       ApiQuery({ name: 'challengeId', type: 'string', description: '挑战 ID' }),
       ApiResponse({
         status: 200,

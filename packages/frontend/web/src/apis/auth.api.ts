@@ -11,6 +11,17 @@ function isSuccessful(response: RequestResult) {
 }
 
 /**
+ * 获取验证码
+ * @api /auth/captcha
+ * @returns 验证码信息
+ */
+export async function getCaptcha() {
+   const response =
+      await post<RequestResult<{ id: string; svg: string }>>('/auth/captcha');
+   return response;
+}
+
+/**
  * 登录
  * @api /auth/login
  * @param options 登录信息
@@ -19,10 +30,11 @@ function isSuccessful(response: RequestResult) {
  * @returns 登录结果
  */
 export async function login(options: { username: string; password: string }) {
-   const response = await post<RequestResult<string>>('/auth/login', {
-      body: JSON.stringify(options),
-   });
-   isSuccessful(response) && setToken(response.data);
+   const response = await post<RequestResult<{ token: string }>>(
+      '/auth/login',
+      { body: JSON.stringify(options) }
+   );
+   isSuccessful(response) && setToken(response.data.token);
    return response;
 }
 
@@ -35,6 +47,8 @@ export async function login(options: { username: string; password: string }) {
  * - `email` 邮箱
  * - `number` 学号
  * - `phone` 手机号
+ * - `captcha` 验证码
+ * - `captchaId` 验证码 ID
  * @returns 注册结果
  */
 export async function register(options: {
@@ -43,6 +57,8 @@ export async function register(options: {
    email: string;
    number: string;
    phone: string;
+   captcha: string;
+   captchaId: string;
 }) {
    const response = await post<RequestResult<string>>('/auth/register', {
       body: JSON.stringify(options),

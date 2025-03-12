@@ -84,4 +84,34 @@ declare module '@challenge/utils' {
        */
       compare(a: T, b: T): number;
    }
+
+   /**
+    * @overload
+    * 产生一个从 0 到 count - 1 的数组
+    * @param count 数组长度
+    * @example range(3) => [0, 1, 2]
+    *
+    * @overload
+    * 产生一个从 start 到 end - 1 的数组
+    * @param start 数组起始值
+    * @param end 数组结束值
+    * @example range(1, 4) => [1, 2, 3]
+    */
+   declare function range(count: number): number[];
+   declare function range(start: number, end?: number): number[];
+   export { range };
+
+   /**
+    * 将字符串转换为像素，支持转化 `rem` 和 `px` 单位
+    * @author still-soda
+    * @param value 值
+    * @example
+    * ```typescript
+    * parseToPixels('1rem')   // 16
+    * parseToPixels('16px')   // 16
+    * parseToPixels('1')      // 1
+    * ```
+    */
+   declare function parseToPixels(value: string): number;
+   export { parseToPixels };
 }

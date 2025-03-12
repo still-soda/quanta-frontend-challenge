@@ -12,7 +12,7 @@ export async function getMySubmissoins() {
 }
 
 /**
- * 获取提交详情
+ * 根据提交id获取提交详情
  * @api /submissions/one-submission
  * @param submissionId 提交id
  * @returns 提交详情
@@ -24,13 +24,13 @@ export async function getSubmissionById(submissionId: string) {
 }
 
 /**
- * 获取挑战提交次数
+ * 获取挑战的提交次数
  * @api /submissions/count
  * @param challengeId 挑战id
  * @returns 提交次数
  */
 export async function getSubmitCountOfChallenge(challengeId: string) {
-   return await get<RequestResult<number>>(`/submissions/count`, {
+   return await get<RequestResult<{ rate: number }>>(`/submissions/count`, {
       query: { challengeId },
    });
 }
@@ -42,7 +42,21 @@ export async function getSubmitCountOfChallenge(challengeId: string) {
  * @returns 通过率
  */
 export async function getChallengePassedRate(challengeId: string) {
-   return await get<RequestResult<number>>(`/submissions/passed-rate`, {
-      query: { challengeId },
-   });
+   return await get<RequestResult<{ count: number }>>(
+      `/submissions/passed-rate`,
+      { query: { challengeId } }
+   );
+}
+
+/**
+ * 获取我的挑战提交
+ * @api /submissions/my-submissions-in-challenge
+ * @param challengeId 挑战id
+ * @returns 我的挑战提交
+ */
+export async function getMySubmissionsInChallenge(challengeId: string) {
+   return await get<RequestResult<Submission[]>>(
+      `/submissions/my-submissions-in-challenge`,
+      { query: { challengeId } }
+   );
 }
