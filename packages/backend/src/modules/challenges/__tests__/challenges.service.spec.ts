@@ -396,7 +396,7 @@ describe('ChallengesService', () => {
         CHALLENGE_STATUS.PUBLISHED,
       );
       const mockReadTextFile = jest
-        .spyOn(assetsService, 'readTextFile')
+        .spyOn(assetsService, 'readTextFileById')
         .mockImplementation(() => {
           return Promise.resolve('test content') as any;
         });
