@@ -122,9 +122,10 @@ export class TasksProcessor {
       const maxScore = await this.submissionsService.getMaxSubmissionScore(
         challengeId,
         submission.userId,
+        submission.id,
       );
       if (maxScore < result.score) {
-        this.usersService.modifyUserScore(
+        await this.usersService.modifyUserScore(
           submission.userId,
           maxScore,
           result.score,

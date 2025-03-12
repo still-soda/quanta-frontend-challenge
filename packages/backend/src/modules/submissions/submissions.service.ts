@@ -198,11 +198,16 @@ export class SubmissionsService {
    * @private 仅供内部使用
    * @param challengeId 挑战ID
    * @param userId 用户ID
+   * @param excludeId 排除的提交ID
    * @returns 最高分
    */
-  async getMaxSubmissionScore(challengeId: string, userId: string) {
+  async getMaxSubmissionScore(
+    challengeId: string,
+    userId: string,
+    excludeId?: string,
+  ) {
     const submissionWithMaxScore = await this.submissionModel
-      .find({ challengeId, userId, status: 'passed' })
+      .find({ challengeId, userId, status: 'passed', _id: { $ne: excludeId } })
       .sort({ score: -1 })
       .limit(1);
     return submissionWithMaxScore.length === 0
