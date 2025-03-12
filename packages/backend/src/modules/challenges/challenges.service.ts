@@ -538,7 +538,7 @@ export class ChallengesService {
     const promises = answer.map(
       async (file) =>
         new Promise<string>(async (resolve, reject) => {
-          const { ok, id } = await this.assetsService.saveFileAsStatic({
+          const { ok, id } = await this.assetsService.saveFile({
             file: file.buffer,
             mimeType: file.mimetype as any,
             name: file.originalname,

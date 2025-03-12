@@ -82,7 +82,7 @@ export class SubmissionsService {
 
     if (createSubmissionDto.type === 'execute') {
       await this.commitHeatmapService.increaseHeatmapCount({
-        date: Date.now().toString(),
+        date: new Date().toISOString(),
         userId: createSubmissionDto.userId,
       });
     }

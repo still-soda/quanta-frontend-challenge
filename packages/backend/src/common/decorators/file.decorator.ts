@@ -1,7 +1,7 @@
 import { applyDecorators, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import { responseError } from 'src/utils/http-response.utils';
+import { responseError } from '../../utils/http-response.utils';
 
 /**
  * 拦截文件上传的装饰器
