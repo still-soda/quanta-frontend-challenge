@@ -561,4 +561,44 @@ export class ChallengesService {
 
     return answerIds;
   }
+
+  /**
+   * 根据ID查找挑战
+   * @param id 挑战ID
+   * @param options 查找挑战数据选项
+   * - `onlyPublished` 只查找发布的
+   * - `user` 用户过滤
+   * @returns 挑战数据
+   * @throws
+   * - `bad request` ID 无效
+   */
+  async findById(
+    id: string,
+    options: {
+      onlyPublished?: boolean;
+      user?: UserData;
+    } = {},
+  ) {
+    if (!isMongoId(id)) {
+      throw responseError('bad request', { msg: 'ID 无效' });
+    }
+
+    const challenge = await this.challengeModel.findById(id);
+    const { onlyPublished, user } = options;
+
+    if (onlyPublished && challenge.status !== CHALLENGE_STATUS.PUBLISHED) {
+      return null;
+    }
+
+    if (
+      challenge.status !== CHALLENGE_STATUS.PUBLISHED &&
+      user &&
+      user.role < ROLE.SUPER_ADMIN &&
+      challenge.authorId !== user.id
+    ) {
+      return null;
+    }
+
+    return challenge;
+  }
 }

@@ -413,4 +413,42 @@ export const ChallengeDoc = new ApiDocumentHelper({
       }),
     ];
   },
+  '/find-one': () => {
+    return [
+      ApiOperation({
+        summary: '获取一个挑战',
+        description: '用户获取一个挑战',
+      }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'object',
+          properties: userGetChallengeProps,
+        }),
+      }),
+    ];
+  },
+  '/admin-find-one': () => {
+    return [
+      ApiOperation({
+        summary: '管理员根据 ID 获取一个挑战',
+        description: '需要管理员及以上的权限，超级管理员可以获取所有挑战',
+      }),
+      ApiNeedAuth({ level: ROLE.ADMIN }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'object',
+          properties: userGetChallengeProps,
+        }),
+      }),
+      ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: 'ID 无效',
+        schema: responseSchema('bad request', 'ID 无效'),
+      }),
+    ];
+  },
 });

@@ -307,4 +307,36 @@ export class ChallengesController {
     const result = await this.challengesService.uploadAnswer(files);
     return responseSuccess('ok', result, '上传成功');
   }
+
+  /**
+   * 获取用户作答结果。
+   * @param id 作答ID
+   */
+  @ChallengeDoc.forRoute('/find-one')
+  @HttpCode(200)
+  @Get('/find-one')
+  async findOne(@Query('id') id: string) {
+    const result = await this.challengesService.findById(id, {
+      onlyPublished: true,
+    });
+    const filteredResult = filterData(UserGetChallengeDto, result);
+    return responseSuccess('ok', filteredResult, '获取成功');
+  }
+
+  /**
+   * 管理员获取用户作答结果。
+   *
+   * 需要管理员及以上的权限，超级管理员可以获取所有作答结果。
+   *
+   * @param id 作答ID
+   * @param user 管理员用户
+   */
+  @ChallengeDoc.forRoute('/admin-find-one')
+  @HttpCode(200)
+  @Auth(ROLE.ADMIN)
+  @Get('/admin-find-one')
+  async adminFineOne(@Query('id') id: string, @CurrentUser() user: UserData) {
+    const result = await this.challengesService.findById(id, { user });
+    return responseSuccess('ok', result, '获取成功');
+  }
 }
