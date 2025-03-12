@@ -13,6 +13,7 @@ import { ChallengeSwitchStatusDto } from './dto/switch-status.dto';
 import { userGetChallengeProps } from './dto/user-get-challenge.dto';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { UpdateChallengeDto } from './dto/update-challenge.dto';
+import { adminGetChallengeProps } from './dto/admin-get-challenge.dto';
 
 /**
  * 挑战模块的 Swagger 接口文档。
@@ -441,7 +442,7 @@ export const ChallengeDoc = new ApiDocumentHelper({
         description: '获取成功',
         schema: responseSchema('ok', '获取成功', {
           type: 'object',
-          properties: userGetChallengeProps,
+          properties: adminGetChallengeProps,
         }),
       }),
       ApiResponse({
