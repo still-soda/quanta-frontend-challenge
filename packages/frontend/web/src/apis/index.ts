@@ -1,2 +1,9 @@
 export * as AuthApi from './auth.api';
 export * as HeatmapApi from './heatmap.api';
+export * as RankApi from './rank.api';
+export * as UsersApi from './user.api';
+export * as NotificationsApi from './notifications.api';
+export * as AssetsApi from './assets.api';
+export * as ActionsApi from './actions.api';
+export * as ChallengesApi from './challenges.api';
+export * as TasksApi from './tasks.api';
