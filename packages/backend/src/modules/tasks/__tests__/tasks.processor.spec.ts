@@ -14,6 +14,7 @@ import { CachesModule } from '../../../modules/caches/caches.module';
 import { TasksModule } from '../tasks.module';
 import { TasksService } from '../tasks.service';
 import { CHALLENGE_STATUS } from '../../../schemas/challenges.schema';
+import { UsersService } from '../../../modules/users/users.service';
 
 describe('TasksProcessor', () => {
   let processor: TasksProcessor;
@@ -23,6 +24,7 @@ describe('TasksProcessor', () => {
   let submissionService: SubmissionsService;
   let challengeService: ChallengesService;
   let tasksService: TasksService;
+  let usersService: UsersService;
 
   const id = '6756f5605fe86d4166703162';
 
@@ -48,11 +50,13 @@ describe('TasksProcessor', () => {
     submissionService = module.get<SubmissionsService>(SubmissionsService);
     challengeService = module.get<ChallengesService>(ChallengesService);
     tasksService = module.get<TasksService>(TasksService);
+    usersService = module.get<UsersService>(UsersService);
     processor = new TasksProcessor(
       judgementsService,
       submissionService,
       challengeService,
       tasksService,
+      usersService,
     );
   });
 
@@ -106,6 +110,18 @@ describe('TasksProcessor', () => {
       .spyOn(challengeService, 'solveChallenge')
       .mockImplementation(async () => ({}) as any);
 
+    const mockSubmitChallenge = jest
+      .spyOn(usersService, 'submitChallenge')
+      .mockImplementation(async () => ({}) as any);
+
+    const mockGetMaxSubmissionScore = jest
+      .spyOn(submissionService, 'getMaxSubmissionScore')
+      .mockImplementation(async () => 50);
+
+    const mockModifyUserScore = jest
+      .spyOn(usersService, 'modifyUserScore')
+      .mockImplementation(async () => ({}) as any);
+
     const job: TaskJob = {
       id: '1',
       name: 'execute',
@@ -117,6 +133,9 @@ describe('TasksProcessor', () => {
     expect(mockExecute).toHaveBeenCalledWith(id, id);
     expect(mockFindOne).toHaveBeenCalledWith(id);
     expect(mockSolveChallenge.mock.calls[0][0]).toEqual(id);
+    expect(mockSubmitChallenge).toHaveBeenCalledTimes(1);
+    expect(mockGetMaxSubmissionScore).toHaveBeenCalledTimes(1);
+    expect(mockModifyUserScore).toHaveBeenCalledTimes(1);
     expect(mockUpdate).toHaveBeenCalledWith(id, {
       status: 'passed',
       score: 100,
