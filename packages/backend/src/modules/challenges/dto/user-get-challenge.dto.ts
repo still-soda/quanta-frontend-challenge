@@ -42,14 +42,6 @@ export class UserGetChallengeDto {
   })
   @Expose()
   tags: string[];
-
-  @ApiProperty({
-    example: ['admin'],
-    description: '最快解答者',
-    required: false,
-  })
-  @Expose()
-  fastestSolvers: string[];
 }
 
 /**
@@ -93,13 +85,5 @@ export const userGetChallengeProps: SchemaProp = {
       type: 'string',
     },
     example: ['css', 'html', 'javascript'],
-  },
-  fastestSolvers: {
-    type: 'array',
-    description: '最快解答者',
-    items: {
-      type: 'string',
-    },
-    example: ['admin'],
   },
 };
