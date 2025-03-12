@@ -112,7 +112,7 @@ export class ChallengesService {
       throw responseError('not found', { msg: '挑战不存在' });
     }
 
-    return await this.assetsService.readTextFile(challenge.contentId);
+    return await this.assetsService.readTextFileById(challenge.contentId);
   }
 
   /**
