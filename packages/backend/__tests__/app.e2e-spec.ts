@@ -5,6 +5,7 @@ import * as request from 'supertest';
 import * as fs from 'fs';
 import * as path from 'path';
 import mongoose from 'mongoose';
+import { AllTestpointsFlowData } from '../src/modules/judgements/core/flow-data';
 
 const SUPER_ADMIN = {
   username: 'test-user',
@@ -115,15 +116,25 @@ describe('App 测试', () => {
     console.log('管理员：上传作答模板成功');
 
     // 上传判题流程
-    const flow = [
+    const flow: AllTestpointsFlowData[] = [
       {
         type: 'testpoint',
         detail: {
           name: 'h1文字测试',
-          score: 100,
+          score: 50,
           selector: 'h1',
           type: 'expect',
           text: 'Hello World',
+        },
+      },
+      {
+        type: 'testpoint',
+        detail: {
+          name: 'h1截图测试',
+          score: 50,
+          type: 'screenshot',
+          root: 'h1',
+          threshold: 0.9,
         },
       },
     ];
