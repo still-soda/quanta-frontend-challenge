@@ -15,6 +15,7 @@ import { SubmissionType } from '../../schemas/submissions.schema';
 import { ChallengesService } from '../challenges/challenges.service';
 import { TasksService } from './tasks.service';
 import { CHALLENGE_STATUS } from '../../schemas/challenges.schema';
+import { UsersService } from '../users/users.service';
 
 export type TaskJob = Job<{
   challengeId: string;
@@ -49,6 +50,7 @@ export class TasksProcessor {
     private readonly submissionsService: SubmissionsService,
     private readonly challengeService: ChallengesService,
     private readonly tasksService: TasksService,
+    private readonly usersService: UsersService,
   ) {}
 
   /**
@@ -112,6 +114,22 @@ export class TasksProcessor {
         challengeId,
         submission.userId,
       );
+      // 更新记录到用户信息
+      await this.usersService.submitChallenge(submission.userId, challengeId, {
+        status: 'success',
+      });
+      // 更新用户总分数
+      const maxScore = await this.submissionsService.getMaxSubmissionScore(
+        challengeId,
+        submission.userId,
+      );
+      if (maxScore < result.score) {
+        this.usersService.modifyUserScore(
+          submission.userId,
+          maxScore,
+          result.score,
+        );
+      }
     }
 
     return { passed: result.passed, type: submission.type };

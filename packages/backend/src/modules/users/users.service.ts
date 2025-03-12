@@ -88,7 +88,28 @@ export class UsersService {
     return this.userModel.deleteOne({ _id: id });
   }
 
-  increaseUserScore(id: string, score: number) {
+  /**
+   * 更新用户总得分。
+   * @param id 用户ID
+   * @param originalScore 原始分数
+   * @param score 新分数
+   * @returns 更新后的用户信息。
+   */
+  async modifyUserScore(id: string, originalScore: number, score: number) {
+    return this.userModel.findByIdAndUpdate(
+      id,
+      { $inc: { totalScore: score - originalScore } },
+      { new: true },
+    );
+  }
+
+  /**
+   * 更新用户总得分。
+   * @param id 用户ID
+   * @param score 新分数
+   * @returns 更新后的用户信息。
+   */
+  async increaseUserScore(id: string, score: number) {
     return this.userModel.findByIdAndUpdate(
       { _id: id },
       { $inc: { totalScore: score } },
@@ -96,7 +117,14 @@ export class UsersService {
     );
   }
 
-  submitChallenge(
+  /**
+   * 提交挑战。
+   * @param id 用户ID
+   * @param taskId 任务ID
+   * @param options 提交选项
+   * @returns 更新后的用户信息。
+   */
+  async submitChallenge(
     id: string,
     taskId: string,
     options: {

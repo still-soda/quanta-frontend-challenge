@@ -192,4 +192,21 @@ export class SubmissionsService {
 
     return await this.submissionModel.findByIdAndDelete(id);
   }
+
+  /**
+   * 获取某个用户在某个挑战中的最高分
+   * @private 仅供内部使用
+   * @param challengeId 挑战ID
+   * @param userId 用户ID
+   * @returns 最高分
+   */
+  async getMaxSubmissionScore(challengeId: string, userId: string) {
+    const submissionWithMaxScore = await this.submissionModel
+      .find({ challengeId, userId, status: 'passed' })
+      .sort({ score: -1 })
+      .limit(1);
+    return submissionWithMaxScore.length === 0
+      ? 0
+      : submissionWithMaxScore[0].score;
+  }
 }
