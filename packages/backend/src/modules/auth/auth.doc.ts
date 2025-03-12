@@ -1,10 +1,31 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { responseSchema } from '../../utils/http-response.utils';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+
+class RegisterWithCaptchaDto extends RegisterDto {
+  @ApiProperty({
+    description: '验证码',
+    required: true,
+    example: '1234',
+  })
+  captcha: string;
+
+  @ApiProperty({
+    description: '验证码ID',
+    required: true,
+    example: '1234',
+  })
+  captchaId: string;
+}
 
 export const AuthDoc = new ApiDocumentHelper({
   '/login': () => {
@@ -34,7 +55,7 @@ export const AuthDoc = new ApiDocumentHelper({
   '/register': () => {
     return [
       ApiOperation({ summary: '用户注册' }),
-      ApiBody({ type: RegisterDto }),
+      ApiBody({ type: RegisterWithCaptchaDto }),
       ApiResponse({
         status: HttpStatus.OK,
         description: '注册成功',
@@ -71,6 +92,22 @@ export const AuthDoc = new ApiDocumentHelper({
         status: HttpStatus.FORBIDDEN,
         description: '无权限',
         schema: responseSchema('forbidden', '无权限'),
+      }),
+    ];
+  },
+  '/captcha': () => {
+    return [
+      ApiOperation({ summary: '获取验证码' }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: '验证码ID' },
+            svg: { type: 'string', description: 'SVG格式的验证码' },
+          },
+        }),
       }),
     ];
   },

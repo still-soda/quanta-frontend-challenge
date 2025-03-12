@@ -213,7 +213,6 @@ export class AuthService {
    * - `svg`: 验证码 SVG
    */
   async getCaptcha() {
-    console.log(this.cachesService);
     const expression = svgCaptcha.createMathExpr({
       noise: 3,
       color: true,
@@ -222,7 +221,7 @@ export class AuthService {
       fontSize: 40,
     });
     const id = crypto.randomBytes(16).toString('hex');
-    await this.cachesService.set(`captcha:${id}`, expression.text, 120);
+    await this.cachesService.set(`captcha:${id}`, expression.text, 60);
     return {
       id,
       svg: expression.data,

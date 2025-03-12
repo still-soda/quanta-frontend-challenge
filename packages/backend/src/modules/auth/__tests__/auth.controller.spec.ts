@@ -97,12 +97,18 @@ describe('AuthController', () => {
         .spyOn(authService, 'register')
         .mockImplementation(async () => 'token');
 
+      jest
+        .spyOn(authService, 'verifyCaptcha')
+        .mockImplementation(async () => true);
+
       const result = await authController.register({
         username: 'test',
         password: 'test',
         email: 'test@email.com',
         number: '12345678901',
         phone: '12345678901',
+        captcha: '1234',
+        captchaId: '1234',
       });
 
       expect(result.code).toBe(200);
@@ -113,12 +119,18 @@ describe('AuthController', () => {
     it('应该在注册时返回用户名重复', async () => {
       jest.spyOn(authService, 'register').mockImplementation(async () => -1);
 
+      jest
+        .spyOn(authService, 'verifyCaptcha')
+        .mockImplementation(async () => true);
+
       const result = authController.register({
         username: 'test',
         password: 'test',
         email: 'test@email.com',
         number: '12345678901',
         phone: '12345678901',
+        captcha: '1234',
+        captchaId: '1234',
       });
 
       await expect(result).rejects.toThrow('用户名重复');
@@ -131,12 +143,18 @@ describe('AuthController', () => {
           throw new Error('请求参数错误');
         });
 
+      jest
+        .spyOn(authService, 'verifyCaptcha')
+        .mockImplementation(async () => true);
+
       const result = authController.register({
         username: 'test',
         password: 'test',
         email: 'test@email.com',
         number: '12345678901',
         phone: '12345678901',
+        captcha: '1234',
+        captchaId: '1234',
       });
 
       await expect(result).rejects.toThrow('请求参数错误');

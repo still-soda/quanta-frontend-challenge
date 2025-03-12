@@ -10,6 +10,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 import { AuthDoc } from './auth.doc';
+import { IpLimit } from '../../common/decorators/ip-limit.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -50,6 +51,8 @@ export class AuthController {
    * - `email` 邮箱
    * - `number` 学号
    * - `phone` 手机号
+   * - `captcha` 验证码
+   * - `captchaId` 验证码ID
    * @throws
    * - `bad request` 请求参数错误
    * - `conflict` 用户名重复
@@ -57,7 +60,12 @@ export class AuthController {
   @AuthDoc.forRoute('/register')
   @HttpCode(200)
   @Post('register')
-  async register(@Body() body: RegisterDto) {
+  async register(
+    @Body() body: RegisterDto & { captcha: string; captchaId: string },
+  ) {
+    const { captcha, captchaId } = body;
+    await this.authService.verifyCaptcha(captcha, captchaId);
+
     const token = await this.authService.register(body);
 
     if (typeof token === 'string') {
@@ -92,5 +100,17 @@ export class AuthController {
     }
 
     throw responseError('not found', { msg: '用户不存在' });
+  }
+
+  /**
+   * 获取验证码控制器，返回验证码。
+   **/
+  @AuthDoc.forRoute('/captcha')
+  @HttpCode(200)
+  @IpLimit(10)
+  @Post('captcha')
+  async captcha() {
+    const captcha = await this.authService.getCaptcha();
+    return responseSuccess('ok', captcha, '获取验证码成功');
   }
 }
