@@ -108,4 +108,18 @@ export const SubmissionsDoc = new ApiDocumentHelper({
       }),
     ];
   },
+  '/my-submissions-in-challenge': () => {
+    return [
+      ApiOperation({ summary: '获取用户在某个挑战的提交记录' }),
+      ApiQuery({ name: 'challengeId', type: 'string', description: '挑战 ID' }),
+      ApiResponse({
+        status: 200,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'array',
+          items: { type: 'object', properties: getSubmissionDtoProps },
+        }),
+      }),
+    ];
+  },
 });

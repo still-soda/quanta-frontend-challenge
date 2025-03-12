@@ -115,4 +115,23 @@ export class SubmissionsController {
       await this.submissionsService.getSubmissionOfChallenge(challengeId);
     return responseSuccess('ok', records, '获取成功');
   }
+
+  /**
+   * 获取用户在某个挑战的提交记录
+   * @param challengeId 挑战 ID
+   * @returns 提交记录
+   */
+  @SubmissionsDoc.forRoute('/my-submissions-in-challenge')
+  @Get('/my-submissions-in-challenge')
+  @Auth()
+  async getMySubmissionsInChallenge(
+    @CurrentUser() user: UserData,
+    @Query('challengeId') challengeId: string,
+  ) {
+    const result = await this.submissionsService.getMySubmissionsInChallenge(
+      user.id,
+      challengeId,
+    );
+    return responseSuccess('ok', result, '获取成功');
+  }
 }

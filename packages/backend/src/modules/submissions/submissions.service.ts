@@ -214,4 +214,14 @@ export class SubmissionsService {
       ? 0
       : submissionWithMaxScore[0].score;
   }
+
+  /**
+   * 获取某个用户在某个挑战中的最新提交
+   * @param challengeId 挑战ID
+   * @param userId 用户ID
+   * @returns 最新提交
+   */
+  async getMySubmissionsInChallenge(challengeId: string, userId: string) {
+    return await this.submissionModel.find({ challengeId, userId });
+  }
 }
