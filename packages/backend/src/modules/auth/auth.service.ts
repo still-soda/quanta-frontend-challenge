@@ -9,6 +9,8 @@ import { LoginDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { responseError } from '../../utils/http-response.utils';
 import validateData from '../../utils/validate-data.utils';
+import { CachesService } from '../caches/caches.service';
+import * as svgCaptcha from 'svg-captcha-fixed';
 
 type LoginResult = Promise<string | number>;
 
@@ -22,6 +24,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly cachesService: CachesService,
   ) {}
 
   /**
@@ -200,6 +203,53 @@ export class AuthService {
 
     const { salt, hash: passwordHash } = this.encryptPassword(newPassword);
     await this.usersService.update(user.id, { passwordHash, salt });
+    return true;
+  }
+
+  /**
+   * 获取验证码。
+   * @returns
+   * - `id`: 验证码 ID
+   * - `svg`: 验证码 SVG
+   */
+  async getCaptcha() {
+    console.log(this.cachesService);
+    const expression = svgCaptcha.createMathExpr({
+      noise: 3,
+      color: true,
+      width: 100,
+      height: 40,
+      fontSize: 40,
+    });
+    const id = crypto.randomBytes(16).toString('hex');
+    await this.cachesService.set(`captcha:${id}`, expression.text, 120);
+    return {
+      id,
+      svg: expression.data,
+    };
+  }
+
+  /**
+   * 验证验证码。
+   * @param id 验证码 ID
+   * @param value 用户输入的验证码
+   * @returns 验证成功返回 `true`
+   * @throws
+   * - `bad request` 验证码已过期
+   * - `bad request` 验证码错误
+   */
+  async verifyCaptcha(id: string, value: string) {
+    const captcha = await this.cachesService.get(`captcha:${id}`);
+    await this.cachesService.del(`captcha:${id}`);
+
+    if (!captcha) {
+      throw responseError('bad request', { msg: '验证码已过期' });
+    }
+
+    if (captcha !== value) {
+      throw responseError('bad request', { msg: '验证码错误' });
+    }
+
     return true;
   }
 }

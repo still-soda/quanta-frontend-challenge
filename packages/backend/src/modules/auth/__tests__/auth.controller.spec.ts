@@ -9,6 +9,7 @@ import { createJwtModule } from '../../../utils/jwt-mock.utils';
 import mongoose from 'mongoose';
 import { AuthService } from '../auth.service';
 import { ROLE } from '../../../common/decorators/auth.decorator';
+import { CachesModule } from '../../../modules/caches/caches.module';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -21,10 +22,11 @@ describe('AuthController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
+        CachesModule,
         mockDb.module,
         UsersModule,
         AuthModule,
-        createEnvConfModule(),
+        createEnvConfModule('.env.development'),
         createJwtModule(),
       ],
       controllers: [AuthController],

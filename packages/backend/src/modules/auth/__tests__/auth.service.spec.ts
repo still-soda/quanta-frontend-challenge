@@ -7,31 +7,40 @@ import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import { createJwtModule } from '../../../utils/jwt-mock.utils';
 import { UsersService } from '../../users/users.service';
 import mongoose from 'mongoose';
+import { CachesModule } from '../../../modules/caches/caches.module';
+import { CachesService } from '../../../modules/caches/caches.service';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let usersService: UsersService;
+  let cachesService: CachesService;
   let mongodb: MongoMemoryServer;
+  let module: TestingModule;
 
   beforeAll(async () => {
     const mockDb = await createMockDBModule();
     mongodb = mockDb.mongodb;
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         UsersModule,
+        CachesModule,
         mockDb.module,
-        createEnvConfModule(),
+        createEnvConfModule('.env.development'),
         createJwtModule(),
       ],
       providers: [AuthService],
     }).compile();
 
+    await module.init();
+
     authService = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
+    cachesService = module.get<CachesService>(CachesService);
   });
 
   afterAll(async () => {
+    await module.close();
     await mongoose.disconnect();
     await mongodb.stop();
   });
@@ -164,5 +173,57 @@ describe('AuthService', () => {
       password: newPassword,
     });
     expect(newToken).not.toBeNull();
+  });
+
+  describe('验证码测试', () => {
+    it('应该正确创建验证码', async () => {
+      const result = await authService.getCaptcha();
+      expect(result).toHaveProperty('id');
+      expect(result).toHaveProperty('svg');
+    });
+
+    it('应该正确验证验证码', async () => {
+      const mockGet = jest
+        .spyOn(cachesService, 'get')
+        .mockImplementation(async () => '1234');
+
+      const result = await authService.getCaptcha();
+      expect(result.id).not.toBeNull();
+
+      const id = result.id;
+      const ok = await authService.verifyCaptcha(id, '1234');
+      expect(ok).toBeTruthy();
+      expect(mockGet).toHaveBeenCalledWith(`captcha:${id}`);
+
+      mockGet.mockRestore();
+    });
+
+    it('验证码错误时验证失败', async () => {
+      const result = await authService.getCaptcha();
+      expect(result.id).not.toBeNull();
+
+      const id = result.id;
+      await expect(authService.verifyCaptcha(id, '4321')).rejects.toThrow(
+        '验证码错误',
+      );
+    });
+
+    it('验证码过期时验证失败', async () => {
+      jest
+        .spyOn(cachesService, 'get')
+        .mockImplementationOnce(async () => '1234')
+        .mockImplementationOnce(async () => null);
+
+      const result = await authService.getCaptcha();
+      expect(result.id).not.toBeNull();
+
+      const id = result.id;
+      const ok = await authService.verifyCaptcha(id, '1234');
+      expect(ok).toBeTruthy();
+
+      await expect(authService.verifyCaptcha(id, '1234')).rejects.toThrow(
+        '验证码已过期',
+      );
+    });
   });
 });

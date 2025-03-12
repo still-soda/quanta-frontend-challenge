@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import { createEnvConfModule } from '../../../utils/env-mock.utils';
 import { createJwtModule } from '../../../utils/jwt-mock.utils';
 import { ROLE } from '../../../common/decorators/auth.decorator';
+import { CachesModule } from '../../../modules/caches/caches.module';
 
 describe('AuthGuard', () => {
   let authGuard: AuthGuard;
@@ -23,8 +24,9 @@ describe('AuthGuard', () => {
       imports: [
         AuthModule,
         UsersModule,
+        CachesModule,
         mockDb.module,
-        createEnvConfModule(),
+        createEnvConfModule('.env.development'),
         createJwtModule(),
       ],
       providers: [AuthGuard],
