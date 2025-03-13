@@ -30,6 +30,7 @@ let hasInit = false;
  * @param eventEmitter 事件总线
  */
 export function init(eventEmitter: EventEmitter) {
+   hasInit = true;
    eventEmitter = eventEmitter;
 }
 
