@@ -12,8 +12,6 @@ async function bootstrap() {
   });
   app.useGlobalFilters(new GlobalExceptionFilter());
 
-  app.enableCors();
-
   // Swagger
   const config = new DocumentBuilder()
     .setTitle('Quanta Frontend Challenge Web API')
