@@ -155,4 +155,13 @@ export class UsersService {
       { new: true },
     );
   }
+
+  /**
+   * 获取ID列表中所有的用户信息。
+   * @param ids 用户ID列表
+   * @returns 用户信息列表。
+   */
+  async getUsersByIds(ids: string[]) {
+    return this.userModel.find({ _id: { $in: ids } });
+  }
 }

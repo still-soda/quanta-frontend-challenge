@@ -141,4 +141,18 @@ export class UsersController {
           });
     }
   }
+
+  /**
+   * 根据用户ID查找用户信息。
+   * @param ids 用户ID数组
+   * @returns 查找到的用户
+   */
+  @UserDoc.forRoute('/get-users-by-ids')
+  @HttpCode(200)
+  @Post('get-users-by-ids')
+  async getUsersByIds(@Body('ids') ids: string[]) {
+    const result = await this.usersService.getUsersByIds(ids);
+    const filtered = result.map((item) => filterData(GuestGetUserDto, item));
+    return responseSuccess('ok', filtered, '成功查找用户');
+  }
 }

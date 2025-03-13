@@ -107,4 +107,31 @@ export const UserDoc = new ApiDocumentHelper({
       }),
     ];
   },
+  '/get-users-by-ids': () => {
+    return [
+      ApiOperation({
+        summary: '根据用户ID查找用户信息',
+        description: '根据用户 ID 数组查找用户信息',
+      }),
+      ApiBody({
+        description: '用户 ID 数组',
+        schema: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['id1', 'id2'],
+        },
+      }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '成功查找用户',
+        schema: responseSchema('ok', '成功查找用户', {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: guestGetUserDtoProps,
+          },
+        }),
+      }),
+    ];
+  },
 });
