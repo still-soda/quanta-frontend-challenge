@@ -1,5 +1,7 @@
+import { useUserStore } from '@/stores/user.store';
 import { RequestResult } from '@/types/request';
 import { post, setToken } from '@challenge/api';
+import { getSelf } from './user.api';
 
 /**
  * 判断请求是否成功
@@ -34,7 +36,11 @@ export async function login(options: { username: string; password: string }) {
       '/auth/login',
       { body: JSON.stringify(options) }
    );
-   isSuccessful(response) && setToken(response.data.token);
+   if (isSuccessful(response)) {
+      setToken(response.data.token);
+      const getSelfResponse = await getSelf();
+      useUserStore().updateUser(getSelfResponse.data);
+   }
    return response;
 }
 

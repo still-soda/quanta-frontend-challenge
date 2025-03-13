@@ -51,13 +51,21 @@
 </template>
 
 <script setup lang="ts">
-import { RouterView, useRoute } from 'vue-router';
+import { RouterView, useRoute, useRouter } from 'vue-router';
 import { SlideTabContainer, SlideTabItem, Icon } from '@/components';
 import Navigator from './components/Navigator.vue';
 
 import { onMounted, provide, ref, watch } from 'vue';
 
 const route = useRoute();
+const router = useRouter();
+
+// 拦截未登录用户
+onMounted(() => {
+   if (!localStorage.getItem('token')) {
+      router.push('/auth/login');
+   }
+});
 
 // 侧边栏上方的图标
 const aboveTabs = [
@@ -113,7 +121,10 @@ onMounted(() => {
 <style scoped>
 .page-enter-active,
 .page-leave-active {
-   transition: opacity 0.5s, transform 0.5s, filter 0.3s;
+   transition:
+      opacity 0.5s,
+      transform 0.5s,
+      filter 0.3s;
 }
 
 .page-enter-from,

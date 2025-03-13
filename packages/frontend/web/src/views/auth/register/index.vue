@@ -9,17 +9,26 @@
       <Input
          style="view-transition-name: username"
          v-model:value="username"
-         placeholder="请输入用户名">
+         placeholder="请输入用户名"
+         :validator="isEmpty">
          <template #icon>
             <IdCard class="text-dark-normal size-[1.5rem]" />
          </template>
       </Input>
-      <Input v-model:value="number" name="number" placeholder="请输入学号">
+      <Input
+         v-model:value="number"
+         name="number"
+         placeholder="请输入学号"
+         :validator="isEleven">
          <template #icon>
             <User class="text-dark-normal size-[1.5rem]" />
          </template>
       </Input>
-      <Input v-model:value="mail" name="email" placeholder="请输入邮箱">
+      <Input
+         v-model:value="mail"
+         name="email"
+         placeholder="请输入邮箱"
+         :validator="isEmail">
          <template #icon>
             <Mail class="text-dark-normal size-[1.5rem]" />
          </template>
@@ -29,7 +38,8 @@
             class="shrink"
             v-model:value="captcha"
             name="captcha"
-            placeholder="请输入结果">
+            placeholder="请输入结果"
+            :validator="isEmpty">
             <template #icon>
                <Robot class="text-dark-normal size-[1.5rem]" />
             </template>
@@ -44,7 +54,8 @@
          style="view-transition-name: password"
          v-model:value="password"
          name="password"
-         placeholder="请输入密码">
+         placeholder="请输入密码"
+         :validator="isGreaterThanSix">
          <template #icon>
             <Key class="text-dark-normal size-[1.5rem]" />
          </template>
@@ -52,7 +63,8 @@
       <Input
          v-model:value="confirmPassword"
          name="confirm-password"
-         placeholder="请确认密码">
+         placeholder="请确认密码"
+         :validator="isEqualsToPassword">
          <template #icon>
             <Key class="text-dark-normal size-[1.5rem]" />
          </template>
@@ -95,6 +107,24 @@ const captcha = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 
+// 验证器
+function isEmail(value: string) {
+   return /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(value);
+}
+function isEmpty(value: string) {
+   return !!value;
+}
+function isEleven(value: string) {
+   return value.length === 11;
+}
+function isGreaterThanSix(value: string) {
+   return value.length >= 6;
+}
+function isEqualsToPassword(value: string) {
+   return value === password.value;
+}
+
+// 检查输入
 function checkInput() {
    if (!username.value) {
       message.error('用户名不能为空', { duration: 3000 });
@@ -104,8 +134,16 @@ function checkInput() {
       message.error('学号不能为空', { duration: 3000 });
       return false;
    }
+   if (number.value.length !== 11) {
+      message.error('学号长度不正确', { duration: 3000 });
+      return false;
+   }
    if (!mail.value) {
       message.error('邮箱不能为空', { duration: 3000 });
+      return false;
+   }
+   if (!isEmail(mail.value)) {
+      message.error('邮箱格式不正确', { duration: 3000 });
       return false;
    }
    if (!captcha.value) {
@@ -116,6 +154,10 @@ function checkInput() {
       message.error('密码不能为空', { duration: 3000 });
       return false;
    }
+   if (password.value.length < 6) {
+      message.error('密码长度不能小于6位', { duration: 3000 });
+      return false;
+   }
    if (password.value !== confirmPassword.value) {
       message.error('两次密码不一致', { duration: 3000 });
       return false;
@@ -123,9 +165,12 @@ function checkInput() {
    return true;
 }
 
+// 获取验证码
 const captchaContent = ref('');
 let captchaId = '';
+
 onMounted(() => refreshCaptcha());
+
 async function refreshCaptcha() {
    let result;
    try {
@@ -138,7 +183,10 @@ async function refreshCaptcha() {
    captchaId = result.data.id;
 }
 
+// 是否正在注册
 const onRegister = ref(false);
+
+// 处理注册
 async function handleRegister() {
    if (!checkInput()) return;
 
