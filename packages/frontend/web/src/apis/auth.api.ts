@@ -34,7 +34,10 @@ export async function getCaptcha() {
 export async function login(options: { username: string; password: string }) {
    const response = await post<RequestResult<{ token: string }>>(
       '/auth/login',
-      { body: JSON.stringify(options) }
+      {
+         body: JSON.stringify(options),
+         headers: { 'Content-Type': 'application/json' },
+      }
    );
    if (isSuccessful(response)) {
       setToken(response.data.token);
@@ -66,6 +69,7 @@ export async function register(options: {
 }) {
    const response = await post<RequestResult<string>>('/auth/register', {
       body: JSON.stringify(options),
+      headers: { 'Content-Type': 'application/json' },
    });
    isSuccessful(response) && setToken(response.data);
    return response;
@@ -85,5 +89,6 @@ export async function resetPassword(options: {
 }) {
    return await post<RequestResult<boolean>>('/auth/reset-password', {
       body: JSON.stringify(options),
+      headers: { 'Content-Type': 'application/json' },
    });
 }

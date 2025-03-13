@@ -45,6 +45,7 @@ export async function getSelf() {
 export async function updateSelf(payload: UpdateUserPayload) {
    return await post<RequestResult<User>>(`/users/update-self`, {
       body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/json' },
    });
 }
 

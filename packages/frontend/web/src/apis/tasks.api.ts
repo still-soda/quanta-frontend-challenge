@@ -16,6 +16,7 @@ type LaunchExecuteResponse = {
 export async function launchExecute(challengeId: string, submitFileId: string) {
    return post<RequestResult<LaunchExecuteResponse>>('/tasks/launch-execute', {
       body: JSON.stringify({ challengeId, submitFileId }),
+      headers: { 'Content-Type': 'application/json' },
    });
 }
 

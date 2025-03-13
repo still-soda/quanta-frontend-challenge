@@ -111,6 +111,7 @@ export class AuthService {
    * - `bad request` 请求参数错误
    */
   async login(dto: LoginDto): LoginResult {
+    console.log(dto);
     try {
       dto = await validateData(LoginDto, dto);
     } catch (error) {
