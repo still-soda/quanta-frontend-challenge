@@ -30,3 +30,8 @@ export { default as Upload } from './Upload.vue';
 export { default as UploadFile } from './UploadFile.vue';
 export { default as Download } from './Download.vue';
 export { default as Go } from './Go.vue';
+export { default as User } from './User.vue';
+export { default as Key } from './Key.vue';
+export { default as IdCard } from './IdCard.vue';
+export { default as Robot } from './Robot.vue';
+export { default as Mail } from './Mail.vue';

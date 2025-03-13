@@ -1,6 +1,6 @@
 <template>
    <div
-      class="w-fit px-3 py-1 rounded-inside border-solid transition-all select-none"
+      class="w-fit px-3 py-1 rounded-inside border-solid border-[1px] transition-all select-none"
       @click="!disabled && emitter('click')"
       :class="{
          // enable

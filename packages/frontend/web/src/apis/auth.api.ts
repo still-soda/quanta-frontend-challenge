@@ -46,7 +46,6 @@ export async function login(options: { username: string; password: string }) {
  * - `password` 密码
  * - `email` 邮箱
  * - `number` 学号
- * - `phone` 手机号
  * - `captcha` 验证码
  * - `captchaId` 验证码 ID
  * @returns 注册结果
@@ -56,7 +55,6 @@ export async function register(options: {
    password: string;
    email: string;
    number: string;
-   phone: string;
    captcha: string;
    captchaId: string;
 }) {

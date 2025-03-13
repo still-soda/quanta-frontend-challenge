@@ -87,7 +87,6 @@ export async function request(
          eventEmitter!.emit(RequestResultStatus.ERROR, {
             url: `${BASE_URL}${url}`,
             options,
-            response,
             error: err,
          } as RequestErrorMsg);
          throw err;
