@@ -49,10 +49,10 @@ export class RegisterDto {
 
   @ApiProperty({
     description: '手机号',
-    required: true,
+    required: false,
     example: '18888888888',
   })
   @IsPhoneNumber('CN')
   @Expose()
-  phone: string;
+  phone?: string;
 }

@@ -54,6 +54,7 @@ export class Users extends Document {
   @ApiProperty({
     example: 'phone',
     description: '手机号',
+    default: '',
   })
   @Prop()
   phone: string;

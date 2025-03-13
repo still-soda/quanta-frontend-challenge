@@ -219,6 +219,7 @@ export class AuthService {
       width: 100,
       height: 40,
       fontSize: 40,
+      mathOperator: '+/-',
     });
     const id = crypto.randomBytes(16).toString('hex');
     await this.cachesService.set(`captcha:${id}`, expression.text, 60);
