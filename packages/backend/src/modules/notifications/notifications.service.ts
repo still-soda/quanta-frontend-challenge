@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { AssetsService } from '../assets/assets.service';
+import { AssetsService, MulterFile } from '../assets/assets.service';
 import validateData from '../../utils/validate-data.utils';
 import { responseError } from '../../utils/http-response.utils';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,6 +15,7 @@ import { UserData } from '../../common/decorators/user.decorator';
 import { ROLE } from '../../common/decorators/auth.decorator';
 import { NotificationSwitchStatusDto } from './dto/switch-status.dto';
 import { isMongoId } from 'class-validator';
+import { MimeType } from '../assets/mime-type.type';
 
 @Injectable()
 export class NotificationsService {
@@ -284,6 +285,51 @@ export class NotificationsService {
     return await this.notificationsModel.findByIdAndUpdate(
       id,
       updateNotificationDto,
+      { new: true },
+    );
+  }
+
+  /**
+   * 上传公告封面。
+   * @param id 公告ID
+   * @param file 封面文件
+   * @param user 当前用户
+   * @returns 更新后的公告数据
+   * @throws
+   * - `not found` 公告不存在
+   * - `bad request` DTO数据校验失败
+   * - `forbidden` 非超级管理员无法代替他人更新公告
+   */
+  async uploadCover(id: string, file: MulterFile, user: UserData) {
+    const notification = await this.notificationsModel.findById(id);
+    if (!notification) {
+      throw responseError('not found', { msg: '公告不存在' });
+    }
+
+    if (user.role < ROLE.SUPER_ADMIN && notification.authorId !== user.id) {
+      throw responseError('forbidden', {
+        msg: '非超级管理员无法代替他人上传封面',
+      });
+    }
+
+    const { buffer, mimetype, originalname } = file;
+    const result = await this.assetsServive.saveFileAsStatic({
+      name: originalname,
+      file: buffer,
+      mimeType: mimetype as MimeType,
+    });
+
+    if (!result.ok) {
+      throw responseError('internal server error', {
+        msg: '保存封面文件失败',
+        withoutStack: false,
+      });
+    }
+
+    const coverUrl = await this.assetsServive.resolveStaticFilePath(result.id);
+    return await this.notificationsModel.findByIdAndUpdate(
+      id,
+      { coverUrl },
       { new: true },
     );
   }

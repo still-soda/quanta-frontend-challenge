@@ -887,4 +887,8 @@ describe('NotificationsService', () => {
       expect(result.length).toBeGreaterThan(0);
     });
   });
+
+  describe('uploadCover', () => {
+    it('应该正确上传公告封面', async () => {});
+  });
 });

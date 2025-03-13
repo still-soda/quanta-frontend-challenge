@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, HttpCode, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  HttpCode,
+  Param,
+  UploadedFile,
+} from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
@@ -7,6 +15,8 @@ import { responseSuccess } from '../../utils/http-response.utils';
 import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 import { NotificationSwitchStatusDto } from './dto/switch-status.dto';
 import { NotificationsDoc } from './notifications.doc';
+import { MulterFile } from '../assets/assets.service';
+import { UseFileInterceptor } from '../../common/decorators/file.decorator';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -176,5 +186,33 @@ export class NotificationsController {
   async adminGetDetail(@Param('id') id: string, @CurrentUser() user: UserData) {
     const result = await this.notificationsService.adminGetDetail(id, user);
     return responseSuccess('ok', result, '获取成功');
+  }
+
+  /**
+   * 上传公告封面，需要管理员及以上权限。
+   * @param file 封面文件
+   * @param notificationId 公告ID
+   * @param user 当前用户
+   * @returns 封面链接
+   * @throws
+   * - `not found` 公告不存在
+   * - `bad request` DTO数据校验失败
+   * - `forbidden` 非超级管理员无法代替他人更新公告
+   */
+  @NotificationsDoc.forRoute('/upload-cover')
+  @UseFileInterceptor('file', 5, 'image/')
+  @Auth(ROLE.ADMIN)
+  @Post('/upload-cover')
+  async uploadCover(
+    @UploadedFile() file: MulterFile,
+    @Body('id') notificationId: string,
+    @CurrentUser() user: UserData,
+  ) {
+    const result = await this.notificationsService.uploadCover(
+      notificationId,
+      file,
+      user,
+    );
+    return responseSuccess('ok', result, '上传成功');
   }
 }

@@ -1,5 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { ApiNeedAuth, ROLE } from '../../common/decorators/auth.decorator';
 import { responseSchema } from '../../utils/http-response.utils';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
@@ -226,6 +231,67 @@ export const NotificationsDoc = new ApiDocumentHelper({
           'forbidden',
           '非超级管理员无法获取他人未发布的公告',
         ),
+      }),
+    ];
+  },
+  '/upload-cover': () => {
+    return [
+      ApiOperation({
+        summary: '上传公告封面',
+        description: '需要管理员及以上权限',
+      }),
+      ApiNeedAuth({ level: ROLE.ADMIN }),
+      ApiConsumes('multipart/form-data'),
+      ApiBody({
+        schema: {
+          type: 'object',
+          properties: {
+            file: {
+              type: 'string',
+              format: 'binary',
+              description: '用户作答文件',
+            },
+            id: {
+              type: 'string',
+              example: '5f4e5f4e5f4e5f4e5f4e5f4e',
+              description: '公告ID',
+            },
+          },
+          required: ['file', 'id'],
+        },
+      }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '上传成功',
+        schema: responseSchema('ok', '上传成功', {
+          type: 'object',
+          properties: {
+            coverUrl: {
+              type: 'string',
+              example: 'http://example.com/cover.png',
+            },
+          },
+        }),
+      }),
+      ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: '公告不存在',
+        schema: responseSchema('not found', '公告不存在'),
+      }),
+      ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: 'DTO数据校验失败',
+        schema: responseSchema('bad request', 'DTO数据校验失败'),
+      }),
+      ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: '非超级管理员无法代替他人更新公告',
+        schema: responseSchema('forbidden', '非超级管理员无法代替他人更新公告'),
+      }),
+      ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: '保存封面文件失败',
+        schema: responseSchema('internal server error', '保存封面文件失败'),
       }),
     ];
   },
