@@ -29,9 +29,9 @@ let hasInit = false;
  * 初始化
  * @param eventEmitter 事件总线
  */
-export function init(eventEmitter: EventEmitter) {
+export function init(_eventEmitter: EventEmitter) {
    hasInit = true;
-   eventEmitter = eventEmitter;
+   eventEmitter = _eventEmitter;
 }
 
 /**
