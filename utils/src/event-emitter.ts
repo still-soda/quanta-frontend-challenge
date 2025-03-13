@@ -1,6 +1,6 @@
 import { inject } from 'vue';
 
-class EventEmitter {
+export class EventEmitter {
    private listeners: Map<string, Set<Function>> = new Map();
 
    /**

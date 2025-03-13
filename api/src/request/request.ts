@@ -1,4 +1,4 @@
-import { useEventEmitter } from '@challenge/utils';
+import { EventEmitter } from '@challenge/utils';
 import {
    RequestErrorMsg,
    RequestOptions,
@@ -17,6 +17,20 @@ export let BASE_URL = 'localhost:3000';
  */
 export function setBaseUrl(url: string) {
    BASE_URL = url;
+}
+
+/**
+ * 请求响应
+ */
+let eventEmitter: EventEmitter;
+let hasInit = false;
+
+/**
+ * 初始化
+ * @param eventEmitter 事件总线
+ */
+export function init(eventEmitter: EventEmitter) {
+   eventEmitter = eventEmitter;
 }
 
 /**
@@ -48,6 +62,10 @@ export async function request(
    url: string,
    options: RequestOptions
 ): Promise<Response> {
+   if (!hasInit) {
+      throw new Error('Please call init() to initialize request');
+   }
+
    options.query && (url = constructURL(url, options.query));
 
    const token = getToken();
@@ -65,8 +83,7 @@ export async function request(
       })
       .catch((err) => {
          // 向事件总线发射错误事件
-         const eventEmitter = useEventEmitter();
-         eventEmitter.emit(RequestResultStatus.ERROR, {
+         eventEmitter!.emit(RequestResultStatus.ERROR, {
             url: `${BASE_URL}${url}`,
             options,
             response,
