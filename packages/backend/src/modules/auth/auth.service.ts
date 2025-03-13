@@ -111,7 +111,6 @@ export class AuthService {
    * - `bad request` 请求参数错误
    */
   async login(dto: LoginDto): LoginResult {
-    console.log(dto);
     try {
       dto = await validateData(LoginDto, dto);
     } catch (error) {
@@ -208,7 +207,7 @@ export class AuthService {
   }
 
   /**
-   * 获取验证码。
+   * 获取验证码，有效时间 3 分钟。
    * @returns
    * - `id`: 验证码 ID
    * - `svg`: 验证码 SVG
@@ -223,7 +222,7 @@ export class AuthService {
       mathOperator: '+/-',
     });
     const id = crypto.randomBytes(16).toString('hex');
-    await this.cachesService.set(`captcha:${id}`, expression.text, 60);
+    await this.cachesService.set(`captcha:${id}`, expression.text, 180);
     return {
       id,
       svg: expression.data,

@@ -64,7 +64,7 @@ export class AuthController {
     @Body() body: RegisterDto & { captcha: string; captchaId: string },
   ) {
     const { captcha, captchaId } = body;
-    await this.authService.verifyCaptcha(captcha, captchaId);
+    await this.authService.verifyCaptcha(captchaId, captcha);
 
     const token = await this.authService.register(body);
 

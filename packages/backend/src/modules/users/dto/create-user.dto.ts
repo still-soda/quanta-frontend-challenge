@@ -55,6 +55,7 @@ export class CreateUserDto {
     required: true,
     description: '手机号',
   })
+  @IsOptional()
   @IsString()
   @Length(11, 11, { message: '手机号长度必须是11' })
   @Expose()

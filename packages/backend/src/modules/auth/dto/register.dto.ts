@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import {
   IsEmail,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   Length,
@@ -52,6 +53,7 @@ export class RegisterDto {
     required: false,
     example: '18888888888',
   })
+  @IsOptional()
   @IsPhoneNumber('CN')
   @Expose()
   phone?: string;
