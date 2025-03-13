@@ -7,6 +7,7 @@ export default {
             dark: {
                sidebar: '#262629',
                normal: '#1e1e1e',
+               shallow: '#e4e4e4',
                from: '#1e1e1e',
                to: '#6f6f6f',
             },
