@@ -273,9 +273,13 @@ export class ChallengesController {
   @Get('/get-latest-challenges')
   async getLastestChallenges() {
     const result = await this.challengesService.getLatestChallenges(5);
-    const filteredResult = result.map((item) =>
-      filterData(UserGetChallengeDto, item),
+    const contents = await Promise.all(
+      result.map((item) => this.challengesService.getDetail(item.id)),
     );
+    const filteredResult = result.map((item, idx) => ({
+      ...filterData(UserGetChallengeDto, item),
+      content: contents[idx],
+    }));
     return responseSuccess('ok', filteredResult, '获取成功');
   }
 

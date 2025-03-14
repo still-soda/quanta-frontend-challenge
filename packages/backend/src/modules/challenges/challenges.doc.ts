@@ -380,7 +380,17 @@ export const ChallengeDoc = new ApiDocumentHelper({
         description: '获取成功',
         schema: responseSchema('ok', '获取成功', {
           type: 'array',
-          items: { type: 'object', properties: userGetChallengeProps },
+          items: {
+            type: 'object',
+            properties: {
+              ...userGetChallengeProps,
+              content: {
+                type: 'string',
+                example: '挑战内容',
+                description: '挑战内容',
+              },
+            },
+          },
         }),
       }),
     ];

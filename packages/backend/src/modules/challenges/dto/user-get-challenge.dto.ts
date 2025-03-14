@@ -42,6 +42,20 @@ export class UserGetChallengeDto {
   })
   @Expose()
   tags: string[];
+
+  @ApiProperty({
+    example: new Date(),
+    description: '更新时间',
+  })
+  @Expose()
+  updatedAt: Date;
+
+  @ApiProperty({
+    example: new Date(),
+    description: '创建时间',
+  })
+  @Expose()
+  createdAt: Date;
 }
 
 /**
@@ -85,5 +99,17 @@ export const userGetChallengeProps: SchemaProp = {
       type: 'string',
     },
     example: ['css', 'html', 'javascript'],
+  },
+  updatedAt: {
+    type: 'string',
+    description: '更新时间',
+    example: '2021-01-01T00:00:00.000Z',
+    required: true,
+  },
+  createdAt: {
+    type: 'string',
+    description: '创建时间',
+    example: '2021-01-01T00:00:00.000Z',
+    required: true,
   },
 };
