@@ -9,11 +9,13 @@ import { responseError } from '../../utils/http-response.utils';
 
 @Injectable()
 export class RankService {
+  private recentRankTime: Date | null = null;
+
   constructor(
     @InjectModel(Rank.name)
     private readonly rankModel: Model<RankDocument>,
-    private readonly userService: UsersService
-  ) { }
+    private readonly userService: UsersService,
+  ) {}
 
   /**
    * 内部方法，获取最近一次排行榜更新时间
@@ -22,15 +24,20 @@ export class RankService {
    * @throws
    * - `internal server error` 获取最近一次排行榜更新时间失败
    */
-  private getRecentRankTime() {
+  getRecentRankTime() {
+    if (this.recentRankTime) {
+      return this.recentRankTime;
+    }
+
     try {
       const data = fs.readFileSync('./.temp/update-info.json', 'utf-8');
       const { recentRankDate } = JSON.parse(data);
-      return new Date(recentRankDate);
+      this.recentRankTime = new Date(recentRankDate);
+      return this.recentRankTime;
     } catch (error) {
       throw responseError('internal server error', {
         msg: '获取最近一次排行榜更新时间失败',
-        withoutStack: false
+        withoutStack: false,
       });
     }
   }
@@ -42,17 +49,19 @@ export class RankService {
    * @throws
    * - `internal server error` 更新排行榜时间失败
    */
-  private updateRecentRankTime(time: Date) {
+  updateRecentRankTime(time: Date) {
+    this.recentRankTime = time;
+
     try {
       !fs.existsSync('./.temp') && fs.mkdirSync('./.temp');
       fs.writeFileSync(
         `./.temp/update-info.json`,
-        JSON.stringify({ recentRankDate: time })
+        JSON.stringify({ recentRankDate: time }),
       );
     } catch (error) {
       throw responseError('internal server error', {
         msg: '更新排行榜时间失败',
-        withoutStack: false
+        withoutStack: false,
       });
     }
   }
@@ -76,7 +85,7 @@ export class RankService {
       userId: user.id,
       score: user.totalScore,
       rank: index + 1,
-      time: rankTime
+      time: rankTime,
     }));
 
     // 开启事务，并插入排行榜数据
@@ -90,7 +99,7 @@ export class RankService {
     if (currentRankCount - prevRankCount !== rankList.length) {
       throw responseError('internal server error', {
         msg: '排行榜数据插入失败',
-        withoutStack: false
+        withoutStack: false,
       });
     }
 
@@ -119,6 +128,28 @@ export class RankService {
    */
   async findSomeonesHistory(userId: string) {
     return await this.rankModel.find({ userId }).sort({ time: 1 });
+  }
+
+  /**
+   * 获取最近一次排行榜的总人数
+   * @returns 最近一次排行榜的总人数
+   * @throws
+   * - `bad request` 时间格式错误
+   */
+  async findRankCount(when: string | Date) {
+    let rankTime: Date;
+
+    if (typeof when === 'string') {
+      try {
+        rankTime = new Date(when);
+      } catch (error) {
+        throw responseError('bad request', { msg: '时间格式错误' });
+      }
+    } else {
+      rankTime = when;
+    }
+
+    return await this.rankModel.countDocuments({ time: rankTime });
   }
 
   /**

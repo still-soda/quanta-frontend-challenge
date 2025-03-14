@@ -55,7 +55,11 @@ describe('RankController', () => {
     it('应该正确返回我的排名历史', async () => {
       const findSomeonesHistoryServiceSpy = jest
         .spyOn(controller['rankService'], 'findSomeonesHistory')
-        .mockImplementationOnce((async () => ({})) as any);
+        .mockImplementationOnce((async () => []) as any);
+
+      const findRankCountServiceSpy = jest
+        .spyOn(controller['rankService'], 'findRankCount')
+        .mockImplementationOnce((async () => 0) as any);
 
       const res = await controller.findMyHistory({
         id: '123',
@@ -64,6 +68,7 @@ describe('RankController', () => {
       });
       expect(res).toBeDefined();
       expect(findSomeonesHistoryServiceSpy).toHaveBeenCalledTimes(1);
+      expect(findRankCountServiceSpy).toHaveBeenCalledTimes(1);
     });
   });
 

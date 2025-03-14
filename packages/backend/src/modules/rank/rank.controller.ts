@@ -32,7 +32,12 @@ export class RankController {
   @Auth()
   async findMyHistory(@CurrentUser() user: UserData) {
     const history = await this.rankService.findSomeonesHistory(user.id);
-    return responseSuccess('ok', history, '成功获取');
+    const earliestRankCount = await this.rankService.findRankCount(
+      history.length > 0
+        ? history[0].time
+        : this.rankService.getRecentRankTime(),
+    );
+    return responseSuccess('ok', { history, earliestRankCount }, '成功获取');
   }
 
   /**

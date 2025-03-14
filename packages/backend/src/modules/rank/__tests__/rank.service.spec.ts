@@ -85,12 +85,10 @@ describe('RankService', () => {
     it('应该返回最近一次更新的排行榜', async () => {
       const rankModel = rankService['rankModel'];
 
-      const readFileSyncSpy = jest
-        .spyOn(fs, 'readFileSync')
-        .mockImplementationOnce(() => {
-          return '{"recentRankDate": "2021-09-01T00:00:00.000Z"}';
-        });
-      readFileSyncSpy.mockClear();
+      const getRecentRankTimeSpy = jest
+        .fn()
+        .mockReturnValue(new Date('2021-09-01T00:00:00.000Z'));
+      rankService['getRecentRankTime'] = getRecentRankTimeSpy;
 
       const findSpy = jest
         .spyOn(rankModel, 'find')
@@ -116,7 +114,7 @@ describe('RankService', () => {
       });
 
       findSpy.mockRestore();
-      readFileSyncSpy.mockRestore();
+      getRecentRankTimeSpy.mockRestore();
     });
   });
 
