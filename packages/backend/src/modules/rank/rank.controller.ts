@@ -50,7 +50,12 @@ export class RankController {
   @Auth(ROLE.ADMIN)
   async findSomeonesHistory(@Query('userId') userId: string) {
     const history = await this.rankService.findSomeonesHistory(userId);
-    return responseSuccess('ok', history, '成功获取');
+    const earliestRankCount = await this.rankService.findRankCount(
+      history.length > 0
+        ? history[0].time
+        : this.rankService.getRecentRankTime(),
+    );
+    return responseSuccess('ok', { history, earliestRankCount }, '成功获取');
   }
 
   /**

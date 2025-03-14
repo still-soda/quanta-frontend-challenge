@@ -29,19 +29,17 @@ export const RankDoc = new ApiDocumentHelper({
         status: 200,
         description: '成功获取',
         schema: responseSchema('ok', '成功获取', {
-          schema: {
-            type: 'object',
-            properties: {
-              history: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: getRankDtoProps,
-                },
-                description: '排名历史',
+          type: 'object',
+          properties: {
+            history: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: getRankDtoProps,
               },
-              earliestRankCount: { type: 'number', description: '最早的排名' },
+              description: '排名历史',
             },
+            earliestRankCount: { type: 'number', description: '最早的排名' },
           },
         }),
       }),

@@ -76,12 +76,18 @@ describe('RankController', () => {
     it('应该正确返回某个用户的排名历史', async () => {
       const findSomeonesHistoryServiceSpy = jest
         .spyOn(controller['rankService'], 'findSomeonesHistory')
-        .mockImplementationOnce((async () => ({})) as any);
+        .mockImplementationOnce((async () => []) as any);
       findSomeonesHistoryServiceSpy.mockClear();
+
+      const findRankCountServiceSpy = jest
+        .spyOn(controller['rankService'], 'findRankCount')
+        .mockImplementationOnce((async () => 0) as any);
+      findRankCountServiceSpy.mockClear();
 
       const res = await controller.findSomeonesHistory('123');
       expect(res).toBeDefined();
       expect(findSomeonesHistoryServiceSpy).toHaveBeenCalledTimes(1);
+      expect(findRankCountServiceSpy).toHaveBeenCalledTimes(1);
     });
   });
 
