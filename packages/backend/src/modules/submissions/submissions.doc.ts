@@ -142,4 +142,18 @@ export const SubmissionsDoc = new ApiDocumentHelper({
       }),
     ];
   },
+  '/my-recent-submission': () => {
+    return [
+      ApiOperation({ summary: '获取我的最近提交' }),
+      ApiNeedAuth(),
+      ApiResponse({
+        status: 200,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'object',
+          properties: getSubmissionDtoProps,
+        }),
+      }),
+    ];
+  },
 });

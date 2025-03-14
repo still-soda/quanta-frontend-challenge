@@ -140,4 +140,17 @@ export class SubmissionsController {
       await this.submissionsService.getMaxCorrectRateOfChallenge(challengeId);
     return responseSuccess('ok', result, '获取成功');
   }
+
+  /**
+   * 获取我的最近提交
+   * @param user 当前用户
+   * @returns 最近提交
+   */
+  @SubmissionsDoc.forRoute('/my-recent-submission')
+  @Get('/my-recent-submission')
+  @Auth()
+  async getMyRecentSubmissions(@CurrentUser() user: UserData) {
+    const result = await this.submissionsService.getMyRecentSubmission(user.id);
+    return responseSuccess('ok', result, '获取成功');
+  }
 }

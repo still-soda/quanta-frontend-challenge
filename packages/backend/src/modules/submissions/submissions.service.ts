@@ -282,4 +282,16 @@ export class SubmissionsService {
   async getMySubmissionsInChallenge(challengeId: string, userId: string) {
     return await this.submissionModel.find({ challengeId, userId });
   }
+
+  /**
+   * 获取某个用户的最新提交
+   * @param userId 用户ID
+   * @returns 最新提交
+   */
+  async getMyRecentSubmission(userId: string) {
+    return await this.submissionModel
+      .find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(1);
+  }
 }
