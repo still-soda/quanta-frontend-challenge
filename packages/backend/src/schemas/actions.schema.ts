@@ -4,7 +4,7 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 export type ActionsDocument = Actions & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 @ApiSchema({ description: '用户活动' })
 export class Actions extends Document {
   @ApiProperty({

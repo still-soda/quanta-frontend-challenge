@@ -4,7 +4,7 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 export type AssetsDocument = Assets & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 @ApiSchema({ description: '本地资源' })
 export class Assets extends Document {
   @ApiProperty({

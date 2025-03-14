@@ -6,7 +6,7 @@ export type NotificationsDocument = Notifications & Document;
 
 export type NotificationStatus = 'draft' | 'published';
 
-@Schema()
+@Schema({ timestamps: true })
 @ApiSchema({ description: '公告' })
 export class Notifications extends Document {
   @ApiProperty({

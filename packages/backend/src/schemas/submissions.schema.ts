@@ -8,7 +8,7 @@ export type SubmissionStatus = 'pending' | 'failed' | 'passed';
 
 export type SubmissionType = 'execute' | 'preExecute';
 
-@Schema()
+@Schema({ timestamps: true })
 @ApiSchema({ description: '提交' })
 export class Submissions extends Document {
   @ApiProperty({

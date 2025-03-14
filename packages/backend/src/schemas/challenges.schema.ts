@@ -11,7 +11,7 @@ export enum CHALLENGE_STATUS {
   CLOSED,
 }
 
-@Schema()
+@Schema({ timestamps: true })
 @ApiSchema({ description: '挑战' })
 export class Challenges extends Document {
   @ApiProperty({

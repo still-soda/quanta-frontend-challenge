@@ -13,7 +13,7 @@ export type UsersDocument = Users & Document;
  */
 export type Role = 0 | 1 | 2;
 
-@Schema()
+@Schema({ timestamps: true })
 @ApiSchema({ description: '用户' })
 export class Users extends Document {
   @ApiProperty({
