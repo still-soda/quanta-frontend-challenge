@@ -120,6 +120,8 @@ export const RankDoc = new ApiDocumentHelper({
         schema: responseSchema('ok', '成功获取', {
           type: 'object',
           properties: {
+            total: { type: 'number', description: '总人数' },
+            lower: { type: 'number', description: '比自己分数低的人数' },
             percent: { type: 'number', description: '超越的百分比' },
           },
         }),

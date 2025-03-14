@@ -237,17 +237,17 @@ describe('RankService', () => {
         .mockImplementationOnce(() => {});
       rankService.generateScoreInteval(
         [
-          { rank: 0 },
-          { rank: 1 },
-          { rank: 2 },
-          { rank: 3 },
-          { rank: 4 },
-          { rank: 5 },
-          { rank: 6 },
-          { rank: 7 },
-          { rank: 8 },
-          { rank: 9 },
-          { rank: 10 },
+          { score: 0 },
+          { score: 1 },
+          { score: 2 },
+          { score: 3 },
+          { score: 4 },
+          { score: 5 },
+          { score: 6 },
+          { score: 7 },
+          { score: 8 },
+          { score: 9 },
+          { score: 10 },
         ] as any,
         4,
       );

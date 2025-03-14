@@ -88,27 +88,26 @@ export class RankService {
    */
   generateScoreInteval(orderedRank: Rank[], intervalCnt: number) {
     // 计算分数区间
-    const ranks = orderedRank.map((rank) => rank.rank);
-    const maxRank = Math.max(...ranks) + 1;
-    const minRank = Math.min(...ranks);
-    const interval = (maxRank - minRank) / intervalCnt;
+    const scores = orderedRank.map((rank) => rank.score);
+    const maxScore = Math.max(...scores) + 1;
+    const minScore = Math.min(...scores);
+    const interval = (maxScore - minScore) / intervalCnt;
 
     // 统计每个区间的人数
     const result: ScoreInterval[] = [];
-    let from = 0;
-    let to = interval;
-    let count = 0;
-    ranks.forEach((rank) => {
-      if (rank >= from && rank < to) {
-        count++;
-      } else {
-        result.push({ from, to, count });
-        from = to;
-        to += interval;
-        count = 1;
-      }
-    });
-    result.push({ from, to, count: count + 1 });
+    for (let i = 0; i < intervalCnt; i++) {
+      const from = minScore + i * interval;
+      const to = minScore + (i + 1) * interval;
+      const count = orderedRank.filter(
+        (rank) => rank.score >= from && rank.score < to,
+      ).length;
+      result.push({ from, to, count });
+    }
+
+    if (result.length > 0) {
+      result[result.length - 1].to = maxScore; // 修正最后一个区间的 to
+      result[result.length - 1].count++; // 修正最后一个区间的 count
+    }
 
     // 保存到文件
     this.scoreInterval = result;
@@ -156,7 +155,7 @@ export class RankService {
     }));
 
     // 生成分数区间
-    this.generateScoreInteval(rankList as Rank[], 10);
+    this.generateScoreInteval(rankList as Rank[], 11);
 
     // 开启事务，并插入排行榜数据
     const session = await this.rankModel.startSession();
@@ -249,14 +248,14 @@ export class RankService {
    * @returns
    * - lower: 比自己分数低的人数
    * - total: 总人数
-   * - rate: 超越的百分比
+   * - percent: 超越的百分比
    * @throws
    * - `bad request` 用户ID不合法
    */
   async getOvercomingPercent(userId: string): Promise<{
     lower: number;
     total: number;
-    rate: number;
+    percent: number;
   }> {
     if (!isMongoId(userId)) {
       throw responseError('bad request', { msg: '用户ID不合法' });
@@ -289,7 +288,7 @@ export class RankService {
         $project: {
           lower: 1,
           total: 1,
-          rate: {
+          percent: {
             $cond: [
               { $eq: ['$total', 0] },
               0,
