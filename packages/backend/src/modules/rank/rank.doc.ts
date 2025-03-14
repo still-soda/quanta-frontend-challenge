@@ -110,4 +110,45 @@ export const RankDoc = new ApiDocumentHelper({
       }),
     ];
   },
+  '/overcoming-percent': () => {
+    return [
+      ApiOperation({ summary: '获取用户超越的百分比' }),
+      ApiNeedAuth(),
+      ApiResponse({
+        status: 200,
+        description: '成功获取',
+        schema: responseSchema('ok', '成功获取', {
+          type: 'object',
+          properties: {
+            percent: { type: 'number', description: '超越的百分比' },
+          },
+        }),
+      }),
+      ApiResponse({
+        status: 400,
+        description: '用户ID错误',
+        schema: responseSchema('bad request', '用户ID错误'),
+      }),
+    ];
+  },
+  '/score-interval': () => {
+    return [
+      ApiOperation({ summary: '获取分数区间' }),
+      ApiResponse({
+        status: 200,
+        description: '成功获取',
+        schema: responseSchema('ok', '成功获取', {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              min: { type: 'number', description: '最小分数' },
+              max: { type: 'number', description: '最大分数' },
+              count: { type: 'number', description: '人数' },
+            },
+          },
+        }),
+      }),
+    ];
+  },
 });

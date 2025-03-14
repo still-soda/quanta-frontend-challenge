@@ -6,10 +6,24 @@ import { UsersService } from '../users/users.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as fs from 'fs';
 import { responseError } from '../../utils/http-response.utils';
+import { isMongoId } from 'class-validator';
+
+/**
+ * 分数区间数据
+ * @property from 区间起始分数
+ * @property to 区间结束分数，不包含
+ * @property count 该区间的人数
+ */
+export interface ScoreInterval {
+  from: number;
+  to: number;
+  count: number;
+}
 
 @Injectable()
 export class RankService {
   private recentRankTime: Date | null = null;
+  private scoreInterval: ScoreInterval[] | null = null;
 
   constructor(
     @InjectModel(Rank.name)
@@ -67,6 +81,59 @@ export class RankService {
   }
 
   /**
+   * 生成分数区间并保存到文件
+   * @private 内部方法
+   * @param orderedRank 排序后的排行榜
+   * @param intervalCnt 区间个数
+   */
+  generateScoreInteval(orderedRank: Rank[], intervalCnt: number) {
+    // 计算分数区间
+    const ranks = orderedRank.map((rank) => rank.rank);
+    const maxRank = Math.max(...ranks) + 1;
+    const minRank = Math.min(...ranks);
+    const interval = (maxRank - minRank) / intervalCnt;
+
+    // 统计每个区间的人数
+    const result: ScoreInterval[] = [];
+    let from = 0;
+    let to = interval;
+    let count = 0;
+    ranks.forEach((rank) => {
+      if (rank >= from && rank < to) {
+        count++;
+      } else {
+        result.push({ from, to, count });
+        from = to;
+        to += interval;
+        count = 1;
+      }
+    });
+    result.push({ from, to, count: count + 1 });
+
+    // 保存到文件
+    this.scoreInterval = result;
+    fs.writeFileSync(`./.temp/score-interval.json`, JSON.stringify(result));
+  }
+
+  /**
+   * 读取分数区间
+   * @returns 分数区间
+   */
+  getScoreInterval(): ScoreInterval[] {
+    if (this.scoreInterval) {
+      return this.scoreInterval;
+    }
+
+    try {
+      const data = fs.readFileSync('./.temp/score-interval.json', 'utf-8');
+      this.scoreInterval = JSON.parse(data);
+      return this.scoreInterval;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
    * 更新排行榜数据，每月1号凌晨定时执行，有可能被手动强制触发
    * @returns 更新后的排行榜数据
    * @throws
@@ -87,6 +154,9 @@ export class RankService {
       rank: index + 1,
       time: rankTime,
     }));
+
+    // 生成分数区间
+    this.generateScoreInteval(rankList as Rank[], 10);
 
     // 开启事务，并插入排行榜数据
     const session = await this.rankModel.startSession();
@@ -171,5 +241,65 @@ export class RankService {
     const date = new Date(time);
     date.setHours(0, 0, 0, 0);
     return await this.rankModel.find({ time: date }).sort({ rank: 1 });
+  }
+
+  /**
+   * 获取用户超越的百分比
+   * @param userId 用户ID
+   * @returns
+   * - lower: 比自己分数低的人数
+   * - total: 总人数
+   * - rate: 超越的百分比
+   * @throws
+   * - `bad request` 用户ID不合法
+   */
+  async getOvercomingPercent(userId: string): Promise<{
+    lower: number;
+    total: number;
+    rate: number;
+  }> {
+    if (!isMongoId(userId)) {
+      throw responseError('bad request', { msg: '用户ID不合法' });
+    }
+
+    const recentTime = this.getRecentRankTime();
+    const userRank = await this.rankModel.findOne({
+      userId,
+      time: recentTime,
+    });
+
+    const result = await this.rankModel.aggregate([
+      {
+        $facet: {
+          totalCount: [{ $match: { time: recentTime } }, { $count: 'total' }],
+          lowerCount: [
+            // 排名比 rank 大的人数即为比自己分数低的人数
+            { $match: { time: recentTime, rank: { $gt: userRank.rank } } },
+            { $count: 'lower' },
+          ],
+        },
+      },
+      {
+        $project: {
+          lower: { $arrayElemAt: ['$lowerCount.lower', 0] },
+          total: { $arrayElemAt: ['$totalCount.total', 0] },
+        },
+      },
+      {
+        $project: {
+          lower: 1,
+          total: 1,
+          rate: {
+            $cond: [
+              { $eq: ['$total', 0] },
+              0,
+              { $divide: ['$lower', '$total'] },
+            ],
+          },
+        },
+      },
+    ]);
+
+    return result[0];
   }
 }

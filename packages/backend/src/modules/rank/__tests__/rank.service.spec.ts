@@ -71,8 +71,11 @@ describe('RankService', () => {
       expect(result[2].score).toBe(100);
       expect(findAllSpy).toHaveBeenCalledTimes(1);
 
-      expect(writeFileSyncSpy).toHaveBeenCalledTimes(1);
+      expect(writeFileSyncSpy).toHaveBeenCalledTimes(2);
       expect(writeFileSyncSpy.mock.calls[0][0]).toBe(
+        './.temp/score-interval.json',
+      );
+      expect(writeFileSyncSpy.mock.calls[1][0]).toBe(
         './.temp/update-info.json',
       );
 
@@ -224,6 +227,38 @@ describe('RankService', () => {
       });
 
       findSpy.mockRestore();
+    });
+  });
+
+  describe('generateScoreInteval', () => {
+    it('应该正确生成分数区间', () => {
+      const mockWriteFileSync = jest
+        .spyOn(fs, 'writeFileSync')
+        .mockImplementationOnce(() => {});
+      rankService.generateScoreInteval(
+        [
+          { rank: 0 },
+          { rank: 1 },
+          { rank: 2 },
+          { rank: 3 },
+          { rank: 4 },
+          { rank: 5 },
+          { rank: 6 },
+          { rank: 7 },
+          { rank: 8 },
+          { rank: 9 },
+          { rank: 10 },
+        ] as any,
+        4,
+      );
+      expect(mockWriteFileSync.mock.calls[0][1]).toBe(
+        JSON.stringify([
+          { from: 0, to: 2.75, count: 3 },
+          { from: 2.75, to: 5.5, count: 3 },
+          { from: 5.5, to: 8.25, count: 3 },
+          { from: 8.25, to: 11, count: 3 },
+        ]),
+      );
     });
   });
 });

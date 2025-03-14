@@ -84,4 +84,31 @@ export class RankController {
     const history = await this.rankService.findHistorySometime(time);
     return responseSuccess('ok', history, '成功获取');
   }
+
+  /**
+   * 获取用户超越的百分比
+   * @param userId 用户ID
+   * @throws
+   * - `bad request` 用户ID错误
+   */
+  @RankDoc.forRoute('/overcoming-percent')
+  @Get('/overcoming-percent')
+  @Auth()
+  @UseCache(120)
+  async getOvercomingPercent(@CurrentUser() user: UserData) {
+    const result = await this.rankService.getOvercomingPercent(user.id);
+    return responseSuccess('ok', result, '成功获取');
+  }
+
+  /**
+   * 获取分数区间
+   * @returns 分数区间
+   */
+  @RankDoc.forRoute('/score-interval')
+  @Get('/score-interval')
+  @UseCache()
+  async getScoreInterval() {
+    const result = this.rankService.getScoreInterval();
+    return responseSuccess('ok', result, '成功获取');
+  }
 }
