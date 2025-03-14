@@ -5,7 +5,7 @@ import { RankModule } from '../rank.module';
 import { UsersModule } from '../../../modules/users/users.module';
 import { AssetsModule } from '../../../modules/assets/assets.module';
 import { createEnvConfModule } from '../../../utils/env-mock.utils';
-import * as fs from 'fs';
+import fs from 'fs';
 import mongoose from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -41,6 +41,10 @@ describe('RankService', () => {
     await mongodb.stop();
   });
 
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should be defined', () => {
     expect(rankService).toBeDefined();
   });
@@ -61,7 +65,7 @@ describe('RankService', () => {
 
       const writeFileSyncSpy = jest
         .spyOn(fs, 'writeFileSync')
-        .mockImplementationOnce(async () => {});
+        .mockImplementationOnce(() => {});
 
       const result = await rankService.updateRank();
       expect(result).toBeDefined();
@@ -259,6 +263,8 @@ describe('RankService', () => {
           { from: 8.25, to: 11, count: 3 },
         ]),
       );
+
+      mockWriteFileSync.mockRestore();
     });
   });
 });

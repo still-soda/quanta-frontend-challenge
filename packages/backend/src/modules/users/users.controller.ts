@@ -23,6 +23,7 @@ import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersService } from './users.service';
 import { UseFileInterceptor } from '../../common/decorators/file.decorator';
 import { UserDoc } from './users.doc';
+import { UseCache } from '../../common/decorators/cache.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -163,6 +164,7 @@ export class UsersController {
   @UserDoc.forRoute('/get-default-avatar')
   @HttpCode(200)
   @Get('get-default-avatar')
+  @UseCache(60 * 60)
   @Auth()
   async getDefaultAvatar(@CurrentUser() user: UserData) {
     const avatar = this.usersService.getRandomAvatar(user.id);
