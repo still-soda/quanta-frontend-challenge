@@ -86,18 +86,10 @@ export class SubmissionsController {
   @Get('/passed-rate')
   @UseCache(120)
   async getPassedRateByChallengeId(@Query('challengeId') challengeId: string) {
-    const passedCount =
-      await this.submissionsService.getSubmissionCountOfChallenge(challengeId, {
-        type: 'execute',
-        status: 'passed',
-      });
-    const totalCount =
-      await this.submissionsService.getSubmissionCountOfChallenge(challengeId, {
-        type: 'execute',
-      });
-    const rate = totalCount === 0 ? 0 : passedCount / totalCount;
+    const result =
+      await this.submissionsService.getPassedRateByChallengeId(challengeId);
 
-    return responseSuccess('ok', { rate }, '获取成功');
+    return responseSuccess('ok', result, '获取成功');
   }
 
   /**
@@ -132,6 +124,20 @@ export class SubmissionsController {
       user.id,
       challengeId,
     );
+    return responseSuccess('ok', result, '获取成功');
+  }
+
+  /**
+   * 获取某个挑战的最大通过率
+   * @param challengeId 挑战 ID
+   * @returns 最大通过率
+   */
+  @SubmissionsDoc.forRoute('/max-correct-rate')
+  @Get('/max-correct-rate')
+  @UseCache(120)
+  async getMaxCorrectRateOfChallenge(challengeId: string) {
+    const result =
+      await this.submissionsService.getMaxCorrectRateOfChallenge(challengeId);
     return responseSuccess('ok', result, '获取成功');
   }
 }

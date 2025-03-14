@@ -117,18 +117,17 @@ describe('SubmissionsController', () => {
   describe('getPassedRateByChallengeId', () => {
     it('应该返回挑战的通过率', async () => {
       const getPassedRateOfChallengeSpy = jest
-        .spyOn(
-          controller['submissionsService'],
-          'getSubmissionCountOfChallenge',
-        )
-        .mockImplementation(async (_, { status }) => {
-          return status === 'passed' ? 1 : 2;
-        });
+        .spyOn(controller['submissionsService'], 'getPassedRateByChallengeId')
+        .mockImplementation(async () => ({
+          rate: 0.5,
+          total: 10,
+          passed: 5,
+        }));
 
       const result = await controller.getPassedRateByChallengeId('1');
       expect(result).toBeDefined();
-      expect(result.data).toEqual({ rate: 0.5 });
-      expect(getPassedRateOfChallengeSpy).toHaveBeenCalledTimes(2);
+      expect(result.data).toEqual({ rate: 0.5, total: 10, passed: 5 });
+      expect(getPassedRateOfChallengeSpy).toHaveBeenCalledTimes(1);
 
       getPassedRateOfChallengeSpy.mockRestore();
     });

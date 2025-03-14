@@ -88,8 +88,12 @@ export const SubmissionsDoc = new ApiDocumentHelper({
         description: '获取成功',
         schema: responseSchema('ok', '获取成功', {
           type: 'object',
-          properties: { rate: { type: 'number' } },
-          example: { rate: 0.5 },
+          properties: {
+            rate: { type: 'number', description: '通过率' },
+            total: { type: 'number', description: '总提交数量' },
+            passed: { type: 'number', description: '通过的提交数量' },
+          },
+          example: { rate: 0.5, total: 10, passed: 5 },
         }),
       }),
     ];
@@ -120,6 +124,20 @@ export const SubmissionsDoc = new ApiDocumentHelper({
         schema: responseSchema('ok', '获取成功', {
           type: 'array',
           items: { type: 'object', properties: getSubmissionDtoProps },
+        }),
+      }),
+    ];
+  },
+  '/max-correct-rate': () => {
+    return [
+      ApiOperation({ summary: '获取某个挑战的最大通过率' }),
+      ApiQuery({ name: 'challengeId', type: 'string', description: '挑战 ID' }),
+      ApiResponse({
+        status: 200,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'number',
+          example: 0.5,
         }),
       }),
     ];

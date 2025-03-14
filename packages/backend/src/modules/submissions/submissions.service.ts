@@ -129,6 +129,50 @@ export class SubmissionsService {
   }
 
   /**
+   * 获取某个挑战的通过率
+   * @param challengeId 挑战ID
+   * @returns 通过率
+   */
+  async getPassedRateByChallengeId(challengeId: string): Promise<{
+    total: number;
+    passed: number;
+    rate: number;
+  }> {
+    const result = await this.submissionModel.aggregate([
+      {
+        // 统计通过和总数
+        $facet: {
+          passed: [
+            { $match: { challengeId, status: 'passed' } },
+            { $count: 'count' },
+          ],
+          total: [{ $match: { challengeId } }, { $count: 'count' }],
+        },
+      },
+      {
+        $project: {
+          total: { $arrayElemAt: ['$total.count', 0] },
+          passed: { $arrayElemAt: ['$passed.count', 0] },
+          rate: {
+            // 计算通过率，避免除数为 0
+            $cond: [
+              { $eq: [{ $arrayElemAt: ['$total.count', 0] }, 0] },
+              0,
+              {
+                $divide: [
+                  { $arrayElemAt: ['$passed.count', 0] },
+                  { $arrayElemAt: ['$total.count', 0] },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    ]);
+    return result.length === 0 ? { total: 0, passed: 0, rate: 0 } : result[0];
+  }
+
+  /**
    * 获取某个挑战的提交记录
    * @param challengeId 挑战ID
    * @returns 提交记录
@@ -144,6 +188,20 @@ export class SubmissionsService {
       challengeId,
       ...(filterOptions || {}),
     });
+  }
+
+  /**
+   * 获取某个挑战的最大通过率
+   * @param challengeId 挑战ID
+   * @returns 通过率
+   */
+  async getMaxCorrectRateOfChallenge(challengeId: string) {
+    const result = await this.submissionModel.aggregate([
+      { $match: { challengeId, status: 'passed' } },
+      { $sort: { count: -1 } },
+      { $limit: 1 },
+    ]);
+    return result.length === 0 ? 0 : result[0].count;
   }
 
   /**
