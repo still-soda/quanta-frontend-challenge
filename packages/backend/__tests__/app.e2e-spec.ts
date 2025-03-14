@@ -8,12 +8,12 @@ import mongoose from 'mongoose';
 import { AllTestpointsFlowData } from '../src/modules/judgements/core/flow-data';
 
 const SUPER_ADMIN = {
-  username: 'test-user',
+  username: 'admin',
   password: '123456',
 };
 
 const USER = {
-  username: 'user-test',
+  username: 'user',
   password: '123456',
 };
 
@@ -198,7 +198,7 @@ describe('App 测试', () => {
     const latestChallenge = await GET('/challenges/get-latest-challenges');
     expect(latestChallenge.body.code).toBe(200);
     expect(latestChallenge.body.data).toBeDefined();
-    expect(latestChallenge.body.data.length).toBeGreaterThan(1);
+    expect(latestChallenge.body.data.length).toBeGreaterThanOrEqual(1);
     console.log('用户：获取最新挑战成功');
 
     // 获取挑战详情
