@@ -16,11 +16,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const message = exception?.message || 'Internal server error';
     const ip = request.headers['x-real-ip'] || request.ip;
     const token = request.headers['authorization'];
+    const from = request.headers['referer'];
 
     const info = {
       status: status,
       method: request.method,
       url: request.url,
+      from: from,
       ip: ip,
       token: token,
       body: request.body,
