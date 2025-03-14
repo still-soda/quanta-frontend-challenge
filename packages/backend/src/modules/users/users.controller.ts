@@ -166,8 +166,11 @@ export class UsersController {
   @Get('get-default-avatar')
   @UseCache(60 * 60)
   @Auth()
-  async getDefaultAvatar(@CurrentUser() user: UserData) {
-    const avatar = this.usersService.getRandomAvatar(user.id);
+  async getDefaultAvatar(
+    @CurrentUser() user: UserData,
+    @Query('id') id?: string,
+  ) {
+    const avatar = this.usersService.getRandomAvatar(id ?? user.id);
     return responseSuccess('ok', { avatar }, '成功获取');
   }
 }

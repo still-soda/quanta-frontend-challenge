@@ -4,6 +4,13 @@ import { SchemaProp } from '../../../utils/schema-prop.util';
 
 export class OwnerGetUserDto {
   @ApiProperty({
+    example: 'id',
+    required: true,
+    description: '用户 ID',
+  })
+  id?: string;
+
+  @ApiProperty({
     example: 'username',
     required: true,
     description: '用户名',
@@ -100,6 +107,12 @@ export class OwnerGetUserDto {
  * 用户信息 Schema，用于 Swagger 文档
  */
 export const ownerGetUserDtoProps: SchemaProp = {
+  id: {
+    type: 'string',
+    example: 'id',
+    required: true,
+    description: '用户 ID',
+  },
   username: {
     type: 'string',
     example: 'username',

@@ -44,6 +44,14 @@ export class UserGetChallengeDto {
   tags: string[];
 
   @ApiProperty({
+    example: '1234567',
+    description: '作者ID',
+    required: true,
+  })
+  @Expose()
+  authorId: string;
+
+  @ApiProperty({
     example: new Date(),
     description: '更新时间',
   })
@@ -90,6 +98,12 @@ export const userGetChallengeProps: SchemaProp = {
     type: 'string',
     description: '类型',
     example: 'css',
+    required: true,
+  },
+  authorId: {
+    type: 'string',
+    description: '作者ID',
+    example: '1234567',
     required: true,
   },
   tags: {

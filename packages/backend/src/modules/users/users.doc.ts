@@ -139,6 +139,11 @@ export const UserDoc = new ApiDocumentHelper({
       ApiOperation({
         summary: '获取默认头像',
       }),
+      ApiQuery({
+        name: 'id',
+        required: false,
+        description: '用户ID，不传则自己的默认头像',
+      }),
       ApiResponse({
         status: HttpStatus.OK,
         description: '成功获取',
