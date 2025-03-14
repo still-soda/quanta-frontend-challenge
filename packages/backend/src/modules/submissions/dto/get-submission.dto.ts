@@ -16,6 +16,30 @@ export const getSubmissionDtoProps: SchemaProp = {
     example: 'execute',
     description: '提交类型',
   },
+  score: {
+    type: 'number',
+    example: 30,
+    default: -1,
+    description: '得分，-1表示未评分',
+  },
+  correctRate: {
+    type: 'number',
+    example: 0.7,
+    default: -1,
+    description: '正确率，-1表示未评分',
+  },
+  status: {
+    type: 'string',
+    example: 'pending',
+    default: 'pending',
+    description: '判题状态',
+  },
+  message: {
+    type: 'string',
+    example: '提交成功',
+    default: '',
+    description: '消息',
+  },
   createdAt: {
     type: 'string',
     example: '2021-01-01T00:00:00.000Z',

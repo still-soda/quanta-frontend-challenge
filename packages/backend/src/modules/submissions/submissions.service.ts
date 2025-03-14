@@ -198,7 +198,7 @@ export class SubmissionsService {
   async getMaxCorrectRateOfChallenge(challengeId: string) {
     const result = await this.submissionModel.aggregate([
       { $match: { challengeId, status: 'passed' } },
-      { $sort: { count: -1 } },
+      { $sort: { correctRate: -1 } },
       { $limit: 1 },
     ]);
     return result.length === 0 ? 0 : result[0].count;
@@ -289,9 +289,10 @@ export class SubmissionsService {
    * @returns 最新提交
    */
   async getMyRecentSubmission(userId: string) {
-    return await this.submissionModel
+    const submissions = await this.submissionModel
       .find({ userId })
       .sort({ createdAt: -1 })
       .limit(1);
+    return submissions.length === 0 ? null : submissions[0];
   }
 }
