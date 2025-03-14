@@ -349,6 +349,7 @@ export class ChallengesController {
   @Get('/total-score')
   @UseCache(120)
   async getTotalScore() {
-    return await this.challengesService.getTotalScore();
+    const result = await this.challengesService.getTotalScore();
+    return responseSuccess('ok', result, '获取成功');
   }
 }
