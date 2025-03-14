@@ -201,7 +201,7 @@ export class SubmissionsService {
       { $sort: { correctRate: -1 } },
       { $limit: 1 },
     ]);
-    return result.length === 0 ? 0 : result[0].count;
+    return result.length === 0 ? 0 : result[0].correctRate;
   }
 
   /**

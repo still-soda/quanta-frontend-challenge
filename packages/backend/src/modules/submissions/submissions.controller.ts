@@ -135,7 +135,9 @@ export class SubmissionsController {
   @SubmissionsDoc.forRoute('/max-correct-rate')
   @Get('/max-correct-rate')
   @UseCache(120)
-  async getMaxCorrectRateOfChallenge(challengeId: string) {
+  async getMaxCorrectRateOfChallenge(
+    @Query('challengeId') challengeId: string,
+  ) {
     const result =
       await this.submissionsService.getMaxCorrectRateOfChallenge(challengeId);
     return responseSuccess('ok', result, '获取成功');
