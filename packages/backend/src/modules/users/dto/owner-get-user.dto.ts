@@ -8,6 +8,7 @@ export class OwnerGetUserDto {
     required: true,
     description: '用户 ID',
   })
+  @Expose()
   id?: string;
 
   @ApiProperty({
