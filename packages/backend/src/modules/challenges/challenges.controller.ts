@@ -339,4 +339,16 @@ export class ChallengesController {
     const result = await this.challengesService.findById(id, { user });
     return responseSuccess('ok', result, '获取成功');
   }
+
+  /**
+   * 获取所有挑战的总分。
+   * @returns 总分
+   */
+  @ChallengeDoc.forRoute('/total-score')
+  @HttpCode(200)
+  @Get('/total-score')
+  @UseCache(120)
+  async getTotalScore() {
+    return await this.challengesService.getTotalScore();
+  }
 }

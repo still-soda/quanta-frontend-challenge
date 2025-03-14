@@ -452,4 +452,20 @@ export const ChallengeDoc = new ApiDocumentHelper({
       }),
     ];
   },
+  '/total-score': () => {
+    return [
+      ApiOperation({
+        summary: '获取所有挑战的总分',
+        description: '获取所有挑战的总分',
+      }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'number',
+          example: 100,
+        }),
+      }),
+    ];
+  },
 });

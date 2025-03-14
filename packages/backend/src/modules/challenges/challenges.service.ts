@@ -601,4 +601,15 @@ export class ChallengesService {
 
     return challenge;
   }
+
+  /**
+   * 获取挑战的总分
+   * @returns 总分
+   */
+  async getTotalScore() {
+    const result = await this.challengeModel.aggregate([
+      { $group: { _id: null, totalScore: { $sum: '$score' } } },
+    ]);
+    return result[0]?.totalScore ?? 0;
+  }
 }
