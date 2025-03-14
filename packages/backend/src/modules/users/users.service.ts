@@ -9,6 +9,7 @@ import { UserUpdateDto } from './dto/user-update.dto';
 import { AssetsService, MulterFile } from '../assets/assets.service';
 import { responseError } from '../../utils/http-response.utils';
 import { MimeType } from '../assets/mime-type.type';
+import multiavatar from '@multiavatar/multiavatar';
 
 @Injectable()
 export class UsersService {
@@ -163,5 +164,14 @@ export class UsersService {
    */
   async getUsersByIds(ids: string[]) {
     return this.userModel.find({ _id: { $in: ids } });
+  }
+
+  /**
+   * 获取用户的随机头像。
+   * @param userId 用户ID
+   * @returns 随机头像URL。
+   */
+  getRandomAvatar(userId: string) {
+    return multiavatar(userId);
   }
 }

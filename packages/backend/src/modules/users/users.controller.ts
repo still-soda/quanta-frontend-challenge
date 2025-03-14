@@ -155,4 +155,17 @@ export class UsersController {
     const filtered = result.map((item) => filterData(GuestGetUserDto, item));
     return responseSuccess('ok', filtered, '成功查找用户');
   }
+
+  /**
+   * 获取默认头像。
+   * @returns 默认头像
+   */
+  @UserDoc.forRoute('/get-default-avatar')
+  @HttpCode(200)
+  @Get('get-default-avatar')
+  @Auth()
+  async getDefaultAvatar(@CurrentUser() user: UserData) {
+    const avatar = this.usersService.getRandomAvatar(user.id);
+    return responseSuccess('ok', { avatar }, '成功获取');
+  }
 }

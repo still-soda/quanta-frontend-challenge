@@ -134,4 +134,26 @@ export const UserDoc = new ApiDocumentHelper({
       }),
     ];
   },
+  '/get-default-avatar': () => {
+    return [
+      ApiOperation({
+        summary: '获取默认头像',
+      }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '成功获取',
+        schema: responseSchema('ok', '成功获取', {
+          type: 'object',
+          properties: {
+            avatar: {
+              type: 'string',
+              description: 'SVG 格式的头像',
+              example:
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">...</svg>',
+            },
+          },
+        }),
+      }),
+    ];
+  },
 });
