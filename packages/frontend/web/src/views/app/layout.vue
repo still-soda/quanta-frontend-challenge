@@ -56,15 +56,19 @@ import { SlideTabContainer, SlideTabItem, Icon } from '@/components';
 import Navigator from './components/Navigator.vue';
 
 import { onMounted, provide, ref, watch } from 'vue';
+import { useUserStore } from '@/stores/user.store';
+import { getSelf } from '@/apis/user.api';
 
 const route = useRoute();
 const router = useRouter();
 
 // 拦截未登录用户
-onMounted(() => {
+onMounted(async () => {
    if (!localStorage.getItem('token')) {
       router.push('/auth/login');
    }
+   const getSelfResponse = await getSelf();
+   useUserStore().updateUser(getSelfResponse.data);
 });
 
 // 侧边栏上方的图标
