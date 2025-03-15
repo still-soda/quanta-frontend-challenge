@@ -95,6 +95,10 @@ describe('TasksService', () => {
       .spyOn(tasksService['actionsService'], 'create')
       .mockImplementationOnce(() => ({}) as any);
 
+    const increaseSpy = jest
+      .spyOn(challengesService, 'increaseTotalSubmissions')
+      .mockImplementationOnce(() => true as any);
+
     const addSpy = jest
       .spyOn(tasksService['tasksQueue'], 'add')
       .mockImplementationOnce(() => ({ id: 'jobId' }) as any);
@@ -108,6 +112,7 @@ describe('TasksService', () => {
     expect(findOneChallengeSpy).toHaveBeenCalledWith(challengeId);
     expect(createActionSpy).toHaveBeenCalledTimes(1);
     expect(findOneUserSpy).toHaveBeenCalledWith(userId);
+    expect(increaseSpy).toHaveBeenCalledWith(challengeId);
     expect(createSubmissionSpy).toHaveBeenCalledWith({
       challengeId,
       userId,

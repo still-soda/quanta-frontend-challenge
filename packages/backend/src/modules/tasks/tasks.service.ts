@@ -160,6 +160,10 @@ export class TasksService implements OnModuleInit {
       { id: userId, role: 0, username: undefined },
     );
 
+    // 增加提交次数
+    await this.challengesService.increaseTotalSubmissions(challengeId);
+
+    // 提交任务到队列
     return await this.tasksQueue.add('execute', {
       challengeId,
       submissionId,

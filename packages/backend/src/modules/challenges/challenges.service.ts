@@ -616,4 +616,15 @@ export class ChallengesService {
     ]);
     return result[0]?.totalScore ?? 0;
   }
+
+  /**
+   * 获取挑战的总提交数
+   * @returns 总提交数
+   */
+  async increaseTotalSubmissions(challengeId: string) {
+    return await this.challengeModel.updateOne(
+      { _id: challengeId },
+      { $inc: { totalSubmissions: 1 } },
+    );
+  }
 }
