@@ -1,4 +1,4 @@
-import { Challenge } from '@/models/challenge.model';
+import { Challenge, LatestChallenge } from '@/models/challenge.model';
 import { RequestResult } from '@/types/request';
 import { get, post } from '@challenge/api';
 
@@ -39,7 +39,9 @@ export async function getDownloadUrlOfAnswerTemplate(challengeId: string) {
  * @returns 最新的挑战
  */
 export async function getLastestChallenges() {
-   return get<RequestResult<Challenge[]>>('/challenges/get-latest-challenges');
+   return get<RequestResult<LatestChallenge[]>>(
+      '/challenges/get-latest-challenges'
+   );
 }
 
 /**
@@ -59,11 +61,20 @@ export async function uploadAnswer(files: File[]) {
 /**
  * 根据ID获取挑战详情
  * @api /challenges/find-one
- * @param challengeId 挑战 ID
+ * @param id 挑战 ID
  * @returns 挑战详情
  */
-export async function getChallengeById(challengeId: string) {
+export async function getChallengeById(id: string) {
    return get<RequestResult<Challenge>>(`/challenges/find-one`, {
-      query: { challengeId },
+      query: { id },
    });
+}
+
+/**
+ * 获取挑战总分
+ * @api /challenges/total-score
+ * @returns 挑战总分
+ */
+export async function getChallengesTotalScore() {
+   return get<RequestResult<number>>('/challenges/total-score');
 }

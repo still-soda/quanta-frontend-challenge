@@ -30,10 +30,22 @@ export async function getSubmissionById(submissionId: string) {
  * @returns 提交次数
  */
 export async function getSubmitCountOfChallenge(challengeId: string) {
-   return await get<RequestResult<{ rate: number }>>(`/submissions/count`, {
+   return await get<RequestResult<{ count: number }>>(`/submissions/count`, {
       query: { challengeId },
    });
 }
+
+/**
+ * 获取某个挑战的提交数量的响应
+ * @property total 提交总数
+ * @property passed 通过的提交数
+ * @property rate 通过率
+ */
+export type GetChallengesPassRateResponse = {
+   rate: number;
+   total: number;
+   passed: number;
+};
 
 /**
  * 获取挑战通过率
@@ -42,7 +54,7 @@ export async function getSubmitCountOfChallenge(challengeId: string) {
  * @returns 通过率
  */
 export async function getChallengePassedRate(challengeId: string) {
-   return await get<RequestResult<{ count: number }>>(
+   return await get<RequestResult<GetChallengesPassRateResponse>>(
       `/submissions/passed-rate`,
       { query: { challengeId } }
    );
@@ -59,4 +71,25 @@ export async function getMySubmissionsInChallenge(challengeId: string) {
       `/submissions/my-submissions-in-challenge`,
       { query: { challengeId } }
    );
+}
+
+/**
+ * 获取挑战的最大通过率
+ * @api /submissions/max-correct-rate
+ * @param challengeId 挑战id
+ * @returns 最大通过率
+ */
+export async function getMaxCorrectRate(challengeId: string) {
+   return get<RequestResult<number>>(`/submissions/max-correct-rate`, {
+      query: { challengeId },
+   });
+}
+
+/**
+ * 获取我的最近提交
+ * @api /submissions/my-recent-submission
+ * @returns 我的最近提交
+ */
+export async function getMyRecentSubmission() {
+   return get<RequestResult<Submission>>(`/submissions/my-recent-submission`);
 }
