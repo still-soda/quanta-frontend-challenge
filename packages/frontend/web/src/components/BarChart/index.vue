@@ -41,11 +41,19 @@ function asNumber(value: string | number) {
 const widthNumber = asNumber(props.width ?? 300);
 const heightNumber = asNumber(props.height ?? 300);
 
-onMounted(init);
+onMounted(() => {
+   cleanup = init();
+});
+
+let cleanup: (() => void) | null = null;
 function init() {
+   cleanup && cleanup();
+   cleanup = null;
+
    if (!chartContainer.value) {
-      return;
+      return null;
    }
+
    chartInstance = echarts.init(chartContainer.value, null, {
       renderer: 'canvas',
       useDirtyRect: false,
@@ -56,7 +64,7 @@ function init() {
    const min = Math.min(...scores);
    const max = Math.max(...scores);
    const segments = props.segments ?? 11;
-   const step = (max - min) / segments;
+   const step = (max - min) / segments || 0.1; // 防止无限循环
 
    // 分数区间定义
    const ranges = (() => {
@@ -139,7 +147,7 @@ function init() {
          formatter: (params: any) => {
             const { name, dataIndex } = params[0];
             const [min, max] = name.split('~');
-            return `[${min}%, ${max}%): ${rangeCounts[dataIndex]}人`;
+            return `[${min}, ${max}): ${rangeCounts[dataIndex]}人`;
          },
       },
       series: [
@@ -168,11 +176,14 @@ function init() {
    };
 
    if (option && typeof option === 'object') {
-      chartInstance.setOption(option);
+      chartInstance!.setOption(option);
    }
 
-   window.addEventListener('resize', () => chartInstance!.resize());
-   window.addEventListener('resize', updateImage);
+   window.addEventListener('resize', () => onResize());
+   function onResize() {
+      chartInstance!.resize();
+      updateImage();
+   }
 
    updateImage();
    function updateImage() {
@@ -214,6 +225,10 @@ function init() {
       });
       chartInstance!.setOption(option);
    }
+
+   return () => {
+      window.removeEventListener('resize', onResize);
+   };
 }
 
 watch(
@@ -230,7 +245,7 @@ watch(
 watch(
    () => [props.users, props.scores, props.imageSize],
    () => {
-      init();
+      cleanup = init();
    },
    { deep: true }
 );
