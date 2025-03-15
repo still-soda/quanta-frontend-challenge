@@ -16,6 +16,7 @@ import { ChallengesService } from '../challenges/challenges.service';
 import { TasksService } from './tasks.service';
 import { CHALLENGE_STATUS } from '../../schemas/challenges.schema';
 import { UsersService } from '../users/users.service';
+import { ResolvedChallengeService } from '../resolved-challenge/resolved-challenge.service';
 
 export type TaskJob = Job<{
   challengeId: string;
@@ -51,6 +52,7 @@ export class TasksProcessor {
     private readonly challengeService: ChallengesService,
     private readonly tasksService: TasksService,
     private readonly usersService: UsersService,
+    private readonly resolvedChallengeService: ResolvedChallengeService,
   ) {}
 
   /**
@@ -131,6 +133,11 @@ export class TasksProcessor {
           result.score,
         );
       }
+      // 创建解决记录
+      await this.resolvedChallengeService.create({
+        challengeId,
+        userId: submission.userId,
+      });
     }
 
     return { passed: result.passed, type: submission.type };

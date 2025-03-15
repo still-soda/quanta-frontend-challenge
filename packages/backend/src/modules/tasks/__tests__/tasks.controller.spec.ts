@@ -12,6 +12,7 @@ import mongoose from 'mongoose';
 import { CounterModule } from '../../../modules/counter/counter.module';
 import { CachesModule } from '../../../modules/caches/caches.module';
 import { Subject } from 'rxjs';
+import { ResolvedChallengeModule } from '../../../modules/resolved-challenge/resolved-challenge.module';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -30,6 +31,7 @@ describe('TasksController', () => {
         SubmissionsModule,
         CounterModule,
         CachesModule,
+        ResolvedChallengeModule,
         createEnvConfModule('.env.development'),
         mockDb.module,
         TasksModule,

@@ -17,6 +17,7 @@ import mongoose from 'mongoose';
 import { CachesModule } from '../../../modules/caches/caches.module';
 import { CounterModule } from '../../../modules/counter/counter.module';
 import { Subject } from 'rxjs';
+import { ResolvedChallengeModule } from '../../../modules/resolved-challenge/resolved-challenge.module';
 
 describe('TasksService', () => {
   let module: TestingModule;
@@ -41,6 +42,7 @@ describe('TasksService', () => {
           defaultJobOptions: { timeout: 30000 },
         }),
         CachesModule,
+        ResolvedChallengeModule,
         CounterModule,
         SubmissionsModule,
         JudgementsModule,

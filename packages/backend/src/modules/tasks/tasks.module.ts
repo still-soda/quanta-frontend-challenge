@@ -11,6 +11,7 @@ import { ActionsModule } from '../actions/actions.module';
 import { CounterModule } from '../counter/counter.module';
 import { CachesModule } from '../caches/caches.module';
 import { TasksProcessor } from './tasks.processor';
+import { ResolvedChallengeModule } from '../resolved-challenge/resolved-challenge.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TasksProcessor } from './tasks.processor';
     ActionsModule,
     CounterModule,
     CachesModule,
+    ResolvedChallengeModule,
     BullModule.registerQueue({
       name: 'tasks',
       defaultJobOptions: {
