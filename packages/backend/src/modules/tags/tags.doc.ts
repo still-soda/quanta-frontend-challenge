@@ -2,6 +2,9 @@ import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
 import { getTagDtoProps } from './dto/get-tag.dto';
 import { responseSchema } from 'src/utils/http-response.utils';
+import { CreateTagDto } from './dto/create-tag.dto';
+import { UpdateTagDto } from './dto/update-tag.dto';
+import { ApiNeedAuth, ROLE } from '../../common/decorators/auth.decorator';
 
 export const TagsDoc = new ApiDocumentHelper({
   '/create': () => {
@@ -10,8 +13,9 @@ export const TagsDoc = new ApiDocumentHelper({
         summary: '创建标签',
         description: '创建标签',
       }),
+      ApiNeedAuth({ level: ROLE.ADMIN }),
       ApiBody({
-        type: 'CreateTagDto',
+        type: CreateTagDto,
       }),
       ApiResponse({
         status: 201,
@@ -64,8 +68,9 @@ export const TagsDoc = new ApiDocumentHelper({
         summary: '更新标签',
         description: '更新标签',
       }),
+      ApiNeedAuth({ level: ROLE.ADMIN }),
       ApiBody({
-        type: 'UpdateTagDto',
+        type: UpdateTagDto,
       }),
       ApiResponse({
         status: 200,
@@ -83,6 +88,7 @@ export const TagsDoc = new ApiDocumentHelper({
         summary: '删除标签',
         description: '删除标签',
       }),
+      ApiNeedAuth({ level: ROLE.ADMIN }),
       ApiResponse({
         status: 200,
         description: '删除成功',
@@ -95,6 +101,25 @@ export const TagsDoc = new ApiDocumentHelper({
       ApiOperation({
         summary: '获取创建的标签',
         description: '获取创建的标签',
+      }),
+      ApiResponse({
+        status: 200,
+        description: '获取成功',
+        schema: responseSchema('ok', '获取成功', {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: getTagDtoProps,
+          },
+        }),
+      }),
+    ];
+  },
+  '/find-by-ids': () => {
+    return [
+      ApiOperation({
+        summary: '根据ID数组获取标签',
+        description: '根据ID数组获取标签',
       }),
       ApiResponse({
         status: 200,

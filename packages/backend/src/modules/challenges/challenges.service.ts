@@ -6,7 +6,7 @@ import {
   Challenges,
   ChallengesDocument,
 } from '../../schemas/challenges.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import validateData from '../../utils/validate-data.utils';
 import { UserData } from '../../common/decorators/user.decorator';
@@ -15,6 +15,24 @@ import { isMongoId } from 'class-validator';
 import { ROLE } from '../../common/decorators/auth.decorator';
 import { AssetsService, MulterFile } from '../assets/assets.service';
 import { ChallengeSwitchStatusDto } from './dto/switch-status.dto';
+
+// 从 Tags 集合中联合查询 tags 字段
+const $set = {
+  tags: {
+    $map: {
+      input: '$tags',
+      as: 'tag',
+      in: { $toObjectId: '$$tag' },
+    },
+  },
+};
+
+const $lookup = {
+  from: 'tags',
+  localField: 'tags',
+  foreignField: '_id',
+  as: 'tags',
+};
 
 @Injectable()
 export class ChallengesService {
@@ -67,9 +85,11 @@ export class ChallengesService {
    * @returns 挑战列表
    */
   async findAll() {
-    return await this.challengeModel.find({
-      status: CHALLENGE_STATUS.PUBLISHED,
-    });
+    return await this.challengeModel.aggregate([
+      { $match: { status: CHALLENGE_STATUS.PUBLISHED } },
+      { $set },
+      { $lookup },
+    ]);
   }
 
   /**
@@ -79,9 +99,13 @@ export class ChallengesService {
    */
   async adminFindAll(user: UserData) {
     if (user.role < ROLE.SUPER_ADMIN) {
-      return await this.challengeModel.find({ authorId: user.id });
+      return await this.challengeModel.aggregate([
+        { $match: { authorId: user.id } },
+        { $set },
+        { $lookup },
+      ]);
     }
-    return await this.challengeModel.find();
+    return await this.challengeModel.aggregate([{ $lookup }]);
   }
 
   /**
@@ -518,10 +542,13 @@ export class ChallengesService {
    * @returns 最新的挑战
    */
   async getLatestChallenges(count: number) {
-    return await this.challengeModel
-      .find({ status: CHALLENGE_STATUS.PUBLISHED })
-      .sort({ createdAt: -1 })
-      .limit(count);
+    return await this.challengeModel.aggregate([
+      { $match: { status: CHALLENGE_STATUS.PUBLISHED } },
+      { $set },
+      { $lookup },
+      { $sort: { createdAt: -1 } },
+      { $limit: count },
+    ]);
   }
 
   /**
@@ -583,7 +610,11 @@ export class ChallengesService {
       throw responseError('bad request', { msg: 'ID 无效' });
     }
 
-    const challenge = await this.challengeModel.findById(id);
+    const objectId = new Types.ObjectId(id);
+    const challenge = await this.challengeModel
+      .aggregate([{ $match: { _id: objectId } }, { $set }, { $lookup }])
+      .then((result: any) => result[0] ?? null);
+
     const { onlyPublished, user } = options;
 
     if (!challenge) {

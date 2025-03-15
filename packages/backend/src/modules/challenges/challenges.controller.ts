@@ -21,10 +21,7 @@ import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import { filterData } from '../../utils/filter-data.utils';
 import { UserGetChallengeDto } from './dto/user-get-challenge.dto';
 import { MulterFile } from '../assets/assets.service';
-import {
-  UseFileInterceptor,
-  UseFilesInterceptor,
-} from '../../common/decorators/file.decorator';
+import { UseFilesInterceptor } from '../../common/decorators/file.decorator';
 import { ChallengeDoc } from './challenges.doc';
 import { UseCache } from '../../common/decorators/cache.decorator';
 
@@ -274,7 +271,9 @@ export class ChallengesController {
   async getLastestChallenges() {
     const result = await this.challengesService.getLatestChallenges(5);
     const contents = await Promise.all(
-      result.map((item) => this.challengesService.getDetail(item.id)),
+      result.map((item) =>
+        this.challengesService.getDetail(item._id.toString()),
+      ),
     );
     const filteredResult = result.map((item, idx) => ({
       ...filterData(UserGetChallengeDto, item),

@@ -107,4 +107,13 @@ export class TagsService {
 
     return this.tagsModel.find({ creatorId });
   }
+
+  /**
+   * 根据ID查找标签
+   * @param ids 标签ID列表
+   * @returns 标签列表
+   */
+  async findByIds(ids: string[]) {
+    return this.tagsModel.find({ _id: { $in: ids } });
+  }
 }

@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, HttpCode } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
@@ -70,7 +61,7 @@ export class TagsController {
    * @returns 更新结果
    */
   @TagsDoc.forRoute('/update')
-  @Patch('/update/:id')
+  @Post('/update/:id')
   @Auth(ROLE.ADMIN)
   async update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
     const result = await this.tagsService.updateById(id, updateTagDto);
@@ -83,7 +74,7 @@ export class TagsController {
    * @returns 删除结果
    */
   @TagsDoc.forRoute('/delete')
-  @Delete('/delete/:id')
+  @Post('/delete/:id')
   @Auth(ROLE.ADMIN)
   async remove(@Param('id') id: string): Promise<any> {
     await this.tagsService.remove(id);
@@ -100,6 +91,18 @@ export class TagsController {
   @Auth(ROLE.ADMIN)
   async findMy(@CurrentUser() user: UserData) {
     const result = await this.tagsService.findByCreatorId(user.id);
+    return responseSuccess('ok', result, '获取成功');
+  }
+
+  /**
+   * 根据ID数组获取标签
+   * @param ids 标签ID数组
+   * @returns 标签列表
+   */
+  @TagsDoc.forRoute('/find-by-ids')
+  @Post('/find-by-ids')
+  async findByIds(@Body('ids') ids: string[]) {
+    const result = this.tagsService.findByIds(ids);
     return responseSuccess('ok', result, '获取成功');
   }
 }

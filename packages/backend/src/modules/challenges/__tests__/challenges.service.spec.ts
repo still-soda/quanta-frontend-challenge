@@ -47,7 +47,7 @@ describe('ChallengesService', () => {
   });
 
   async function createOne(dto?: Partial<CreateChallengeDto>) {
-    const result = await challengesService.create(
+    const result = (await challengesService.create(
       { id: 'test author id', role: ROLE.ADMIN, username: 'test author' },
       {
         title: 'test challenge',
@@ -57,8 +57,8 @@ describe('ChallengesService', () => {
         content: 'test content',
         ...dto,
       },
-    );
-    return result;
+    )) as any;
+    return { ...result._doc, id: result._doc._id as string };
   }
 
   afterAll(async () => {
@@ -331,7 +331,7 @@ describe('ChallengesService', () => {
       await challengesService.setStatusTo(created.id, CHALLENGE_STATUS.READY);
 
       const updated = await challengesService.switchStatus(
-        { id: created.id, status: CHALLENGE_STATUS.PUBLISHED },
+        { id: created._id.toString(), status: CHALLENGE_STATUS.PUBLISHED },
         { id: 'test author id', role: ROLE.ADMIN, username: 'test author' },
       );
       expect(updated.status).toBe(CHALLENGE_STATUS.PUBLISHED);
@@ -350,7 +350,7 @@ describe('ChallengesService', () => {
       const created = await createOne();
       await expect(
         challengesService.switchStatus(
-          { id: created.id, status: CHALLENGE_STATUS.PUBLISHED },
+          { id: created._id.toString(), status: CHALLENGE_STATUS.PUBLISHED },
           { id: 'test author id', role: ROLE.ADMIN, username: 'test author' },
         ),
       ).rejects.toThrow('挑战未就绪');
@@ -362,7 +362,7 @@ describe('ChallengesService', () => {
 
       await expect(
         challengesService.switchStatus(
-          { id: created.id, status: CHALLENGE_STATUS.PUBLISHED },
+          { id: created.id.toString(), status: CHALLENGE_STATUS.PUBLISHED },
           {
             id: 'test author id -- not the author',
             role: ROLE.USER,
@@ -377,7 +377,7 @@ describe('ChallengesService', () => {
       await challengesService.setStatusTo(created.id, CHALLENGE_STATUS.READY);
 
       const updated = await challengesService.switchStatus(
-        { id: created.id, status: CHALLENGE_STATUS.PUBLISHED },
+        { id: created.id.toString(), status: CHALLENGE_STATUS.PUBLISHED },
         {
           id: 'test author id',
           role: ROLE.SUPER_ADMIN,
