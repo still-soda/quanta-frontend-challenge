@@ -46,7 +46,11 @@
          </div>
       </BaseContainer>
       <div>
-         <Transition name="aside" mode="out-in" :duration="300">
+         <Transition
+            class="sticky top-4"
+            name="aside"
+            mode="out-in"
+            :duration="300">
             <Result v-if="activeIndex === 0" />
             <Detail v-else />
          </Transition>

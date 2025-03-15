@@ -13,7 +13,7 @@
             <div class="text-[1.5rem] font-semibold">题目描述</div>
          </div>
          <div class="pl-7 -mb-4">
-            <Markdown :raw-content="detailContent" />
+            <Markdown class="text-[1rem]" :raw-content="detailContent" />
          </div>
       </div>
 
@@ -87,7 +87,7 @@ const detailContent = `
 
 请完成一个 HTML + CSS 功能，当用户点击按钮 button 后，应在页面的 #output 标签中显示文字 “Hello world”。要求如下：
 
-1. 文字初始颜色为 红色 \`（#ff0000）\`。
-2. 显示后 1秒 文字颜色自动变为 绿色 \`（#00ff00）\`。
+1. 文字初始颜色为 红色 \`#ff0000\`。
+2. 显示后 1秒 文字颜色自动变为 绿色 \`#00ff00\`。
 `;
 </script>
