@@ -26,6 +26,13 @@ export class ResolvedChallengeService {
    * - `bad request`: 数据验证失败
    */
   async create(createResolvedChallengeDto: CreateResolvedChallengeDto) {
+    const { challengeId, userId } = createResolvedChallengeDto;
+    const exist = await this.resolvedChallengeModel.exists({
+      challengeId,
+      userId,
+    });
+    if (exist) return;
+
     try {
       createResolvedChallengeDto = await validateData(
         CreateResolvedChallengeDto,
@@ -35,7 +42,7 @@ export class ResolvedChallengeService {
       throw responseError('bad request', { msg: error.message });
     }
 
-    const couterId = `challenge:${createResolvedChallengeDto.challengeId}`;
+    const couterId = `challenge:${challengeId}`;
     const rank = await this.counterService.nextValue(couterId);
 
     return await this.resolvedChallengeModel.create({
