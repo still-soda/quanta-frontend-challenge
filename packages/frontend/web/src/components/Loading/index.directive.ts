@@ -27,8 +27,10 @@ const loadingDirective: Directive = {
       el.__observer = observer;
 
       const background =
-         binding.value instanceof Object ? binding.value.background : undefined;
-      instance.$el.style.backgroundColor = background ?? 'rgba(0, 0, 0, 0.15)';
+         binding.value instanceof Object
+            ? binding.value.background
+            : 'rgba(255, 255, 255, 0.25)';
+      instance.$el.style.backgroundColor = background;
       instance.$el.style.backdropFilter = 'blur(5px)';
 
       instance.$el.style.display = 'flex';
