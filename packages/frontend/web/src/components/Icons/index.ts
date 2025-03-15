@@ -35,3 +35,6 @@ export { default as Key } from './Key.vue';
 export { default as IdCard } from './IdCard.vue';
 export { default as Robot } from './Robot.vue';
 export { default as Mail } from './Mail.vue';
+export { default as Fail } from './Fail.vue';
+export { default as Success } from './Success.vue';
+export { default as Pending } from './Pending.vue';
