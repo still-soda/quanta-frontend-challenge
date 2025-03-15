@@ -1,26 +1,44 @@
-import { User } from '@/models/user.model';
+import { svgToBase64 } from '@/adapters/svgToBase64.adapters';
+import { getDefaultAvatar } from '@/apis/user.api';
+import { DEFAULT_AVATAR } from '@/constant/default.constant';
+import { UserSelf } from '@/models/user.model';
 import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('user', {
    state: () => ({
+      id: '',
       name: 'unknown',
-      avatar:
-         'https://pic1.zhimg.com/v2-a622d09f99ce9292cb35db0707be587a_r.jpg',
-      totalSubmissions: 0,
       email: '',
       signature: '',
-      id: '',
+      number: '',
+      totalScore: 0,
+      totalSubmissions: 0,
+      solvedChallenges: new Array<string>(),
+      tryingChallenges: new Array<string>(),
+      failedChallenges: new Array<string>(),
+      avatar: DEFAULT_AVATAR,
    }),
    actions: {
-      updateUser(user: User) {
+      async updateUser(user: UserSelf) {
          this.name = user.username;
-         this.avatar =
-            user.avatar ||
-            'https://pic1.zhimg.com/v2-a622d09f99ce9292cb35db0707be587a_r.jpg';
-         this.totalSubmissions = user.totalSubmissions;
+         this.id = user.id;
          this.email = user.email;
          this.signature = user.signature;
-         this.id = user.id;
+         this.totalScore = user.totalScore;
+         this.totalSubmissions = user.totalSubmissions;
+         this.solvedChallenges = user.solvedTasks;
+         this.tryingChallenges = user.tryingTasks;
+         this.failedChallenges = user.failedTasks;
+         this.number = user.number;
+
+         if (user.avatar) {
+            this.avatar = user.avatar;
+         } else {
+            const {
+               data: { avatar: svg },
+            } = await getDefaultAvatar();
+            this.avatar = svgToBase64(svg);
+         }
       },
    },
 });
