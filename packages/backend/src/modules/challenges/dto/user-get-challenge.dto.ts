@@ -64,6 +64,20 @@ export class UserGetChallengeDto {
   })
   @Expose()
   createdAt: Date;
+
+  @ApiProperty({
+    example: 123,
+    description: '总提交次数',
+  })
+  @Expose()
+  totalSubmissions: number;
+
+  @ApiProperty({
+    example: 12,
+    description: '总通过次数',
+  })
+  @Expose()
+  totalPass: number;
 }
 
 /**
@@ -124,6 +138,18 @@ export const userGetChallengeProps: SchemaProp = {
     type: 'string',
     description: '创建时间',
     example: '2021-01-01T00:00:00.000Z',
+    required: true,
+  },
+  totalSubmissions: {
+    type: 'number',
+    description: '总提交次数',
+    example: 123,
+    required: true,
+  },
+  totalPass: {
+    type: 'number',
+    description: '总通过次数',
+    example: 12,
     required: true,
   },
 };
