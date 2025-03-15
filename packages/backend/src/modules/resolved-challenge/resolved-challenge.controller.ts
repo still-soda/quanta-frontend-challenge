@@ -1,9 +1,12 @@
 import { Controller, Get, Query, HttpCode } from '@nestjs/common';
 import { ResolvedChallengeService } from './resolved-challenge.service';
-import { responseError, responseSuccess } from 'src/utils/http-response.utils';
+import {
+  responseError,
+  responseSuccess,
+} from '../../utils/http-response.utils';
 import { ResolvedDoc } from './resolved-challenge.doc';
-import { Auth, ROLE } from 'src/common/decorators/auth.decorator';
-import { CurrentUser, UserData } from 'src/common/decorators/user.decorator';
+import { Auth, ROLE } from '../../common/decorators/auth.decorator';
+import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
 
 @Controller('resolved-challenge')
 export class ResolvedChallengeController {

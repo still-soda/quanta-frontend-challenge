@@ -1,6 +1,6 @@
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
-import { responseSchema } from 'src/utils/http-response.utils';
+import { responseSchema } from '../../utils/http-response.utils';
 import { getResolvedChallengeDtoProps } from './dto/get-resolved-challenge.dto';
 
 export const ResolvedDoc = new ApiDocumentHelper({

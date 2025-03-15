@@ -4,6 +4,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/db-mock.utils';
 import { CounterModule } from '../../../modules/counter/counter.module';
 import mongoose from 'mongoose';
+import { ResolvedChallengeModule } from '../resolved-challenge.module';
 
 describe('ResolvedChallengeService', () => {
   let service: ResolvedChallengeService;
@@ -14,7 +15,7 @@ describe('ResolvedChallengeService', () => {
     mongodb = mockDb.mongodb;
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [mockDb.module, CounterModule],
+      imports: [mockDb.module, CounterModule, ResolvedChallengeModule],
       providers: [ResolvedChallengeService],
     }).compile();
 

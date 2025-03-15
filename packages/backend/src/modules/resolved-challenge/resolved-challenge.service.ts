@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateResolvedChallengeDto } from './dto/create-resolved-challenge.dto';
 import validateData from '../../utils/validate-data.utils';
-import { responseError } from 'src/utils/http-response.utils';
+import { responseError } from '../../utils/http-response.utils';
 import { CounterService } from '../counter/counter.service';
 import { InjectModel } from '@nestjs/mongoose';
 import {
