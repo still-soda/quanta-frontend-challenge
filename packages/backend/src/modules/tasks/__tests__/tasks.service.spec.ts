@@ -117,6 +117,7 @@ describe('TasksService', () => {
       challengeId,
       submissionId,
       submitFileId,
+      startAt: expect.any(Number),
     });
 
     expect(jobId).toBe('jobId');
@@ -175,6 +176,7 @@ describe('TasksService', () => {
     expect(addSpy).toHaveBeenCalledWith('preExecute', {
       challengeId,
       submissionId,
+      startAt: expect.any(Number),
     });
 
     expect(jobId).toBe('jobId');

@@ -28,11 +28,11 @@ export class ResolvedChallenge {
   resolvedAt: Date;
 
   @ApiProperty({
-    example: '1',
-    description: '解决用时',
+    example: 100,
+    description: '解决用时 毫秒',
   })
   @Prop({ required: true })
-  solution: string;
+  solution: number;
 
   @ApiProperty({
     example: 1,

@@ -21,6 +21,7 @@ import { ResolvedChallengeService } from '../resolved-challenge/resolved-challen
 export type TaskJob = Job<{
   challengeId: string;
   submissionId: string;
+  startAt: number;
   submitFileId?: string;
 }>;
 
@@ -83,7 +84,7 @@ export class TasksProcessor {
     concurrency: Number(process.env.MAX_EXECUTE_CONCURRENCY ?? 2),
   })
   async handleExecute(job: TaskJob): Promise<ProcessResult> {
-    const { submissionId, submitFileId, challengeId } = job.data;
+    const { submissionId, submitFileId, challengeId, startAt } = job.data;
 
     if (!submitFileId) {
       throw new Error('需要 submitFileId');
@@ -137,6 +138,7 @@ export class TasksProcessor {
       await this.resolvedChallengeService.create({
         challengeId,
         userId: submission.userId,
+        solution: startAt - Date.now(),
       });
     }
 

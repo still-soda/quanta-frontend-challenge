@@ -164,6 +164,7 @@ export class TasksService implements OnModuleInit {
       challengeId,
       submissionId,
       submitFileId,
+      startAt: Date.now(),
     });
   }
 
@@ -202,6 +203,7 @@ export class TasksService implements OnModuleInit {
     return await this.tasksQueue.add('preExecute', {
       challengeId,
       submissionId,
+      startAt: Date.now(),
     });
   }
 
