@@ -1,17 +1,17 @@
 import { UpdateUserPayload } from '@/dto/update-user.type';
-import { User } from '@/models/user.model';
+import { User, UserSelf } from '@/models/user.model';
 import { RequestResult } from '@/types/request';
 import { get, post } from '@challenge/api';
 
 /**
  * 获取用户信息
  * @api /users/find-one
- * @param userId 用户id
+ * @param id 用户id
  * @returns 用户信息
  */
-export async function getUserById(userId: string) {
+export async function getUserById(id: string) {
    return await get<RequestResult<User>>(`/users/find-one`, {
-      query: { userId },
+      query: { id },
    });
 }
 
@@ -33,7 +33,7 @@ export async function getUserByUsername(username: string) {
  * @returns 自己的信息
  */
 export async function getSelf() {
-   return await get<RequestResult<User>>(`/users/find-self`);
+   return await get<RequestResult<UserSelf>>(`/users/find-self`);
 }
 
 /**
@@ -61,4 +61,17 @@ export async function uploadAvatar(file: File) {
    return await post<RequestResult<undefined>>(`/users/upload-avatar`, {
       body: formData,
    });
+}
+
+/**
+ * 获取默认头像
+ * @api /users/default-avatar
+ * @param id 用户id，不传则自己的默认头像
+ * @returns 默认头像地址
+ */
+export async function getDefaultAvatar(id?: string) {
+   return await get<RequestResult<{ avatar: string }>>(
+      `/users/get-default-avatar`,
+      { query: id ? { id } : {} }
+   );
 }
