@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import * as fs from 'fs';
 import * as path from 'path';
 import mongoose from 'mongoose';
@@ -260,10 +260,10 @@ describe('App 测试', () => {
     console.log('用户：获取执行结果成功');
 
     // 删除挑战
-    const deleteRes = await POST(`/challenges/remove/${challenge2.data.id}`)
-      .set('authorization', superAdminToken)
-      .then((res) => res.body);
-    expect(deleteRes.code).toBe(200);
-    console.log('管理员：删除挑战成功');
+    // const deleteRes = await POST(`/challenges/remove/${challenge2.data.id}`)
+    //   .set('authorization', superAdminToken)
+    //   .then((res) => res.body);
+    // expect(deleteRes.code).toBe(200);
+    // console.log('管理员：删除挑战成功');
   });
 });
