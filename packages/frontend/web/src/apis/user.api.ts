@@ -69,9 +69,8 @@ export async function uploadAvatar(file: File) {
  * @param id 用户id，不传则自己的默认头像
  * @returns 默认头像地址
  */
-export async function getDefaultAvatar(id?: string) {
+export async function getDefaultAvatar(id: string) {
    return await get<RequestResult<{ avatar: string }>>(
-      `/users/get-default-avatar`,
-      { query: id ? { id } : {} }
+      `/users/get-default-avatar/${id}`
    );
 }

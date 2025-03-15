@@ -10,8 +10,9 @@
          <template #extra>
             <div
                class="text-xs text-gray-400 h-full flex items-center tracking-tight">
-               距离下次排行榜更新还有 {{ updateDate.day }} 天
-               {{ updateDate.hour }} 小时 {{ updateDate.second }} 秒
+               距离下次排行榜更新还有 {{ padZero(updateDate.day) }} 天
+               {{ padZero(updateDate.hour) }} 小时
+               {{ padZero(updateDate.second) }} 秒
             </div>
          </template>
          <div class="w-full text-gray-500 flex justify-between">
@@ -25,7 +26,7 @@
                </Button>
             </div>
          </div>
-         <div ref="table">
+         <div ref="table" class="mb-2">
             <Table
                :data="rankData"
                :order="['rank', 'avatar', 'name', 'score']"
@@ -45,14 +46,14 @@
 
                <template #rank="{ value, idx }">
                   <div
-                     class="text-center relative w-full"
+                     class="text-center relative w-full flex items-center justify-center"
                      :class="{
                         'text-orange-high font-bold': idx === myRank - 1,
                      }"
                      :id="`rank-${value}`">
                      <div
                         v-if="value <= 3"
-                        class="absolute left-4"
+                        class="absolute left-3"
                         :class="{
                            'text-orange-high': value === 1,
                            'text-gray-500': value === 2,
@@ -60,7 +61,7 @@
                         }">
                         <Trophy />
                      </div>
-                     {{ value }}
+                     <span class="ml-1">{{ value }}</span>
                   </div>
                </template>
                <template #name="{ value, idx }">
@@ -107,7 +108,7 @@
             <div
                class="flex items-center justify-center text-dark-normal mb-1 -mt-1">
                <div class="flex items-start gap-1">
-                  <span class="text-2xl font-semibold tracking-tighter">
+                  <span class="text-2xl mr-0.5 font-semibold tracking-tighter">
                      {{ myScore }}
                   </span>
                   <span class="mt-1 text-sm text-gray-500">分</span>
@@ -308,11 +309,29 @@ watch(
    { immediate: true }
 );
 
-// 延迟时间
-const delayedDate = shiftDate(new Date(), { days: 3, hours: 5 });
+// 更新剩余时间
+const firstDayOfMonth = new Date();
+firstDayOfMonth.setDate(1);
+firstDayOfMonth.setHours(0, 0, 0, 0);
+
+const delayedDate = shiftDate(firstDayOfMonth, { months: 1 });
 const updateDate = ref(
    dateToObject(new Date(delayedDate.getTime() - Date.now()))
 );
+
+function padZero(num: number) {
+   return num.toString().padStart(2, '0');
+}
+
+const interval = setInterval(() => {
+   updateDate.value = dateToObject(
+      new Date(delayedDate.getTime() - Date.now())
+   );
+}, 500);
+
+onUnmounted(() => {
+   clearInterval(interval);
+});
 
 // 返回顶部按钮
 const showReturnTop = ref(false);

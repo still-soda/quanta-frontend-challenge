@@ -277,8 +277,6 @@ async function updateData() {
       const result = await getAllPublishedChallenges();
       publishedChallenges = result.data;
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       // 映射数据
       data.value = publishedChallenges.map((item, idx) => {
          const correctRate =
@@ -323,7 +321,6 @@ watch(
       let earlisetResolvedChallenges: ResolvedChallenge[] = [];
       try {
          const result = await getEarlisetResolvedChallengesOfUser(userStore.id);
-         await new Promise((resolve) => setTimeout(resolve, 1000));
          earlisetResolvedChallenges = result.data;
       } catch (error: any) {
          message.error(error.message, { duration: 3000 });

@@ -36,7 +36,7 @@ export const useUserStore = defineStore('user', {
          } else {
             const {
                data: { avatar: svg },
-            } = await getDefaultAvatar();
+            } = await getDefaultAvatar(user.id);
             this.avatar = svgToBase64(svg);
          }
       },

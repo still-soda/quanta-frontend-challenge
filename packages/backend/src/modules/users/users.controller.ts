@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpException,
+  Param,
   Post,
   Query,
   UploadedFile,
@@ -163,12 +164,12 @@ export class UsersController {
    */
   @UserDoc.forRoute('/get-default-avatar')
   @HttpCode(200)
-  @Get('get-default-avatar')
+  @Get('get-default-avatar/:id')
   @UseCache(60 * 60)
   @Auth()
   async getDefaultAvatar(
     @CurrentUser() user: UserData,
-    @Query('id') id?: string,
+    @Param('id') id?: string,
   ) {
     const avatar = this.usersService.getRandomAvatar(id ?? user.id);
     return responseSuccess('ok', { avatar }, '成功获取');

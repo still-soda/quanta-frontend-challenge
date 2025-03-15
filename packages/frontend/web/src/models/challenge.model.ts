@@ -7,6 +7,8 @@
  * @property type - 挑战类型
  * @property tags - 挑战标签
  * @property authorId - 作者ID
+ * @property totalSubmissions - 总提交数
+ * @property totalPass - 总通过数
  * @property updatedAt - 更新时间
  * @property createdAt - 创建时间
  */
@@ -18,6 +20,8 @@ export type Challenge = {
    type: string;
    tags: string[];
    authorId: string;
+   totalSubmissions: number;
+   totalPass: number;
    updatedAt: string;
    createdAt: string;
 };
