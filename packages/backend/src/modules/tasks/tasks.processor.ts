@@ -138,7 +138,7 @@ export class TasksProcessor {
       await this.resolvedChallengeService.create({
         challengeId,
         userId: submission.userId,
-        solution: startAt - Date.now(),
+        solution: Date.now() - startAt,
       });
     }
 
