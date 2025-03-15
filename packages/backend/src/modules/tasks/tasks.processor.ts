@@ -140,6 +140,8 @@ export class TasksProcessor {
         userId: submission.userId,
         solution: Date.now() - startAt,
       });
+      // 增加挑战通过数
+      await this.challengeService.increaseTotalPass(challengeId);
     }
 
     return { passed: result.passed, type: submission.type };

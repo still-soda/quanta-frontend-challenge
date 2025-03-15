@@ -135,6 +135,10 @@ describe('TasksProcessor', () => {
       .spyOn(resolvedChallengeService, 'create')
       .mockImplementation(async () => ({}) as any);
 
+    const mockIncreaseTotalPass = jest
+      .spyOn(challengeService, 'increaseTotalPass')
+      .mockImplementation(async () => ({}) as any);
+
     const job: TaskJob = {
       id: '1',
       name: 'execute',
@@ -150,6 +154,7 @@ describe('TasksProcessor', () => {
     expect(mockGetMaxSubmissionScore).toHaveBeenCalledTimes(1);
     expect(mockModifyUserScore).toHaveBeenCalledTimes(1);
     expect(mockCreateResolvedChallenge).toHaveBeenCalledTimes(1);
+    expect(mockIncreaseTotalPass).toHaveBeenCalledTimes(1);
     expect(mockUpdate).toHaveBeenCalledWith(id, {
       status: 'passed',
       score: 100,

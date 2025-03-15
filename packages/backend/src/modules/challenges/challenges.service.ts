@@ -627,4 +627,15 @@ export class ChallengesService {
       { $inc: { totalSubmissions: 1 } },
     );
   }
+
+  /**
+   * 获取挑战的总通过数
+   * @returns 总通过数
+   */
+  async increaseTotalPass(challengeId: string) {
+    return await this.challengeModel.updateOne(
+      { _id: challengeId },
+      { $inc: { totalPass: 1 } },
+    );
+  }
 }
