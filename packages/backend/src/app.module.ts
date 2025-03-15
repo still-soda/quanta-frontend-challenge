@@ -22,6 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { RankModule } from './modules/rank/rank.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CounterModule } from './modules/counter/counter.module';
+import { ResolvedChallengeModule } from './modules/resolved-challenge/resolved-challenge.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { CounterModule } from './modules/counter/counter.module';
     CommitHeatmapModule,
     RankModule,
     CounterModule,
+    ResolvedChallengeModule,
   ],
   controllers: [],
   providers: [

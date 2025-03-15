@@ -586,6 +586,10 @@ export class ChallengesService {
     const challenge = await this.challengeModel.findById(id);
     const { onlyPublished, user } = options;
 
+    if (!challenge) {
+      return null;
+    }
+
     if (onlyPublished && challenge.status !== CHALLENGE_STATUS.PUBLISHED) {
       return null;
     }
