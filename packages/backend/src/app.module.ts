@@ -23,6 +23,7 @@ import { RankModule } from './modules/rank/rank.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CounterModule } from './modules/counter/counter.module';
 import { ResolvedChallengeModule } from './modules/resolved-challenge/resolved-challenge.module';
+import { TagsModule } from './modules/tags/tags.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { ResolvedChallengeModule } from './modules/resolved-challenge/resolved-c
     RankModule,
     CounterModule,
     ResolvedChallengeModule,
+    TagsModule,
   ],
   controllers: [],
   providers: [
