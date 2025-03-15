@@ -12,78 +12,30 @@
       <div
          class="flex relative flex-col gap-8 mt-4 mr-1 pb-5 px-3 h-full overflow-auto max-h-fit hide-scrollbar">
          <Notification
-            date="2024.11.29"
-            is-new
-            :tags="{ warning: '中等' }"
-            publisher="still-soda"
-            language="JavaScript">
+            v-for="(challenge, idx) in challenges"
+            :key="challenge.id"
+            :date="challenge.createdAt"
+            :is-new="idx === 0"
+            :tags="challenge.processedTags"
+            :publisher-id="challenge.authorId"
+            :language="challenge.type">
             <div class="gap-2 flex flex-col">
                <header class="flex gap-2 text-base px-1 mb-1">
                   <div class="flex gap-2 items-center">
                      <i class="fas fa-file-code text-orange-high"></i>
                      <h1 class="text-dark-normal text-sm font-semibold">
-                        填充代码
+                        {{ challenge.title }}
                      </h1>
                   </div>
                   <div class="font-medium tracking-wider text-xs ml-auto">
-                     25 &nbsp;points
+                     {{ challenge.score }} &nbsp;points
                   </div>
                </header>
-               <p>尝试补充代码，使得点击按钮后列表自动增加 3 条。要求如下：</p>
-               <ul class="list-disc list-inside ml-3">
-                  <li>点击按钮后列表自动增加 3 条</li>
-                  <li>点击按钮后列表自动增加 3 条</li>
-                  <li>点击按钮后列表自动增加 3 条</li>
-               </ul>
-            </div>
-         </Notification>
-         <Notification
-            date="2024.11.29"
-            publisher="still-soda"
-            :tags="{ success: '简单' }"
-            language="JavaScript">
-            <div class="gap-2 flex flex-col">
-               <header class="flex gap-2 text-base px-1 mb-1">
-                  <div class="flex gap-2 items-center">
-                     <i class="fas fa-file-code text-orange-high"></i>
-                     <h1 class="text-dark-normal text-sm font-semibold">
-                        填充代码
-                     </h1>
-                  </div>
-                  <div class="font-medium tracking-wider text-xs ml-auto">
-                     25 &nbsp;points
-                  </div>
-               </header>
-               <p>尝试补充代码，使得点击按钮后列表自动增加 3 条。要求如下：</p>
-               <ul class="list-disc list-inside ml-3">
-                  <li>点击按钮后列表自动增加 3 条</li>
-                  <li>点击按钮后列表自动增加 3 条</li>
-                  <li>点击按钮后列表自动增加 3 条</li>
-               </ul>
-            </div>
-         </Notification>
-         <Notification
-            date="2024.11.29"
-            publisher="still-soda"
-            language="JavaScript">
-            <div class="gap-2 flex flex-col">
-               <header class="flex gap-2 text-base px-1 mb-1">
-                  <div class="flex gap-2 items-center">
-                     <i class="fas fa-file-code text-orange-high"></i>
-                     <h1 class="text-dark-normal text-sm font-semibold">
-                        填充代码
-                     </h1>
-                  </div>
-                  <div class="font-medium tracking-wider text-xs ml-auto">
-                     25 &nbsp;points
-                  </div>
-               </header>
-               <p>尝试补充代码，使得点击按钮后列表自动增加 3 条。要求如下：</p>
-               <ul class="list-disc list-inside ml-3">
-                  <li>点击按钮后列表自动增加 3 条</li>
-                  <li>点击按钮后列表自动增加 3 条</li>
-                  <li>点击按钮后列表自动增加 3 条</li>
-               </ul>
+               <div class="ml-2">
+                  <Markdown
+                     class="text-[0.7rem]"
+                     :raw-content="challenge.content" />
+               </div>
             </div>
          </Notification>
       </div>
@@ -93,9 +45,47 @@
 </template>
 
 <script setup lang="ts">
+import { getLastestChallenges } from '@/apis/challenges.api';
 import Notification from './components/Notification.vue';
-import { Button, BaseContainer } from '@/components';
+import { Button, BaseContainer, useMessage, Markdown } from '@/components';
 import { Go } from '@/components/Icons';
+import { ref } from 'vue';
+import { LatestChallenge } from '@/models/challenge.model';
+import { resolveDoc } from '@/utils/resolve-doc.utils';
+import { TAG_COLOR_MAPPING, TAG_TEXT_MAPPING } from '@/constant/tags.constant';
+
+const message = useMessage();
+
+type ChallengeWithTags = LatestChallenge & {
+   processedTags: Record<string, string>;
+};
+const challenges = ref<ChallengeWithTags[]>([]);
+
+// 更新最新挑战数据
+updateChallengeData();
+async function updateChallengeData() {
+   try {
+      const recentChallenges = await getLastestChallenges();
+      // 处理数据
+      challenges.value = recentChallenges.data.map((item) => {
+         return {
+            ...item,
+            content: resolveDoc(item.content).description,
+            createdAt: item.createdAt.split('T')[0].replace(/-/g, '.'),
+            processedTags: {},
+         };
+      });
+      // 处理标签
+      challenges.value.forEach((challenge) => {
+         challenge.tags.forEach((tag) => {
+            const color = TAG_COLOR_MAPPING[tag] ?? 'gray';
+            challenge.processedTags[color] = TAG_TEXT_MAPPING[tag] ?? tag;
+         });
+      });
+   } catch (error: any) {
+      message.error(error.message, { duration: 3000 });
+   }
+}
 </script>
 
 <style scoped></style>

@@ -12,11 +12,15 @@
             class="flex px-3 text-base gap-6 text-dark-normal items-center mb-1">
             <div class="text-center text-nowrap">
                <div>当前排名</div>
-               <div class="text-5xl font-semibold tracking-wide">96</div>
+               <div class="text-5xl font-semibold tracking-wide">
+                  {{ currentRank }}
+               </div>
             </div>
             <div class="text-center text-red-base">
                <div>排名变化</div>
-               <div class="text-5xl font-semibold tracking-wide">+03</div>
+               <div class="text-5xl font-semibold tracking-wide">
+                  {{ rankChange }}
+               </div>
             </div>
             <div class="gap-1 flex items-center ml-auto mr-2 flex-wrap">
                <span
@@ -30,14 +34,56 @@
          <TrendChart
             class="pr-2"
             style="width: 100%; height: 100%"
-            :data="[60, 50, 55, 48, 40, 48]"
-            :start-month="0"
-            :end-month="6" />
+            :data="data"
+            :start-month="startMonth"
+            :end-month="endMonth" />
       </template>
    </BaseContainer>
 </template>
 
 <script setup lang="ts">
+import { getMyHistoryRank } from '@/apis/rank.api';
 import { BaseContainer, TrendChart, Button } from '@/components';
 import { Go } from '@/components/Icons';
+import { ref } from 'vue';
+
+const data = ref<number[]>(new Array(6).fill(99));
+const currentRank = ref('--');
+const rankChange = ref('--');
+
+// 设置月份范围
+const endMonth = new Date().getMonth() + 1;
+const start = endMonth - 6;
+const startMonth = start < 0 ? 12 + start : start;
+
+init();
+async function init() {
+   // 获取我的历史排名
+   const {
+      data: { history, earliestRankCount },
+   } = await getMyHistoryRank();
+
+   // 提取最近 6 个月的排名
+   let rank = history.map((item) => item.rank);
+   rank =
+      rank.length < 6
+         ? new Array(6 - rank.length).fill(earliestRankCount).concat(rank)
+         : rank.slice(0, 6);
+   data.value = rank;
+
+   // 设置当前排名和排名变化
+   const recent = rank[rank.length - 1];
+   const last = rank[rank.length - 2];
+
+   currentRank.value = recent < 10 ? `0${recent}` : recent.toString();
+
+   const change = recent - last;
+   if (change > 0) {
+      rankChange.value = `-${change}`;
+   } else if (change < 0) {
+      rankChange.value = `+${-change}`;
+   } else {
+      rankChange.value = '0';
+   }
+}
 </script>

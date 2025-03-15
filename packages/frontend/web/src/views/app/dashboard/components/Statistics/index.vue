@@ -30,9 +30,24 @@
 </template>
 
 <script setup lang="ts">
+import { getOvercomingPercent } from '@/apis/rank.api';
 import { BaseContainer, RingChart } from '@/components';
 import { Celebrate } from '@/components/Icons';
 import { ref } from 'vue';
+import { useMessage } from '../../../../../components/Message/index';
 
-const percent = ref(0.45);
+const message = useMessage();
+
+const percent = ref(0);
+
+updatePercent();
+async function updatePercent() {
+   try {
+      const { data } = await getOvercomingPercent();
+      const p = data.lower / (data.total - 1);
+      percent.value = isNaN(p) ? 0 : p;
+   } catch (error: any) {
+      message.error(error.message, { duration: 3000 });
+   }
+}
 </script>
