@@ -76,9 +76,9 @@ export async function request(
    };
 
    const response = await fetch(`${BASE_URL}${url}`, options)
-      .then((response) => {
+      .then(async (response) => {
          if (!response.ok) {
-            throw new Error(response.statusText);
+            throw new Error((await response.json()).message);
          }
          return response;
       })
