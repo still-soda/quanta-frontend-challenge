@@ -40,11 +40,17 @@ function init() {
       useDirtyRect: false,
    });
 
-   const monthText = range(props.startMonth ?? 0, props.endMonth ?? 12).map(
-      (month) => MONTH_TEXT[month]
-   );
+   // 默认月份范围
+   const startMonth = props.startMonth ?? 0;
+   const endMonth = props.endMonth ?? 12;
 
-   // [60, 53, 50, 55, 40, 48]
+   // 月份范围
+   const months =
+      endMonth >= startMonth
+         ? range(startMonth, endMonth)
+         : range(startMonth, 12).concat(range(0, endMonth));
+   // 月份范围转月份文本
+   const monthText = months.map((month) => MONTH_TEXT[month]);
 
    // ECharts 配置项
    option = {
@@ -69,10 +75,14 @@ function init() {
          min: 'dataMin',
          max: 'dataMax',
          inverse: true,
+         splitNumber: 4,
          axisLabel: {
             margin: 22,
             fontSize: 12,
             fontWeight: 'bold',
+            formatter: (value: number) => {
+               return Number.isInteger(value) ? value.toString() : '';
+            },
          },
       },
       tooltip: {

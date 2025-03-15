@@ -1,10 +1,11 @@
 <template>
    <div class="relative w-full h-2 rounded-2xl bg-gray-200 overflow-hidden">
       <div
-         class="h-full left-0 bg-green-base rounded-2xl"
+         class="h-full left-0 rounded-2xl"
          style="transition: width 1s ease-out"
          :style="{
             width: `${displayPercent * 100}%`,
+            backgroundColor: props.color ?? '#94B889',
          }"></div>
    </div>
 </template>
@@ -14,6 +15,7 @@ import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
    percent: number;
+   color?: string;
 }>();
 
 const displayPercent = ref(0);

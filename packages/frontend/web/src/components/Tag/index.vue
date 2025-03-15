@@ -1,7 +1,12 @@
 <template>
    <div
       class="text-xs px-[0.8em] py-[0.1em] tracking-wide rounded-[0.4rem] font-medium text-[0.6rem] w-fit h-fit shrink-0"
-      :class="TagColors[props.type ?? 'primary']">
+      :class="TagColors[props.type ?? 'primary'] ?? 'text-white'"
+      :style="{
+         backgroundColor: TagColors[props.type ?? 'primary']
+            ? undefined
+            : props.type,
+      }">
       <slot></slot>
    </div>
 </template>
