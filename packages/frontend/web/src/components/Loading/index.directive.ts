@@ -13,13 +13,22 @@ const loadingDirective: Directive = {
       instance.$el.style.top = '0';
       instance.$el.style.left = '0';
 
-      instance.$el.style.width = el.getBoundingClientRect().width + 'px';
-      instance.$el.style.height = el.getBoundingClientRect().height + 'px';
+      const { width, height } = el.getBoundingClientRect();
+      instance.$el.style.width = width + 'px';
+      instance.$el.style.height = height + 'px';
       instance.$el.style.borderRadius = getComputedStyle(el).borderRadius;
+
+      const observer = new ResizeObserver(() => {
+         const { width, height } = el.getBoundingClientRect();
+         instance.$el.style.width = width + 'px';
+         instance.$el.style.height = height + 'px';
+      });
+      observer.observe(el);
+      el.__observer = observer;
 
       const background =
          binding.value instanceof Object ? binding.value.background : undefined;
-      instance.$el.style.backgroundColor = background ?? 'rgba(0, 0, 0, 0.5)';
+      instance.$el.style.backgroundColor = background ?? 'rgba(0, 0, 0, 0.15)';
       instance.$el.style.backdropFilter = 'blur(5px)';
 
       instance.$el.style.display = 'flex';
@@ -60,6 +69,8 @@ const loadingDirective: Directive = {
       el.__loading_instance?.$destroy();
       delete el.__loading_instance;
       delete el.__set_status;
+      el.__observer?.disconnect();
+      delete el.__observer;
    },
 };
 
