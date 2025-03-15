@@ -15,3 +15,19 @@ export type User = {
    signature: string;
    totalSubmissions: number;
 };
+
+/**
+ * UserSelf 数据模型
+ * @property totalScore 总分
+ * @property solvedTasks 已解决的题目
+ * @property tryingTasks 正在尝试的题目
+ * @property failedTasks 未解决的题目
+ * @property number 学号
+ */
+export type UserSelf = User & {
+   totalScore: number;
+   solvedTasks: string[];
+   tryingTasks: string[];
+   failedTasks: string[];
+   number: string;
+};

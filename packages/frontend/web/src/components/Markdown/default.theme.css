@@ -2,56 +2,74 @@
    @apply text-dark-normal;
 }
 
-[data-markdown]:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
-   @apply ml-3;
+[data-markdown]:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(code) {
+   @apply ml-[0.75em];
 }
 
 h1[data-markdown] {
-   @apply text-[2rem] font-bold w-full text-center;
+   @apply font-bold w-full text-center;
+   font-size: 2em;
 }
 
 h2[data-markdown] {
-   @apply text-[1.25rem] font-bold before:content-['#'] before:text-xl before:mr-2 before:text-orange-high;
+   @apply font-bold before:content-['#'] before:mr-[0.5em] before:text-orange-high;
+   font-size: 1.25em;
+   line-height: 1.75rem;
 }
 
 h3[data-markdown] {
-   @apply text-lg font-bold before:content-['##'] before:text-lg before:mr-2 before:text-orange-high;
+   @apply font-bold before:content-['##'] before:mr-[0.5em] before:text-orange-high;
+   font-size: 1.125em;
+   line-height: 1.75em;
 }
 
 h4[data-markdown] {
-   @apply text-base font-bold before:content-['###'] before:text-base before:mr-2 before:text-orange-high;
+   @apply font-bold before:content-['###'] before:mr-[0.5em] before:text-orange-high;
+   font-size: 1em;
+   line-height: 1.5em;
 }
 
 h5[data-markdown] {
-   @apply text-sm font-bold before:content-['####'] before:text-sm before:mr-2 before:text-orange-high;
+   @apply font-bold before:content-['####'] before:mr-[0.5em] before:text-orange-high;
+   font-size: 0.875em;
+   line-height: 1.25em;
 }
 
 h6[data-markdown] {
-   @apply text-xs font-bold before:content-['#####'] before:text-xs before:mr-2 before:text-orange-high;
+   @apply font-bold before:content-['#####'] before:mr-[0.5em] before:text-orange-high;
+   font-size: 0.75em;
+   line-height: 1em;
+}
+
+h6[data-markdown]::before {
+   content: var(--tw-content);
+   font-size: 0.75em;
+   line-height: 1em;
 }
 
 p[data-markdown] {
-   @apply text-base;
+   font-size: 1em;
+   line-height: 1.5em;
 }
 
 ul[data-markdown] {
-   @apply list-disc ml-4 marker:text-orange-high;
+   @apply list-disc ml-[1em] marker:text-orange-high;
 }
 
 ol[data-markdown] {
-   @apply list-decimal ml-4 marker:text-orange-high;
+   @apply list-decimal ml-[1em] marker:text-orange-high;
 }
 
 li[data-markdown] {
-   @apply mb-1;
+   @apply mb-[0.25em];
 }
 
 pre[data-markdown] {
-   @apply bg-gray-100 p-2 rounded-md;
+   @apply bg-gray-100 p-[0.5em] rounded-md;
 }
 
 code[data-markdown] {
-   @apply bg-gray-100 p-1 rounded-md;
+   @apply bg-gray-100 p-[0.25em] rounded-md;
 }
 
 a[data-markdown] {
@@ -67,11 +85,11 @@ input[data-markdown] {
 }
 
 th[data-markdown] {
-   @apply border-b border-gray-300 p-2;
+   @apply border-b border-gray-300 p-[0.5em];
 }
 
 td[data-markdown] {
-   @apply border-gray-300 p-2 text-center;
+   @apply border-gray-300 p-[0.5em] text-center;
 }
 
 tr[data-markdown]:nth-child(even) {
@@ -83,7 +101,7 @@ del[data-markdown] {
 }
 
 img[data-markdown] {
-   @apply max-h-[16rem] mx-auto rounded-outside before:content-[attr(title)] before:block before:text-center before:font-[0.75rem];
+   @apply max-h-[16em] mx-auto rounded-outside before:content-[attr(title)] before:block before:text-center before:font-[0.75em];
 }
 
 [data-markdown]:nth-child(1) {
@@ -91,9 +109,9 @@ img[data-markdown] {
 }
 
 [data-markdown] li:nth-child(1) {
-   @apply mt-4;
+   @apply mt-[1em];
 }
 
 [data-markdown] {
-   @apply my-[1.25rem];
+   @apply my-[1.25em];
 }

@@ -6,6 +6,9 @@
  * @property score - 挑战分数
  * @property type - 挑战类型
  * @property tags - 挑战标签
+ * @property authorId - 作者ID
+ * @property updatedAt - 更新时间
+ * @property createdAt - 创建时间
  */
 export type Challenge = {
    id: string;
@@ -14,4 +17,16 @@ export type Challenge = {
    score: number;
    type: string;
    tags: string[];
+   authorId: string;
+   updatedAt: string;
+   createdAt: string;
+};
+
+/**
+ * 最新的挑战
+ * @extends Challenge
+ * @property content - 挑战内容
+ */
+export type LatestChallenge = Challenge & {
+   content: string;
 };
