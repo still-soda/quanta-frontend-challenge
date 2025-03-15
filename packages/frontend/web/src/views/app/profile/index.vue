@@ -4,7 +4,7 @@
          <BaseContainer title="个人资料" class="w-[13.9375rem]">
             <div class="w-[9.875rem] relative mt-2 mx-auto">
                <img
-                  :src="avatar"
+                  :src="userStore.avatar"
                   alt="头像"
                   class="size-[9.875rem] rounded-full shrink-0" />
                <div
@@ -13,8 +13,8 @@
                </div>
             </div>
             <div class="mt-3">
-               <div class="font-bold text-lg">still-soda</div>
-               <div class="font-thin text-sm">20231003059</div>
+               <div class="font-bold text-lg">{{ userStore.name }}</div>
+               <div class="font-thin text-sm">{{ userStore.number }}</div>
                <Button
                   class="w-full text-center rounded-[0.375rem] py-0.5 mt-4">
                   编辑资料
@@ -118,9 +118,9 @@ import {
 import { Pen, Call, Chat, Trophy, Fire } from '@/components/Icons';
 import { inject, ref } from 'vue';
 import activeMock from '@/mock/active.mock';
+import { useUserStore } from '@/stores/user.store';
 
-const avatar =
-   'https://pic1.zhimg.com/v2-a622d09f99ce9292cb35db0707be587a_r.jpg';
+const userStore = useUserStore();
 
 const navigatorHeight = inject('navigatorHeight');
 const showAll = ref(false);
