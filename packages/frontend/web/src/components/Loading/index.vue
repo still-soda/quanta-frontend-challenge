@@ -31,7 +31,7 @@
             stroke-linecap="round"
             stroke-linejoin="round" />
       </svg>
-      <div class="-mt-4 text-white font-medium">加载中...</div>
+      <div class="-mt-4 text-orange-high font-medium">加载中...</div>
    </div>
 </template>
 

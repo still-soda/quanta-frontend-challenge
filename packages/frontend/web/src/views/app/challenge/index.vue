@@ -32,8 +32,11 @@
                   </div>
                </div>
             </template>
+
             <template #status="{ value, idx }">
-               <div class="flex gap-2 items-center shrink-0 w-8">
+               <div
+                  v-if="!loadingUserStatus"
+                  class="flex gap-2 items-center shrink-0 w-8">
                   <div v-if="value === 'done'" class="size-6">
                      <Check class="text-green-base size-6" />
                   </div>
@@ -52,22 +55,44 @@
                         }" />
                   </div>
                </div>
+               <Skeleton v-else type="text">
+                  {{ randomLength(8, 8) }}
+               </Skeleton>
             </template>
+
             <template #name="{ value, idx }">
                <Button
+                  v-if="!loadingMainData"
                   type="link"
                   class="w-full max-w-72 text-nowrap py-1 font-medium px-0 overflow-hidden whitespace-nowrap overflow-ellipsis">
                   <RouterLink :to="`/challenge/detail?id=${data[idx].id}`">
-                     {{ data[idx].id + 1 }}.
+                     {{ data[idx].number }}.
                      {{ value }}
                   </RouterLink>
                </Button>
+               <Skeleton v-else type="text">
+                  <Button
+                     type="link"
+                     class="w-full max-w-72 text-nowrap py-1 font-medium px-0 overflow-hidden whitespace-nowrap overflow-ellipsis">
+                     <RouterLink :to="`/challenge/detail?id=${data[idx].id}`">
+                        {{ randomLength(8, 12) }}
+                     </RouterLink>
+                  </Button>
+               </Skeleton>
             </template>
+
             <template #correctRate="{ value }">
-               {{ (value * 100).toFixed(2) }}%
+               <div v-if="!loadingUserStatus">
+                  {{ (value * 100).toFixed(2) }}%
+               </div>
+               <Skeleton v-else type="text">
+                  {{ randomLength(4, 7) }}
+               </Skeleton>
             </template>
+
             <template #difficulty="{ value }">
                <div
+                  v-if="!loadingMainData"
                   :class="{
                      'text-green-base': value === '简单',
                      'text-orange-high': value === '中等',
@@ -75,17 +100,38 @@
                   }">
                   {{ value }}
                </div>
+               <Skeleton v-else type="text">
+                  {{ randomLength(8, 8) }}
+               </Skeleton>
             </template>
+
             <template #tags="{ value }">
-               <div class="flex gap-2">
+               <div v-if="!loadingMainData" class="flex gap-2">
                   <Tag
                      v-for="tag in value"
                      :key="tag"
+                     :style="{
+                        backgroundColor: TAG_COLOR_MAPPING[tag] ?? '#f0f0f0',
+                     }"
                      type="info"
-                     class="bg-[#3281FF] py-[0.25rem]">
-                     {{ tag }}
+                     class="py-[0.25rem]">
+                     {{ TAG_TEXT_MAPPING[tag] ?? tag }}
                   </Tag>
                </div>
+               <Skeleton v-else type="text">
+                  <Tag class="py-[0.25rem]">
+                     {{ randomLength(3, 4) }}
+                  </Tag>
+               </Skeleton>
+            </template>
+
+            <template #submitCount="{ value }">
+               <div v-if="!loadingMainData">
+                  {{ value }}
+               </div>
+               <Skeleton v-else type="text">
+                  {{ randomLength(4, 7) }}
+               </Skeleton>
             </template>
          </Table>
       </div>
@@ -93,13 +139,36 @@
 </template>
 
 <script setup lang="ts">
-import { BaseContainer, Table, Tag, Button } from '@/components';
+import {
+   BaseContainer,
+   Table,
+   Tag,
+   Button,
+   useMessage,
+   Skeleton,
+} from '@/components';
 import { Check, Close, Trophy, Sort } from '@/components/Icons';
 import Filter from './components/Filter.vue';
 import Category from './components/Category.vue';
-import { ref } from 'vue';
+import { ref, watch, watchEffect } from 'vue';
 import { RouterLink } from 'vue-router';
 import { CompareChain } from '@challenge/utils';
+import { getAllPublishedChallenges } from '@/apis/challenges.api';
+import { Challenge } from '@/models/challenge.model';
+import { TAG_COLOR_MAPPING, TAG_TEXT_MAPPING } from '@/constant/tags.constant';
+import { useUserStore } from '@/stores/user.store';
+import { getEarlisetResolvedChallengesOfUser } from '@/apis/resolved.api';
+import { ResolvedChallenge } from '@/models/resolved-challenge.model';
+
+const message = useMessage();
+const userStore = useUserStore();
+
+// 随机骨架宽度
+function randomLength(from: number, to: number) {
+   return new Array(Math.ceil(from + (to - from) * Math.random()))
+      .fill('X')
+      .join('');
+}
 
 const tableOrder = [
    'status',
@@ -117,7 +186,7 @@ const tableHead = {
    submitCount: '提交次数',
    correctRate: '正确率',
    difficulty: '难度',
-   score: '得分',
+   score: '分数',
    tags: '标签',
 } as { [key: string]: string };
 
@@ -179,26 +248,109 @@ function sort(key?: string) {
    data.value = chain.toSort(data.value);
 }
 
-const data = ref(
-   (() => {
-      const data = [];
-      for (let i = 0; i < 40; i++) {
-         data.push({
-            name: 'Easy CSS Button',
-            id: i,
-            correctRate: 0.6667,
-            difficulty: ['简单', '中等', '困难'][Math.floor(Math.random() * 3)],
-            tags: ['CSS', 'CSS'],
-            status: ['done', '', '', '', 'error'][
-               Math.floor(Math.random() * 5)
-            ],
-            top: [0, 1, 2, 3][Math.floor(Math.random() * 4)],
-            score: 40,
-            submitCount: Math.floor(Math.random() * 1200),
-         });
+// 表格数据
+interface TableData {
+   name: string;
+   id: string;
+   correctRate: number;
+   difficulty: string;
+   tags: string[];
+   status: string;
+   top: number;
+   score: number;
+   submitCount: number;
+   number: number;
+}
+const data = ref<TableData[]>(Array(15).fill({}) as TableData[]);
+
+// 加载状态
+const loadingMainData = ref(true);
+const loadingUserStatus = ref(true);
+
+// 更新表格数据
+let publishedChallenges: Challenge[] = [];
+
+updateData();
+async function updateData() {
+   try {
+      // 获取所有题目
+      const result = await getAllPublishedChallenges();
+      publishedChallenges = result.data;
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // 映射数据
+      data.value = publishedChallenges.map((item, idx) => {
+         const correctRate =
+            item.totalSubmissions === 0
+               ? 0
+               : item.totalPass / item.totalSubmissions;
+         return {
+            name: item.title,
+            id: item.id,
+            correctRate: correctRate,
+            difficulty: TAG_TEXT_MAPPING[item.difficulty] ?? item.difficulty,
+            tags: item.tags,
+            status: '',
+            top: 0,
+            score: item.score,
+            submitCount: item.totalSubmissions,
+            number: idx + 1,
+         };
+      });
+
+      // 加载完成
+      loadingMainData.value = false;
+   } catch (error: any) {
+      message.error(error.message, { duration: 3000 });
+   }
+}
+
+// 监听数据变化
+watchEffect(() => {
+   sort();
+});
+
+// 更新状态
+watch(
+   () => [userStore.solvedChallenges, data.value],
+   async () => {
+      if (!userStore.id || loadingMainData.value) {
+         return;
       }
-      return data;
-   })()
+
+      // 获取用户通过的题目
+      let earlisetResolvedChallenges: ResolvedChallenge[] = [];
+      try {
+         const result = await getEarlisetResolvedChallengesOfUser(userStore.id);
+         await new Promise((resolve) => setTimeout(resolve, 1000));
+         earlisetResolvedChallenges = result.data;
+      } catch (error: any) {
+         message.error(error.message, { duration: 3000 });
+      }
+
+      // 更新状态
+      data.value.forEach((item) => {
+         const challenge = publishedChallenges.find(
+            (challenge) => challenge.id === item.id
+         );
+         if (challenge) {
+            // 判断是否通过
+            const passed = userStore.solvedChallenges.includes(challenge.id);
+            const failed = userStore.failedChallenges.includes(challenge.id);
+            failed && (item.status = 'error');
+            passed && (item.status = 'done');
+
+            // 判断是否前三
+            const top = earlisetResolvedChallenges.find(
+               (resolved) => resolved.challengeId === challenge.id
+            );
+            top && (item.top = top.rank);
+         }
+      });
+
+      // 加载完成
+      loadingUserStatus.value = false;
+   }
 );
-sort();
 </script>

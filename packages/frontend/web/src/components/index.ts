@@ -19,6 +19,7 @@ export { default as Loading } from './Loading/index.vue';
 export { default as Uploader } from './Uploader/index.vue';
 export { default as Markdown } from './Markdown/index.vue';
 export { default as Input } from './Input/index.vue';
+export { default as Skeleton } from './Skeleton/index.vue';
 
 export { default as MessageProvider } from './Message/Provider.vue';
 export { useMessage } from './Message/index';
