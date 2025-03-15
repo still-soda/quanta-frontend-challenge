@@ -38,10 +38,10 @@ import { MONTH_TEXT, MONTH_DAY } from '@/constant/date.constant';
 import { range } from '@challenge/utils';
 import Cell from './components/Cell.vue';
 import Popover from '@/components/Popover/index.vue';
-import type { AcitveMockType } from './index.types';
+import { AcitveDataType } from '@/adapters/heatmapToActiveData.adapter';
 
 const props = defineProps<{
-   activeData: AcitveMockType;
+   activeData: AcitveDataType;
 }>();
 
 // 展示的月份个数
@@ -50,12 +50,16 @@ const displayCount = 5;
 const currentMonth = new Date().getMonth();
 const displayMonths = (() => {
    const startMonth =
-      (currentMonth > displayCount
-         ? currentMonth
-         : currentMonth + 12 - displayCount) -
+      (currentMonth > displayCount ? currentMonth : currentMonth + 12) -
       displayCount +
       1;
-   const month = range(startMonth, startMonth + displayCount);
+   let month = range(
+      startMonth,
+      currentMonth > displayCount ? currentMonth + 1 : 12
+   );
+   if (currentMonth <= displayCount) {
+      month = month.concat(range(0, currentMonth + 1));
+   }
    return month;
 })();
 // 展示月份的天数
