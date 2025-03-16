@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsMongoId,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { SubmissionStatus } from '../../../schemas/submissions.schema';
 
 export class UpdateSubmissionDto {
@@ -45,4 +52,10 @@ export class UpdateSubmissionDto {
   @IsString()
   @Expose()
   message?: string;
+
+  @ApiProperty({ example: ['123456', '123457'], description: '截图ID' })
+  @IsOptional()
+  @IsMongoId({ each: true })
+  @Expose()
+  screenshotIds?: string[];
 }

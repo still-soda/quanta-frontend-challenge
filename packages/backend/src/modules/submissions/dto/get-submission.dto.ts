@@ -40,6 +40,16 @@ export const getSubmissionDtoProps: SchemaProp = {
     default: '',
     description: '消息',
   },
+  screenshotIds: {
+    type: 'array',
+    example: ['123456', '123457'],
+    items: {
+      type: 'string',
+      example: '123456',
+    },
+    default: [],
+    description: '截图ID',
+  },
   createdAt: {
     type: 'string',
     example: '2021-01-01T00:00:00.000Z',

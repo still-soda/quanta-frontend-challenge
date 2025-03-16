@@ -79,6 +79,14 @@ export class Submissions extends Document {
   })
   @Prop()
   order: number;
+
+  @ApiProperty({
+    example: ['123456'],
+    description: '截图ID',
+    default: [],
+  })
+  @Prop({ default: [] })
+  screenshotIds: string[];
 }
 
 export const SubmissionsSchema = SchemaFactory.createForClass(Submissions);

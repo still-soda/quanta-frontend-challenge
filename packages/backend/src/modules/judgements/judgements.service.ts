@@ -29,11 +29,13 @@ export interface HandleResult {
  * 这个接口定义了预执行结果的数据结构。
  * - `result` 一个包含执行结果的数组
  * - `passed` 是否通过预执行进入准备发布状态
+ * - `screenshotIdList` 一个包含截图 ID 的数组
  * - `score` 得分
  * - `totalScore` 满分
  */
 export interface PreExecuteResult {
   result: HandleResult[];
+  screenshotIdList: string[];
   passed: boolean;
   score: number;
   totalScore: number;
@@ -354,6 +356,7 @@ export class JudgementsService
       score: testScore,
       totalScore: fullScore,
       passed,
+      screenshotIdList: generatedScreenshotsIdList,
     };
   }
 
