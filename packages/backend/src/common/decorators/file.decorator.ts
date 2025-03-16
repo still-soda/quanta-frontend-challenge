@@ -4,28 +4,7 @@ import { memoryStorage } from 'multer';
 import { responseError } from '../../utils/http-response.utils';
 import sharp from 'sharp';
 import { MulterFile } from '../../modules/assets/assets.service';
-
-/**
- * 使用 sharp 转换图片格式为 webp
- * @param file 文件
- */
-async function sharpImage(file: MulterFile, callback: Function) {
-  try {
-    await sharp(file.buffer).webp({ quality: 0.75 }).toBuffer();
-  } catch (error) {
-    return callback(
-      responseError('bad request', {
-        msg: '图片转换失败',
-      }),
-      false,
-    );
-    return false;
-  }
-
-  file.mimetype = 'image/webp';
-  file.originalname = file.originalname.replace(/\.\w+$/, '.webp');
-  return true;
-}
+import { ImageCompressInterceptor } from '../interceptors/compress.interceptor';
 
 /**
  * 拦截文件上传的装饰器
@@ -54,13 +33,10 @@ export const UseFileInterceptor = (
               false,
             );
           }
-          if (file.mimetype.includes('image')) {
-            const success = await sharpImage(file, callback);
-            if (!success) return;
-          }
           callback(null, true);
         },
       }),
+      new ImageCompressInterceptor(name),
     ),
   );
 };
@@ -94,13 +70,10 @@ export const UseFilesInterceptor = (options: {
               false,
             );
           }
-          if (file.mimetype.includes('image')) {
-            const success = await sharpImage(file, callback);
-            if (!success) return;
-          }
           callback(null, true);
         },
       }),
+      new ImageCompressInterceptor(options.name),
     ),
   );
 };

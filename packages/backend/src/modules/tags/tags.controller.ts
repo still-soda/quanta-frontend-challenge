@@ -126,8 +126,12 @@ export class TagsController {
   @Post('/upload-icon/:id')
   @UseFileInterceptor('file', 5, 'image')
   @Auth(ROLE.ADMIN)
-  async uploadIcon(@UploadedFile() file: MulterFile, @Param('id') id: string) {
-    const result = await this.tagsService.uploadIcon(id, file);
+  async uploadIcon(
+    @UploadedFile() file: MulterFile,
+    @Param('id') id: string,
+    @CurrentUser() user: UserData,
+  ) {
+    const result = await this.tagsService.uploadIcon(id, file, user);
     return responseSuccess('ok', result, '上传成功');
   }
 }

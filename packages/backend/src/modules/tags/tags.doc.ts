@@ -1,4 +1,10 @@
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
 import { getTagDtoProps } from './dto/get-tag.dto';
 import { responseSchema } from 'src/utils/http-response.utils';
@@ -141,8 +147,8 @@ export const TagsDoc = new ApiDocumentHelper({
         description: '上传标签图标',
       }),
       ApiNeedAuth({ level: ROLE.ADMIN }),
+      ApiConsumes('multipart/form-data'),
       ApiBody({
-        type: 'object',
         schema: {
           type: 'object',
           properties: {
@@ -165,6 +171,14 @@ export const TagsDoc = new ApiDocumentHelper({
         status: 200,
         description: '上传成功',
         schema: responseSchema('ok', '上传成功'),
+      }),
+      ApiResponse({
+        status: 403,
+        description: '非超级管理员无法代替别人上传标签图标',
+        schema: responseSchema(
+          'forbidden',
+          '非超级管理员无法代替别人上传标签图标',
+        ),
       }),
     ];
   },

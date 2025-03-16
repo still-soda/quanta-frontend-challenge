@@ -9,6 +9,8 @@ import { responseError } from '../../utils/http-response.utils';
 import { isMongoId } from 'class-validator';
 import { AssetsService, MulterFile } from '../assets/assets.service';
 import { MimeType } from '../assets/mime-type.type';
+import { UserData } from '../../common/decorators/user.decorator';
+import { ROLE } from 'src/common/decorators/auth.decorator';
 
 @Injectable()
 export class TagsService {
@@ -128,11 +130,18 @@ export class TagsService {
    * @throws
    * - `bad request` 标签不存在
    * - `internal server error` 上传文件失败
+   * - `forbidden` 非超级管理员无法代替别人上传标签图标
    */
-  async uploadIcon(id: string, file: MulterFile) {
+  async uploadIcon(id: string, file: MulterFile, user: UserData) {
     const tag = await this.findById(id);
     if (!tag) {
       throw responseError('bad request', { msg: '标签不存在' });
+    }
+
+    if (tag.creatorId !== user.id && user.role < ROLE.SUPER_ADMIN) {
+      throw responseError('forbidden', {
+        msg: '非超级管理员无法代替别人上传标签图标',
+      });
     }
 
     const { ok, id: imageId } = await this.assetsService.saveFileAsStatic({
