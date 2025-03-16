@@ -48,7 +48,13 @@ const constructURL = (
 
    let url = baseUrl;
    entries.length > 0 && (url += '?');
-   url += entries.map(([key, value]) => `${key}=${value}`).join('&');
+   url += entries
+      .map(([key, value]) => {
+         return Array.isArray(value)
+            ? value.map((v) => `${key}=${v}`).join('&')
+            : `${key}=${value}`;
+      })
+      .join('&');
 
    return url;
 };
