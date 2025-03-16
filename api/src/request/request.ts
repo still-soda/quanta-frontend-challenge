@@ -47,14 +47,16 @@ const constructURL = (
    const entries = Object.entries(query);
 
    let url = baseUrl;
-   entries.length > 0 && (url += '?');
-   url += entries
+   const pairs = entries
       .map(([key, value]) => {
          return Array.isArray(value)
-            ? value.map((v) => `${key}=${v}`).join('&')
+            ? value.length === 0
+               ? ''
+               : value.map((v) => `${key}=${v}`).join('&')
             : `${key}=${value}`;
       })
-      .join('&');
+      .filter(Boolean);
+   pairs.length > 0 && (url += `?${pairs.join('&')}`);
 
    return url;
 };
