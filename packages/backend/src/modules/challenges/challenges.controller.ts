@@ -36,7 +36,10 @@ export class ChallengesController {
   @HttpCode(200)
   @UseCache()
   @Get('/find-all')
-  async findAll() {
+  async findAll(
+    @Query('include') includeTagIds?: string[],
+    @Query('all') allInTagIds?: string[],
+  ) {
     const result = await this.challengesService.findAll();
     const filteredResult = result.map((item) =>
       filterData(UserGetChallengeDto, { ...item }),

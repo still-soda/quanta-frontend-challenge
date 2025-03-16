@@ -85,9 +85,21 @@ export class ChallengesService {
    * 用户查找所有挑战，只返回已发布的挑战
    * @returns 挑战列表
    */
-  async findAll() {
+  async findAll(
+    options: { includeTagIds?: string[]; allInTagsIds?: string[] } = {},
+  ) {
+    const $match = {
+      status: CHALLENGE_STATUS.PUBLISHED,
+      tags: {
+        $in: options.includeTagIds,
+        $all: options.allInTagsIds,
+      },
+    };
+    !options.includeTagIds && delete $match.tags.$in;
+    !options.allInTagsIds && delete $match.tags.$all;
+
     return await this.challengeModel.aggregate([
-      { $match: { status: CHALLENGE_STATUS.PUBLISHED } },
+      { $match },
       { $set },
       { $lookup },
     ]);
