@@ -3,6 +3,29 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { responseError } from '../../utils/http-response.utils';
 import sharp from 'sharp';
+import { MulterFile } from '../../modules/assets/assets.service';
+
+/**
+ * 使用 sharp 转换图片格式为 webp
+ * @param file 文件
+ */
+async function sharpImage(file: MulterFile, callback: Function) {
+  try {
+    await sharp(file.buffer).webp({ quality: 0.75 }).toBuffer();
+  } catch (error) {
+    return callback(
+      responseError('bad request', {
+        msg: '图片转换失败',
+      }),
+      false,
+    );
+    return false;
+  }
+
+  file.mimetype = 'image/webp';
+  file.originalname = file.originalname.replace(/\.\w+$/, '.webp');
+  return true;
+}
 
 /**
  * 拦截文件上传的装饰器
@@ -32,18 +55,8 @@ export const UseFileInterceptor = (
             );
           }
           if (file.mimetype.includes('image')) {
-            try {
-              await sharp(file.buffer).webp({ quality: 0.75 }).toBuffer();
-            } catch (error) {
-              return callback(
-                responseError('bad request', {
-                  msg: '图片格式错误',
-                  withoutStack: false,
-                }),
-                false,
-              );
-            }
-            file.mimetype = 'image/webp';
+            const success = await sharpImage(file, callback);
+            if (!success) return;
           }
           callback(null, true);
         },
@@ -69,7 +82,7 @@ export const UseFilesInterceptor = (options: {
         limits: {
           fileSize: (options.maxMb || 5) * 1024 * 1024,
         },
-        fileFilter(_, file, callback) {
+        async fileFilter(_, file, callback) {
           if (
             options.mimetypeLimit &&
             !file.mimetype.includes(options.mimetypeLimit)
@@ -80,6 +93,10 @@ export const UseFilesInterceptor = (options: {
               }),
               false,
             );
+          }
+          if (file.mimetype.includes('image')) {
+            const success = await sharpImage(file, callback);
+            if (!success) return;
           }
           callback(null, true);
         },
