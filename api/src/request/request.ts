@@ -42,7 +42,7 @@ export function init(_eventEmitter: EventEmitter) {
  */
 const constructURL = (
    baseUrl: string,
-   query: { [key: string]: string | number }
+   query: { [key: string]: string | number | string[] | number[] }
 ): string => {
    const entries = Object.entries(query);
 

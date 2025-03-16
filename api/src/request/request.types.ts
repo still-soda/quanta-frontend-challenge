@@ -2,7 +2,7 @@ export interface RequestOptions {
    method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
    body?: BodyInit;
    headers?: HeadersInit;
-   query?: { [key: string]: string | number };
+   query?: { [key: string]: string | number | string[] | number[] };
 }
 
 export enum RequestResultStatus {

@@ -7,8 +7,13 @@ import { get, post } from '@challenge/api';
  * @api /challenges/find-all
  * @returns 挑战列表
  */
-export async function getAllPublishedChallenges() {
-   return get<RequestResult<Challenge[]>>('/challenges/find-all');
+export async function getAllPublishedChallenges(options?: {
+   include?: string[];
+   all?: string[];
+}) {
+   return get<RequestResult<Challenge[]>>('/challenges/find-all', {
+      query: options,
+   });
 }
 
 /**

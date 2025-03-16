@@ -8,3 +8,4 @@ export * as ActionsApi from './actions.api';
 export * as ChallengesApi from './challenges.api';
 export * as TasksApi from './tasks.api';
 export * as ResolvedApi from './resolved.api';
+export * as TagsApi from './tags.api';
