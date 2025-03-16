@@ -7,6 +7,7 @@ import {
   HttpCode,
   UploadedFiles,
   Query,
+  UploadedFile,
 } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
 import { Auth, ROLE } from '../../common/decorators/auth.decorator';
@@ -21,7 +22,10 @@ import { UpdateChallengeDto } from './dto/update-challenge.dto';
 import { filterData } from '../../utils/filter-data.utils';
 import { UserGetChallengeDto } from './dto/user-get-challenge.dto';
 import { MulterFile } from '../assets/assets.service';
-import { UseFilesInterceptor } from '../../common/decorators/file.decorator';
+import {
+  UseFileInterceptor,
+  UseFilesInterceptor,
+} from '../../common/decorators/file.decorator';
 import { ChallengeDoc } from './challenges.doc';
 import { UseCache } from '../../common/decorators/cache.decorator';
 
@@ -363,5 +367,19 @@ export class ChallengesController {
   async getTotalScore() {
     const result = await this.challengesService.getTotalScore();
     return responseSuccess('ok', result, '获取成功');
+  }
+
+  /**
+   * 上传挑战实例图片。
+   * @param file 挑战实例图片
+   */
+  @ChallengeDoc.forRoute('/upload-template-image')
+  @HttpCode(200)
+  @Auth(ROLE.ADMIN)
+  @Post('/upload-template-image')
+  @UseFileInterceptor('file', 5, 'image/', false)
+  async uploadTemplateImage(@UploadedFile() file: MulterFile) {
+    const result = await this.challengesService.uploadTemplateImage(file);
+    return responseSuccess('ok', result, '上传成功');
   }
 }

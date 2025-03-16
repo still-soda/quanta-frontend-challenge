@@ -514,4 +514,28 @@ export const ChallengeDoc = new ApiDocumentHelper({
       }),
     ];
   },
+  '/upload-template-image': () => {
+    return [
+      ApiOperation({
+        summary: '上传挑战封面图片',
+        description: '上传挑战封面图片',
+      }),
+      ApiNeedAuth({ level: ROLE.ADMIN }),
+      ApiConsumes('multipart/form-data'),
+      ApiBody({
+        schema: {
+          type: 'object',
+          properties: {
+            file: { type: 'string', format: 'binary' },
+          },
+          required: ['file'],
+        },
+      }),
+      ApiResponse({
+        status: HttpStatus.OK,
+        description: '上传成功',
+        schema: responseSchema('ok', '上传成功'),
+      }),
+    ];
+  },
 });

@@ -11,11 +11,13 @@ import { ImageCompressInterceptor } from '../interceptors/compress.interceptor';
  * @param name 文件字段名
  * @param maxMb 文件大小限制，单位 MB，默认 5MB
  * @param mimetypeLimit 文件类型限制，如 'image'，默认不限制
+ * @param enableCompress 是否启用压缩，默认 true
  */
 export const UseFileInterceptor = (
   name: string,
   maxMb = 5,
   mimetypeLimit?: string,
+  enableCompress = true,
 ) => {
   return applyDecorators(
     UseInterceptors(
@@ -36,7 +38,7 @@ export const UseFileInterceptor = (
           callback(null, true);
         },
       }),
-      new ImageCompressInterceptor(name),
+      new ImageCompressInterceptor(name, enableCompress),
     ),
   );
 };
@@ -44,12 +46,18 @@ export const UseFileInterceptor = (
 /**
  * 拦截多文件上传的装饰器
  * @param options 配置
+ * - `name` 文件字段名
+ * - `maxCount` 最大文件数量
+ * - `maxMb` 文件大小限制，单位 MB，默认 5MB
+ * - `mimetypeLimit` 文件类型限制，如 'image'，默认不限制
+ * - `enableCompress` 是否启用压缩，默认 true
  */
 export const UseFilesInterceptor = (options: {
   name: string;
   maxCount: number;
   maxMb?: number;
   mimetypeLimit?: string;
+  enableCompress?: boolean;
 }) => {
   return applyDecorators(
     UseInterceptors(
@@ -73,7 +81,10 @@ export const UseFilesInterceptor = (options: {
           callback(null, true);
         },
       }),
-      new ImageCompressInterceptor(options.name),
+      new ImageCompressInterceptor(
+        options.name,
+        options.enableCompress ?? true,
+      ),
     ),
   );
 };

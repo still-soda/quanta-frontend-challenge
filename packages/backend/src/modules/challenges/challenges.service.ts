@@ -681,4 +681,28 @@ export class ChallengesService {
       { $inc: { totalPass: 1 } },
     );
   }
+
+  /**
+   * 上传挑战截图
+   * @param file 挑战截图文件
+   * @returns 上传的截图ID
+   * @throws
+   * - `internal server error` 上传截图失败
+   */
+  async uploadTemplateImage(file: MulterFile) {
+    const { ok, id } = await this.assetsService.saveFileAsStatic({
+      file: file.buffer,
+      mimeType: file.mimetype as any,
+      name: file.originalname,
+    });
+
+    if (!ok) {
+      throw responseError('internal server error', {
+        msg: '上传截图失败',
+        withoutStack: false,
+      });
+    }
+
+    return this.assetsService.resolveStaticFilePath(id);
+  }
 }
