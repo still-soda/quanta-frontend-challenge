@@ -9,7 +9,7 @@
             <th
                class="font-medium text-start indent-1 py-[0.62rem]"
                v-for="(key, idx) in computedOrder"
-               :key="`head-${idx}`">
+               :key="`head-${getKey ? getKey(key) : idx}`">
                <slot name="header" :key="key" :idx="idx">
                   <slot :name="`head-${key}`" :key="key" :idx="idx">
                      {{ key }}
@@ -21,7 +21,7 @@
       <tbody>
          <tr
             v-for="(item, idx) in data"
-            :key="`tr-${idx}`"
+            :key="`tr-${getKey ? getKey(item) : idx}`"
             class="even:bg-[#EBEBEB]">
             <td
                v-for="key in computedOrder"
@@ -44,6 +44,7 @@ const props = defineProps<{
       [key: string]: any;
    }[];
    order?: string[];
+   getKey?: (item: any) => string;
 }>();
 
 const computedOrder = computed(() => {
