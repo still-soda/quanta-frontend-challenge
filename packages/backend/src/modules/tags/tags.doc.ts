@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
 import { getTagDtoProps } from './dto/get-tag.dto';
-import { responseSchema } from 'src/utils/http-response.utils';
+import { responseSchema } from '../../utils/http-response.utils';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { ApiNeedAuth, ROLE } from '../../common/decorators/auth.decorator';

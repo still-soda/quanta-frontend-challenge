@@ -10,7 +10,7 @@ import { isMongoId } from 'class-validator';
 import { AssetsService, MulterFile } from '../assets/assets.service';
 import { MimeType } from '../assets/mime-type.type';
 import { UserData } from '../../common/decorators/user.decorator';
-import { ROLE } from 'src/common/decorators/auth.decorator';
+import { ROLE } from '../../common/decorators/auth.decorator';
 
 @Injectable()
 export class TagsService {

@@ -5,6 +5,8 @@ import { TagsModule } from '../tags.module';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { createMockDBModule } from '../../../utils/db-mock.utils';
 import mongoose from 'mongoose';
+import { createEnvConfModule } from '../../../utils/env-mock.utils';
+import { AssetsModule } from '../../../modules/assets/assets.module';
 
 describe('TagsController', () => {
   let controller: TagsController;
@@ -15,7 +17,12 @@ describe('TagsController', () => {
     mongodb = mockDb.mongodb;
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TagsModule, mockDb.module],
+      imports: [
+        TagsModule,
+        mockDb.module,
+        createEnvConfModule('.env.devlopment'),
+        AssetsModule,
+      ],
       controllers: [TagsController],
       providers: [TagsService],
     }).compile();

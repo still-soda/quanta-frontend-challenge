@@ -10,13 +10,13 @@ import {
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
-import { Auth, ROLE } from 'src/common/decorators/auth.decorator';
-import { CurrentUser, UserData } from 'src/common/decorators/user.decorator';
-import { responseSuccess } from 'src/utils/http-response.utils';
+import { Auth, ROLE } from '../../common/decorators/auth.decorator';
+import { CurrentUser, UserData } from '../../common/decorators/user.decorator';
+import { responseSuccess } from '../../utils/http-response.utils';
 import { TagsDoc } from './tags.doc';
-import { UseCache } from 'src/common/decorators/cache.decorator';
+import { UseCache } from '../../common/decorators/cache.decorator';
 import { MulterFile } from '../assets/assets.service';
-import { UseFileInterceptor } from 'src/common/decorators/file.decorator';
+import { UseFileInterceptor } from '../../common/decorators/file.decorator';
 
 @Controller('tags')
 export class TagsController {
