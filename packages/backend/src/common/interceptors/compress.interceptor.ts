@@ -11,7 +11,7 @@ async function sharpImage(file: MulterFile) {
   try {
     file.mimetype = 'image/webp';
     file.originalname = file.originalname.replace(/\.\w+$/, '.webp');
-    return await sharp(file.buffer).webp({ quality: 0.75 }).toBuffer();
+    return await sharp(file.buffer).webp({ quality: 75 }).toBuffer();
   } catch (error) {
     throw responseError('bad request', {
       msg: '图片转换失败: ' + error.message,
@@ -33,6 +33,7 @@ export class ImageCompressInterceptor implements NestInterceptor {
     const image: MulterFile | undefined = request[this.imageName];
 
     if (image) {
+      const before = image.size;
       image.buffer = await sharpImage(image);
       image.size = image.buffer.length;
     }
