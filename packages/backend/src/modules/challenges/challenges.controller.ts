@@ -37,10 +37,16 @@ export class ChallengesController {
   @UseCache()
   @Get('/find-all')
   async findAll(
-    @Query('include') includeTagIds?: string[],
-    @Query('all') allInTagIds?: string[],
+    @Query('include') includeTagIds?: string[] | string,
+    @Query('all') allInTagIds?: string[] | string,
   ) {
-    const result = await this.challengesService.findAll();
+    typeof includeTagIds === 'string' && (includeTagIds = [includeTagIds]);
+    typeof allInTagIds === 'string' && (allInTagIds = [allInTagIds]);
+
+    const result = await this.challengesService.findAll({
+      includeTagIds,
+      allInTagIds,
+    });
     const filteredResult = result.map((item) =>
       filterData(UserGetChallengeDto, { ...item }),
     );
