@@ -35,7 +35,6 @@ export interface HandleResult {
  */
 export interface PreExecuteResult {
   result: HandleResult[];
-  screenshotIdList: string[];
   passed: boolean;
   score: number;
   totalScore: number;
@@ -185,7 +184,7 @@ export class JudgementsService
       const handleResult = await handleOneFlowData(page, flow as any);
 
       if (handleResult.generateImgBuffer) {
-        const { id } = await this.assetsService.saveFile({
+        const { id } = await this.assetsService.saveFileAsStatic({
           file: handleResult.generateImgBuffer,
           name: `${challengeId}-${flowdataId}.png`,
           mimeType: 'image/png',
@@ -356,7 +355,6 @@ export class JudgementsService
       score: testScore,
       totalScore: fullScore,
       passed,
-      screenshotIdList: generatedScreenshotsIdList,
     };
   }
 

@@ -192,7 +192,6 @@ export class TasksProcessor {
       score: result.score,
       correctRate: result.score / result.totalScore,
       message: resultMsg,
-      screenshotIds: result.screenshotIdList,
     });
 
     if (result.passed) {
