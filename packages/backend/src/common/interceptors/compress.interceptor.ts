@@ -24,16 +24,21 @@ async function sharpImage(file: MulterFile) {
  */
 export class ImageCompressInterceptor implements NestInterceptor {
   private readonly imageName: string;
-  constructor(imageName: string) {
+  private readonly enable: boolean;
+  constructor(imageName: string, enable: boolean = true) {
     this.imageName = imageName;
+    this.enable = enable;
   }
 
   async intercept(context: ExecutionContext, next: CallHandler<any>) {
+    if (!this.enable) {
+      return next.handle();
+    }
+
     const request = context.switchToHttp().getRequest();
     const image: MulterFile | undefined = request[this.imageName];
 
     if (image) {
-      const before = image.size;
       image.buffer = await sharpImage(image);
       image.size = image.buffer.length;
     }
