@@ -35,6 +35,14 @@ export class Tags extends Document {
   })
   @Prop({ default: '#D4D5D9' })
   color: string;
+
+  @ApiProperty({
+    description: '图标',
+    example: 'icon',
+    default: '',
+  })
+  @Prop({ default: '' })
+  icon: string;
 }
 
 export const TagsSchema = SchemaFactory.createForClass(Tags);

@@ -2,6 +2,7 @@ import { applyDecorators, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { responseError } from '../../utils/http-response.utils';
+import sharp from 'sharp';
 
 /**
  * 拦截文件上传的装饰器
@@ -21,7 +22,7 @@ export const UseFileInterceptor = (
         limits: {
           fileSize: maxMb * 1024 * 1024,
         },
-        fileFilter(_, file, callback) {
+        async fileFilter(_, file, callback) {
           if (mimetypeLimit && !file.mimetype.includes(mimetypeLimit)) {
             return callback(
               responseError('bad request', {
@@ -29,6 +30,20 @@ export const UseFileInterceptor = (
               }),
               false,
             );
+          }
+          if (file.mimetype.includes('image')) {
+            try {
+              await sharp(file.buffer).webp({ quality: 0.75 }).toBuffer();
+            } catch (error) {
+              return callback(
+                responseError('bad request', {
+                  msg: '图片格式错误',
+                  withoutStack: false,
+                }),
+                false,
+              );
+            }
+            file.mimetype = 'image/webp';
           }
           callback(null, true);
         },
