@@ -325,6 +325,18 @@ export const ChallengeDoc = new ApiDocumentHelper({
         summary: '获取所有发布的挑战',
         description: '用户获取所有挑战',
       }),
+      ApiQuery({
+        name: 'include',
+        example: [1, 2, 3],
+        description: '只查询存在 include 列表中标签的数据',
+        required: false,
+      }),
+      ApiQuery({
+        name: 'all',
+        example: [1, 2, 3],
+        description: '只查询有 all 列表中所有标签的数据',
+        required: false,
+      }),
       ApiResponse({
         status: HttpStatus.OK,
         description: '获取成功',
