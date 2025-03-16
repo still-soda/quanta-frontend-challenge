@@ -34,7 +34,7 @@ import { TagsModule } from './modules/tags/tags.module';
       envFilePath: ['.env.local', `.env.${process.env.NODE_ENV}`, '.env'],
     }),
     ServeStaticModule.forRoot({
-      rootPath: path.resolve(__dirname, process.env.STATIC_ROOT),
+      rootPath: path.resolve(__dirname, '..', process.env.STATIC_ROOT),
       serveRoot: process.env.STATIC_URL,
     }),
     BullModule.forRoot({
