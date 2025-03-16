@@ -7,11 +7,14 @@ import { Tags, TagsDocument } from '../../schemas/tags.schema';
 import validateData from '../../utils/validate-data.utils';
 import { responseError } from '../../utils/http-response.utils';
 import { isMongoId } from 'class-validator';
+import { AssetsService, MulterFile } from '../assets/assets.service';
+import { MimeType } from '../assets/mime-type.type';
 
 @Injectable()
 export class TagsService {
   constructor(
     @InjectModel(Tags.name) private readonly tagsModel: Model<TagsDocument>,
+    private readonly assetsService: AssetsService,
   ) {}
 
   /**
@@ -115,5 +118,36 @@ export class TagsService {
    */
   async findByIds(ids: string[]) {
     return this.tagsModel.find({ _id: { $in: ids } });
+  }
+
+  /**
+   * 上传标签图标
+   * @param id 标签ID
+   * @param file 图标文件
+   * @returns 上传结果
+   * @throws
+   * - `bad request` 标签不存在
+   * - `internal server error` 上传文件失败
+   */
+  async uploadIcon(id: string, file: MulterFile) {
+    const tag = await this.findById(id);
+    if (!tag) {
+      throw responseError('bad request', { msg: '标签不存在' });
+    }
+
+    const { ok, id: imageId } = await this.assetsService.saveFileAsStatic({
+      file: file.buffer,
+      name: file.originalname,
+      mimeType: file.mimetype as MimeType,
+    });
+    if (!ok) {
+      throw responseError('internal server error', {
+        msg: '上传文件失败',
+        withoutStack: false,
+      });
+    }
+
+    const path = await this.assetsService.resolveStaticFilePath(imageId);
+    return await this.tagsModel.updateOne({ _id: id }, { icon: path });
   }
 }

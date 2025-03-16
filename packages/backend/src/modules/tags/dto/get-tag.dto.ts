@@ -36,4 +36,10 @@ export const getTagDtoProps: SchemaProp = {
     example: '2021-06-28T06:23:35.000Z',
     description: '更新时间',
   },
+  icon: {
+    type: 'string',
+    example: 'icon',
+    description: '图标',
+    required: false,
+  },
 };

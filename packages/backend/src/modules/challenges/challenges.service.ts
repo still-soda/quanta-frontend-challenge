@@ -25,6 +25,7 @@ const $set = {
       in: { $toObjectId: '$$tag' },
     },
   },
+  id: { $toString: '$_id' },
 };
 
 const $lookup = {

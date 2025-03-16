@@ -39,7 +39,7 @@ export class ChallengesController {
   async findAll() {
     const result = await this.challengesService.findAll();
     const filteredResult = result.map((item) =>
-      filterData(UserGetChallengeDto, item),
+      filterData(UserGetChallengeDto, { ...item }),
     );
     return responseSuccess('ok', filteredResult, '获取成功');
   }

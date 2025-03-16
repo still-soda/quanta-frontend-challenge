@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  HttpCode,
+  UploadedFile,
+} from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
@@ -7,6 +15,8 @@ import { CurrentUser, UserData } from 'src/common/decorators/user.decorator';
 import { responseSuccess } from 'src/utils/http-response.utils';
 import { TagsDoc } from './tags.doc';
 import { UseCache } from 'src/common/decorators/cache.decorator';
+import { MulterFile } from '../assets/assets.service';
+import { UseFileInterceptor } from 'src/common/decorators/file.decorator';
 
 @Controller('tags')
 export class TagsController {
@@ -104,5 +114,20 @@ export class TagsController {
   async findByIds(@Body('ids') ids: string[]) {
     const result = this.tagsService.findByIds(ids);
     return responseSuccess('ok', result, '获取成功');
+  }
+
+  /**
+   * 上传标签图标
+   * @param file 图标文件
+   * @param id 标签ID
+   * @returns 上传结果
+   */
+  @TagsDoc.forRoute('/upload-icon')
+  @Post('/upload-icon/:id')
+  @UseFileInterceptor('file', 5, 'image')
+  @Auth(ROLE.ADMIN)
+  async uploadIcon(@UploadedFile() file: MulterFile, @Param('id') id: string) {
+    const result = await this.tagsService.uploadIcon(id, file);
+    return responseSuccess('ok', result, '上传成功');
   }
 }

@@ -1,4 +1,4 @@
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { ApiDocumentHelper } from '../../utils/doc-helper.utils';
 import { getTagDtoProps } from './dto/get-tag.dto';
 import { responseSchema } from 'src/utils/http-response.utils';
@@ -131,6 +131,40 @@ export const TagsDoc = new ApiDocumentHelper({
             properties: getTagDtoProps,
           },
         }),
+      }),
+    ];
+  },
+  '/upload-icon': () => {
+    return [
+      ApiOperation({
+        summary: '上传标签图标',
+        description: '上传标签图标',
+      }),
+      ApiNeedAuth({ level: ROLE.ADMIN }),
+      ApiBody({
+        type: 'object',
+        schema: {
+          type: 'object',
+          properties: {
+            file: {
+              type: 'string',
+              format: 'binary',
+              description: '图标文件',
+            },
+          },
+          required: ['file'],
+        },
+      }),
+      ApiParam({
+        name: 'id',
+        description: '标签ID',
+        required: true,
+        type: 'string',
+      }),
+      ApiResponse({
+        status: 200,
+        description: '上传成功',
+        schema: responseSchema('ok', '上传成功'),
       }),
     ];
   },
