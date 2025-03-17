@@ -8,7 +8,7 @@ import { post } from '@challenge/api';
  */
 export async function getStaticFileMetadata(fileIds: string[]) {
    return post<RequestResult<Asset>>('/assets/static-metadata', {
-      body: JSON.stringify(fileIds),
+      body: JSON.stringify({ fileIds }),
       headers: { 'Content-Type': 'application/json' },
    });
 }

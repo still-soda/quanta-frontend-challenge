@@ -1,3 +1,5 @@
+import { Tag } from './tag.model';
+
 /**
  * 挑战数据
  * @property id - 挑战ID
@@ -18,7 +20,7 @@ export type Challenge = {
    difficulty: string;
    score: number;
    type: string;
-   tags: string[];
+   tags: Tag[];
    authorId: string;
    totalSubmissions: number;
    totalPass: number;
