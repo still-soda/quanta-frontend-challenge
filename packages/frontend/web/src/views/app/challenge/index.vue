@@ -6,10 +6,10 @@
       </div>
       <div class="flex gap-2 p-[0.62rem] items-center">
          <div class="text-xl">分类：</div>
-         <Category />
+         <Category v-model:selected="selectedTagIds" />
       </div>
       <div class="mx-[1.88rem] text-dark-normal">
-         <Table :data="data" :order="tableOrder">
+         <Table :data="data" :order="tableOrder" :get-key="(item) => item.id">
             <template #cols>
                <col style="width: 8.5rem" />
                <col style="width: max-content" />
@@ -110,12 +110,10 @@
                   <Tag
                      v-for="tag in value"
                      :key="tag"
-                     :style="{
-                        backgroundColor: TAG_COLOR_MAPPING[tag] ?? '#f0f0f0',
-                     }"
+                     :style="{ backgroundColor: tag.color }"
                      type="info"
                      class="py-[0.25rem]">
-                     {{ TAG_TEXT_MAPPING[tag] ?? tag }}
+                     {{ tag.name }}
                   </Tag>
                </div>
                <Skeleton v-else type="text">
@@ -155,13 +153,17 @@ import { RouterLink } from 'vue-router';
 import { CompareChain } from '@challenge/utils';
 import { getAllPublishedChallenges } from '@/apis/challenges.api';
 import { Challenge } from '@/models/challenge.model';
-import { TAG_COLOR_MAPPING, TAG_TEXT_MAPPING } from '@/constant/tags.constant';
+import { TAG_TEXT_MAPPING } from '@/constant/tags.constant';
 import { useUserStore } from '@/stores/user.store';
 import { getEarlisetResolvedChallengesOfUser } from '@/apis/resolved.api';
 import { ResolvedChallenge } from '@/models/resolved-challenge.model';
+import { Tag as TagType } from '@/models/tag.model';
 
 const message = useMessage();
 const userStore = useUserStore();
+
+// 选中的标签
+const selectedTagIds = ref<string[]>([]);
 
 // 随机骨架宽度
 function randomLength(from: number, to: number) {
@@ -190,12 +192,7 @@ const tableHead = {
    tags: '标签',
 } as { [key: string]: string };
 
-const sortables = [
-   'submitCount',
-   'correctRate',
-   'score',
-   'difficulty',
-] as const;
+const sortables = ['submitCount', 'correctRate', 'score'] as const;
 
 const sortedStatus = {
    submitCount: 0,
@@ -254,7 +251,7 @@ interface TableData {
    id: string;
    correctRate: number;
    difficulty: string;
-   tags: string[];
+   tags: TagType[];
    status: string;
    top: number;
    score: number;
@@ -270,11 +267,16 @@ const loadingUserStatus = ref(true);
 // 更新表格数据
 let publishedChallenges: Challenge[] = [];
 
-updateData();
+watchEffect(() => {
+   updateData();
+});
+
 async function updateData() {
    try {
       // 获取所有题目
-      const result = await getAllPublishedChallenges();
+      const result = await getAllPublishedChallenges({
+         all: selectedTagIds.value,
+      });
       publishedChallenges = result.data;
 
       // 映射数据
@@ -310,6 +312,8 @@ watchEffect(() => {
 });
 
 // 更新状态
+let earlisetResolvedChallenges: ResolvedChallenge[] | null = null;
+
 watch(
    () => [userStore.solvedChallenges, data.value],
    async () => {
@@ -318,12 +322,15 @@ watch(
       }
 
       // 获取用户通过的题目
-      let earlisetResolvedChallenges: ResolvedChallenge[] = [];
-      try {
-         const result = await getEarlisetResolvedChallengesOfUser(userStore.id);
-         earlisetResolvedChallenges = result.data;
-      } catch (error: any) {
-         message.error(error.message, { duration: 3000 });
+      if (!earlisetResolvedChallenges) {
+         try {
+            const result = await getEarlisetResolvedChallengesOfUser(
+               userStore.id
+            );
+            earlisetResolvedChallenges = result.data;
+         } catch (error: any) {
+            message.error(error.message, { duration: 3000 });
+         }
       }
 
       // 更新状态
@@ -339,7 +346,7 @@ watch(
             passed && (item.status = 'done');
 
             // 判断是否前三
-            const top = earlisetResolvedChallenges.find(
+            const top = earlisetResolvedChallenges!.find(
                (resolved) => resolved.challengeId === challenge.id
             );
             top && (item.top = top.rank);
