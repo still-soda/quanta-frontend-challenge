@@ -27,7 +27,7 @@
             type="link"
             @click="viewDetail(value)"
             :disabled="value === currentView"
-            class="!px-0">
+            class="!px-0 !border-none">
             查看详情
          </Button>
       </template>
