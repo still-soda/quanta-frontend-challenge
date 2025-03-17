@@ -38,7 +38,6 @@ watch(
    async () => {
       try {
          const { data: totalScore } = await getChallengesTotalScore();
-         console.log(userStoreRefs.totalScore, totalScore);
          percent.value =
             totalScore === 0 ? 1 : userStoreRefs.totalScore / totalScore;
       } catch (error: any) {

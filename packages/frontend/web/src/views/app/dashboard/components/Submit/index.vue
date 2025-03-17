@@ -150,9 +150,11 @@ async function updateChallengeData() {
       const { data: correctRate } = await getMaxCorrectRate(challengeId.value);
       highestCorrectRate.value = correctRate;
 
+      const result = await getChallengeById(challengeId.value);
+      console.log(result);
       const {
          data: { title },
-      } = await getChallengeById(challengeId.value);
+      } = result;
       challengeTitle.value = title;
    } catch (error: any) {
       message.error(error.message, { duration: 3000 });

@@ -52,7 +52,6 @@ import { Go } from '@/components/Icons';
 import { ref } from 'vue';
 import { LatestChallenge } from '@/models/challenge.model';
 import { resolveDoc } from '@/utils/resolve-doc.utils';
-import { TAG_COLOR_MAPPING, TAG_TEXT_MAPPING } from '@/constant/tags.constant';
 
 const message = useMessage();
 
@@ -71,15 +70,15 @@ async function updateChallengeData() {
          return {
             ...item,
             content: resolveDoc(item.content).description,
-            createdAt: item.createdAt.split('T')[0].replace(/-/g, '.'),
+            createdAt: item.createdAt.split('T').shift()!.replace(/-/g, '.'),
             processedTags: {},
          };
       });
       // 处理标签
       challenges.value.forEach((challenge) => {
          challenge.tags.forEach((tag) => {
-            const color = TAG_COLOR_MAPPING[tag] ?? 'gray';
-            challenge.processedTags[color] = TAG_TEXT_MAPPING[tag] ?? tag;
+            const color = tag.color;
+            challenge.processedTags[color] = tag.name;
          });
       });
    } catch (error: any) {
