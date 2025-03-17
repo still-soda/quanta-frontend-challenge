@@ -12,6 +12,7 @@
                class="text-xs text-gray-400 h-full flex items-center tracking-tight">
                距离下次排行榜更新还有 {{ padZero(updateDate.day) }} 天
                {{ padZero(updateDate.hour) }} 小时
+               {{ padZero(updateDate.minute) }} 分钟
                {{ padZero(updateDate.second) }} 秒
             </div>
          </template>
@@ -298,6 +299,7 @@ async function updateRabbitData() {
             rabbitData.value.thirdBlood++;
          }
       });
+      console.log(rabbitData.value);
    } catch (error: any) {
       message.error(error.message, { duration: 3000 });
    }
