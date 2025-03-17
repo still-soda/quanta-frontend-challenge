@@ -29,6 +29,13 @@ export class Assets extends Document {
   mimeType: string;
 
   @ApiProperty({
+    example: 1024,
+    description: '文件大小',
+  })
+  @Prop()
+  size: number;
+
+  @ApiProperty({
     example: false,
     description: '是否为静态资源',
   })

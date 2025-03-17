@@ -23,6 +23,12 @@ export class GetFileMetaDto {
   })
   @Expose()
   mimeType: string;
+
+  @ApiProperty({
+    example: 1024,
+    description: '文件大小',
+  })
+  size: number;
 }
 
 export const getFileMetaDtoProps: SchemaProp = {
@@ -40,5 +46,10 @@ export const getFileMetaDtoProps: SchemaProp = {
     type: 'string',
     example: 'image/png',
     description: 'MIME 类型',
+  },
+  size: {
+    type: 'number',
+    example: 1024,
+    description: '文件大小',
   },
 };

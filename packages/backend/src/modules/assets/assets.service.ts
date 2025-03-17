@@ -99,6 +99,7 @@ export class AssetsService {
         localName: fileName,
         mimeType: mimeType,
         isStatic: false,
+        size: new TextEncoder().encode(content).length,
       });
       return { ok: true, fileName, id: id as string };
     } catch (error) {
@@ -138,6 +139,7 @@ export class AssetsService {
         localName: fileName,
         mimeType: mimeType,
         isStatic: true,
+        size: new TextEncoder().encode(content).length,
       });
       return { ok: true, fileName, id };
     } catch (error) {
@@ -176,6 +178,7 @@ export class AssetsService {
         name: name,
         mimeType: mimeType,
         isStatic: false,
+        size: buffer.length,
       });
       return { ok: true, fileName, id };
     } catch (error) {
@@ -215,6 +218,7 @@ export class AssetsService {
         name: name,
         mimeType: mimeType,
         isStatic: true,
+        size: buffer.length,
       });
       return { ok: true, fileName, id };
     } catch (error) {
