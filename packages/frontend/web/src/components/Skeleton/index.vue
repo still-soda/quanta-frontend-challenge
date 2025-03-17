@@ -1,7 +1,7 @@
 <template>
    <div
       v-if="!type || type === 'text'"
-      class="transition-all w-fit duration-200"
+      class="transition-all w-fit duration-200 text-wrap"
       :class="{
          'animate-pulse bg-gray-300 rounded-md text-transparent pointer-events-none':
             !hiden,

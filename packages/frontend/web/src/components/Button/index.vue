@@ -16,7 +16,7 @@
          'bg-transparent border-[#FF9232] text-[#FF9232]':
             !disabled && type === 'secondary',
          // link
-         'bg-transparent ring-0 text-dark-normal hover:text-[#FF9232] border-none':
+         'bg-transparent ring-0 text-dark-normal hover:text-[#FF9232] !border-none':
             !disabled && type === 'link',
          // danger
          'bg-red-base border-red-base text-white':

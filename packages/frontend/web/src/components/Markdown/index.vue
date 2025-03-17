@@ -1,13 +1,22 @@
 <template>
-   <div ref="page"></div>
+   <div v-if="loading">
+      <Skeleton class="w-[33%]"><p data-markdown>X</p> </Skeleton>
+      <Skeleton class="w-full"><p data-markdown>X</p> </Skeleton>
+      <Skeleton class="w-full"><p data-markdown>X</p> </Skeleton>
+      <Skeleton class="w-[63%]"><p data-markdown>X</p> </Skeleton>
+      <Skeleton class="w-full"><p data-markdown>X</p> </Skeleton>
+      <Skeleton class="w-[20%]"><p data-markdown>X</p> </Skeleton>
+   </div>
+   <div v-else v-html="pageHtml"></div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { parse, lexer, Renderer } from 'marked';
 import { Topic } from './index.types';
+import { Skeleton } from '..';
 
-const page = ref<HTMLDivElement | null>(null);
+const pageHtml = ref<string>('');
 
 const props = defineProps<{
    rawContent: string;
@@ -15,15 +24,12 @@ const props = defineProps<{
    maxLevel?: number;
    title?: string;
    noTitle?: boolean;
+   loading?: boolean;
 }>();
 
 const emits = defineEmits(['update:topicTree', 'update:title']);
 
 async function parseContent() {
-   if (!page.value) {
-      return;
-   }
-
    // 解析 markdown
    const safeContent = props.rawContent.replace(
       /^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/,
@@ -38,7 +44,7 @@ async function parseContent() {
    props.noTitle &&
       dom.querySelector('h1')?.style.setProperty('display', 'none');
 
-   page.value.innerHTML = dom.body.innerHTML;
+   pageHtml.value = dom.body.innerHTML;
 
    // 生成目录树
    const tokens = lexer(safeContent);

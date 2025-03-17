@@ -69,8 +69,10 @@ function send(
 
 const success = (text: string, options: MethodsOptions) =>
    send('success', text, options);
-const error = (text: string, options: MethodsOptions) =>
+const error = (text: string, options: MethodsOptions) => {
+   console.log(new Error().stack);
    send('error', text, options);
+};
 const warning = (text: string, options: MethodsOptions) =>
    send('warning', text, options);
 const info = (text: string, options: MethodsOptions) =>
