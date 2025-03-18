@@ -58,7 +58,7 @@ export async function getLastestChallenges() {
 export async function uploadAnswer(files: File[]) {
    const formData = new FormData();
    files.forEach((file) => formData.append('files', file));
-   return post<RequestResult<undefined>>('/challenges/upload-answer', {
+   return post<RequestResult<string[]>>('/challenges/upload-answer', {
       body: formData,
    });
 }

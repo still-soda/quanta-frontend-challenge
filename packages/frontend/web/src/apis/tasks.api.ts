@@ -1,5 +1,6 @@
 import { RequestResult } from '@/types/request';
-import { post } from '@challenge/api';
+import { getToken, post } from '@challenge/api';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 
 type LaunchExecuteResponse = {
    jobId: string;
@@ -38,8 +39,9 @@ type SubscribeOptions = {
  */
 export async function subscribePrevTaskCount(options: SubscribeOptions) {
    const { submissionsId, onMessage, onError, onOpen } = options;
-   const sse = new EventSource(
-      `/tasks/subscribe-prev-task-count/${submissionsId}`
+   const sse = new EventSourcePolyfill(
+      `/api/tasks/subscribe-prev-task-count/${submissionsId}`,
+      { headers: { authorization: getToken() ?? '' } }
    );
    sse.onmessage = (event) => onMessage && onMessage(event.data);
    sse.onerror = () => onError && onError();
