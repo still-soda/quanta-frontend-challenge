@@ -98,12 +98,10 @@ watch(
 );
 
 watch(activeIndex, (val) => {
-   console.log(`[above]: goto ${val}`);
    aboveTabs[val].todo();
 });
 
 function handleUnderTabClick(idx: number) {
-   console.log(`[under]: goto ${idx}`);
    underTabs[idx].todo();
 }
 
