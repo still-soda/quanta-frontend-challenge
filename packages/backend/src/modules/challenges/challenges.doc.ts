@@ -446,7 +446,10 @@ export const ChallengeDoc = new ApiDocumentHelper({
       ApiResponse({
         status: HttpStatus.OK,
         description: '上传成功',
-        schema: responseSchema('ok', '上传成功'),
+        schema: responseSchema('ok', '上传成功', {
+          type: 'array',
+          items: { type: 'string', example: 'answerId' },
+        }),
       }),
     ];
   },
