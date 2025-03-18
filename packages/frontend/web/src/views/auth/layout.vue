@@ -30,11 +30,12 @@
 </template>
 
 <script setup lang="ts">
+import { onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-router.beforeResolve((_, __, next) => {
+const removeGuard = router.beforeResolve((_, __, next) => {
    if (document.startViewTransition) {
       document.startViewTransition(() => {
          next();
@@ -42,6 +43,10 @@ router.beforeResolve((_, __, next) => {
       return;
    }
    next();
+});
+
+onUnmounted(() => {
+   removeGuard();
 });
 </script>
 
