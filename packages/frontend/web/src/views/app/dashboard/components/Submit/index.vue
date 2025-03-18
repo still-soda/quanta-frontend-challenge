@@ -4,8 +4,10 @@
       class="text-dark-normal h-[24.4375rem] gap-[0.81rem]">
       <template #extra>
          <Button type="link" class="text-xs text-gray-500 -mr-4">
-            <RouterLink to="/profile" class="flex items-center gap-0.5">
-               查看更多<Go class="translate-y-[1px]" />
+            <RouterLink
+               :to="submissionDetailUrl"
+               class="flex items-center gap-0.5">
+               查看详情<Go class="translate-y-[1px]" />
             </RouterLink>
          </Button>
       </template>
@@ -91,6 +93,7 @@ const successCount = ref(0);
 const failCount = ref(0);
 const pendingCount = ref(6);
 const challengeId = ref('');
+const submissionId = ref('');
 const status = ref('pending');
 
 // 进度条颜色
@@ -115,6 +118,7 @@ async function updateSubmissionData() {
       }
 
       challengeId.value = recentSubmission.challengeId;
+      submissionId.value = recentSubmission._id;
       status.value = recentSubmission.status;
 
       challengeId.value && updateChallengeData();
@@ -151,7 +155,6 @@ async function updateChallengeData() {
       highestCorrectRate.value = correctRate;
 
       const result = await getChallengeById(challengeId.value);
-      console.log(result);
       const {
          data: { title },
       } = result;
@@ -160,6 +163,12 @@ async function updateChallengeData() {
       message.error(error.message, { duration: 3000 });
    }
 }
+
+// 显示详情页链接
+const submissionDetailUrl = computed(() => {
+   if (submissionId.value === '') return '/challenge';
+   return `/challenge/submission?id=${submissionId.value}`;
+});
 </script>
 
 <style scoped>
