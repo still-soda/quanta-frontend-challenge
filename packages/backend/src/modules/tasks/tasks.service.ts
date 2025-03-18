@@ -10,7 +10,7 @@ import { responseError } from '../../utils/http-response.utils';
 import { JudgementsService } from '../judgements/judgements.service';
 import { CounterService } from '../counter/counter.service';
 import { CachesService } from '../caches/caches.service';
-import { map, Subject, throttleTime } from 'rxjs';
+import { map, startWith, Subject, throttleTime } from 'rxjs';
 import { UserData } from '../../common/decorators/user.decorator';
 import { ROLE } from '../../common/decorators/auth.decorator';
 import { ConfigService } from '@nestjs/config';
@@ -232,9 +232,10 @@ export class TasksService implements OnModuleInit {
     }
 
     const { order } = submission;
-    return this.prevTaskCountSubject
-      .pipe(throttleTime(this.TASK_COUNT_PUSH_INTERVAL))
-      .pipe(map((doneTaskCount: number) => Math.max(order - doneTaskCount, 0)));
+    return this.prevTaskCountSubject.pipe(
+      startWith(order),
+      map((doneTaskCount: number) => Math.max(order - doneTaskCount, 0)),
+    );
   }
 
   /**
