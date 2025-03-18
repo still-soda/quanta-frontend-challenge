@@ -38,3 +38,7 @@ export { default as Mail } from './Mail.vue';
 export { default as Fail } from './Fail.vue';
 export { default as Success } from './Success.vue';
 export { default as Pending } from './Pending.vue';
+export { default as Reduce } from './Reduce.vue';
+export { default as CheckSmall } from './CheckSmall.vue';
+export { default as CloseSmall } from './CloseSmall.vue';
+export { default as Box } from './Box.vue';
