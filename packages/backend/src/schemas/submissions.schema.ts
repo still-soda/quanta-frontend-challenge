@@ -87,6 +87,14 @@ export class Submissions extends Document {
   })
   @Prop({ default: [] })
   screenshotIds: string[];
+
+  @ApiProperty({
+    example: 100,
+    description: '判题用时',
+    default: -1,
+  })
+  @Prop({ default: -1 })
+  solution: number;
 }
 
 export const SubmissionsSchema = SchemaFactory.createForClass(Submissions);

@@ -121,8 +121,8 @@ export class SubmissionsController {
     @Query('challengeId') challengeId: string,
   ) {
     const result = await this.submissionsService.getMySubmissionsInChallenge(
-      user.id,
       challengeId,
+      user.id,
     );
     return responseSuccess('ok', result, '获取成功');
   }

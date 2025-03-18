@@ -55,4 +55,10 @@ export const getSubmissionDtoProps: SchemaProp = {
     example: '2021-01-01T00:00:00.000Z',
     description: '提交时间',
   },
+  solution: {
+    type: 'number',
+    example: 100,
+    default: 0,
+    description: '判题用时',
+  },
 };

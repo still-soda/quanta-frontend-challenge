@@ -58,4 +58,11 @@ export class UpdateSubmissionDto {
   @IsMongoId({ each: true })
   @Expose()
   screenshotIds?: string[];
+
+  @ApiProperty({ example: 100, description: '判题用时' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Expose()
+  solution?: number;
 }

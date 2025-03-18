@@ -111,6 +111,7 @@ export class TasksProcessor {
       correctRate: result.score / result.totalScore,
       message: resultMsg,
       screenshotIds: result.screenshotIdList,
+      solution: Date.now() - startAt,
     });
 
     if (result.passed) {
@@ -192,6 +193,7 @@ export class TasksProcessor {
       score: result.score,
       correctRate: result.score / result.totalScore,
       message: resultMsg,
+      solution: Date.now() - job.data.startAt,
     });
 
     if (result.passed) {
@@ -255,6 +257,7 @@ export class TasksProcessor {
       score: 0,
       correctRate: 0,
       message: error.message,
+      solution: Date.now() - job.data.startAt,
     });
     await this.onExecuteFinished();
   }

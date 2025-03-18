@@ -161,6 +161,7 @@ describe('TasksProcessor', () => {
       correctRate: 1,
       message: JSON.stringify(mockResult),
       screenshotIds: [],
+      solution: expect.any(Number),
     });
     expect(result).toEqual({ passed: true, type: 'execute_test' });
   });
@@ -210,6 +211,7 @@ describe('TasksProcessor', () => {
       correctRate: 1,
       message: JSON.stringify(mockResult),
       screenshotIds: [],
+      solution: expect.any(Number),
     });
     expect(setStatusToMock).toHaveBeenCalledWith('123', CHALLENGE_STATUS.READY);
     expect(result).toEqual({ passed: true, type: 'preExecute' });
