@@ -231,7 +231,6 @@ watch(
       const avatar = userStore.avatar;
       myData.value = [{ score, avatar }];
       myScore.value = score;
-      console.log(myData.value);
    },
    { immediate: true }
 );
@@ -299,7 +298,6 @@ async function updateRabbitData() {
             rabbitData.value.thirdBlood++;
          }
       });
-      console.log(rabbitData.value);
    } catch (error: any) {
       message.error(error.message, { duration: 3000 });
    }
