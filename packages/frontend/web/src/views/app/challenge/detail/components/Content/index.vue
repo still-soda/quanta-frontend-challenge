@@ -94,12 +94,21 @@
             <div class="text-[1.5rem] font-semibold">上传答案</div>
          </div>
          <div class="flex flex-col gap-3 pl-7">
-            <Uploader accept="text/html" :max-file-counts="3" />
+            <Uploader
+               :interceptor="fileUploadInterceptor"
+               :max-file-counts="1" />
          </div>
       </div>
 
       <div>
-         <Button class="w-fit ml-auto py-1.5" type="primary">提交答案</Button>
+         <Button
+            @click="submit"
+            class="w-fit ml-auto py-1.5"
+            type="primary"
+            accept="text/html"
+            :disabled="hasBeenSubmitted || submitFileId === ''">
+            提交答案
+         </Button>
       </div>
    </div>
 </template>
@@ -109,7 +118,9 @@ import {
    getChallengeById,
    getChallengeDetail,
    getDownloadUrlOfAnswerTemplate,
+   uploadAnswer,
 } from '@/apis/challenges.api';
+import { launchExecute } from '@/apis/tasks.api';
 import {
    Tag,
    Button,
@@ -188,7 +199,54 @@ async function updateChallengeDetail() {
    }
 }
 
+// 获取文件名
 function getFileName(url: string) {
    return url.split('/').pop();
+}
+
+// 拦截上传文件
+let submitFileId = ref('');
+const fileUploadInterceptor = async (file: File) => {
+   // 文件大小限制
+   if (file.size > 1024 * 1024 * 2) {
+      message.error(`${file.name}: 文件大小不能超过 2MB`, { duration: 3000 });
+      return false;
+   }
+   // 上传文件
+   try {
+      const { data } = await uploadAnswer([file]);
+      submitFileId.value = data[0];
+      return true;
+   } catch (error: any) {
+      message.error(error.message, { duration: 3000 });
+      return false;
+   }
+};
+
+// 提交答案
+const hasBeenSubmitted = ref(false);
+async function submit() {
+   if (hasBeenSubmitted.value) return;
+   hasBeenSubmitted.value = true;
+
+   if (!submitFileId.value) {
+      message.error('请先上传答案', { duration: 3000 });
+      hasBeenSubmitted.value = false;
+      return;
+   }
+   if (typeof challengeId !== 'string') {
+      message.error('挑战ID不存在', { duration: 3000 });
+      hasBeenSubmitted.value = false;
+      return;
+   }
+   // 启动执行任务
+   try {
+      const result = await launchExecute(challengeId, submitFileId.value);
+      message.success(result.message, { duration: 3000 });
+      router.push(`/challenge/submission?id=${result.data.submissionId}`);
+   } catch (error: any) {
+      message.error(error.message, { duration: 3000 });
+      hasBeenSubmitted.value = false;
+   }
 }
 </script>

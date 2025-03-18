@@ -1,5 +1,5 @@
 <template>
-   <BaseContainer title="提交结果" class="w-[16.5rem]">
+   <BaseContainer title="最近提交" class="w-[16.5rem]">
       <div class="flex flex-col gap-2 my-4">
          <div class="w-full flex justify-center my-[0.9rem]">
             <div
@@ -131,7 +131,6 @@ async function updateChallengeData() {
       highestCorrectRate.value = correctRate;
 
       const result = await getChallengeById(challengeId.value);
-      console.log(result);
       const {
          data: { title },
       } = result;

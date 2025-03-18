@@ -1,49 +1,47 @@
 <template>
    <div class="p-4 flex gap-4">
       <BaseContainer no-header class="w-full h-full relative">
-         <div>
-            <SlideTabContainer
-               class="w-fit text-[0.875rem] text-nowrap"
-               v-model:active-index="activeIndex">
-               <SlideTabItem v-slot="{ active }">
-                  <div
-                     class="py-[0.31rem] px-[0.62rem] transition-colors"
-                     :class="{
-                        'text-white': active,
-                        'text-dark-normal': !active,
-                     }">
-                     题目详情
-                  </div>
-               </SlideTabItem>
-               <SlideTabItem v-slot="{ active }">
-                  <div
-                     class="py-[0.31rem] px-[0.62rem] transition-colors"
-                     :class="{
-                        'text-white': active,
-                        'text-dark-normal': !active,
-                     }">
-                     历史作答
-                  </div>
-               </SlideTabItem>
-            </SlideTabContainer>
-            <div
-               class="overflow-hidden ease-out mt-1"
-               :class="{
-                  'transition-all duration-500': enableTransition,
-               }"
-               :style="{ height: containerHeight + 'px' }">
-               <div ref="container">
-                  <Transition
-                     name="main"
-                     mode="out-in"
-                     :duration="300"
-                     @enter="resizeContainer">
-                     <KeepAlive>
-                        <Content v-if="activeIndex === 0" />
-                        <History v-else />
-                     </KeepAlive>
-                  </Transition>
+         <SlideTabContainer
+            class="w-fit text-[0.875rem] text-nowrap"
+            v-model:active-index="activeIndex">
+            <SlideTabItem v-slot="{ active }">
+               <div
+                  class="py-[0.31rem] px-[0.62rem] transition-colors"
+                  :class="{
+                     'text-white': active,
+                     'text-dark-normal': !active,
+                  }">
+                  题目详情
                </div>
+            </SlideTabItem>
+            <SlideTabItem v-slot="{ active }">
+               <div
+                  class="py-[0.31rem] px-[0.62rem] transition-colors"
+                  :class="{
+                     'text-white': active,
+                     'text-dark-normal': !active,
+                  }">
+                  历史作答
+               </div>
+            </SlideTabItem>
+         </SlideTabContainer>
+         <div
+            class="overflow-hidden ease-out mt-1"
+            :class="{
+               'transition-all duration-500': enableTransition,
+            }"
+            :style="{ height: containerHeight + 'px' }">
+            <div ref="container">
+               <Transition
+                  name="main"
+                  mode="out-in"
+                  :duration="300"
+                  @enter="resizeContainer">
+                  <KeepAlive>
+                     <Content v-if="activeIndex === 0" />
+                     <History v-else />
+                  </KeepAlive>
+               </Transition>
             </div>
          </div>
       </BaseContainer>
@@ -131,9 +129,7 @@ onUnmounted(() => {
 
 <style scoped>
 .main-enter-active,
-.main-leave-active,
-.aside-enter-active,
-.aside-leave-active {
+.main-leave-active {
    transition:
       opacity 0.3s,
       transform 0.3s,
@@ -141,16 +137,13 @@ onUnmounted(() => {
 }
 
 .main-enter-from,
-.aside-enter-from,
-.main-leave-to,
-.aside-leave-to {
+.main-leave-to {
    filter: blur(0.5rem);
    transform: scale(0.95);
    opacity: 0;
 }
 
-.main-enter-to,
-.aside-enter-to {
+.main-enter-to {
    filter: blur(0);
    transform: scale(1);
    opacity: 1;
