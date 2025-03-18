@@ -36,11 +36,17 @@ export class ImageCompressInterceptor implements NestInterceptor {
     }
 
     const request = context.switchToHttp().getRequest();
-    const file: MulterFile | undefined = request[this.imageName];
+    let files: MulterFile | MulterFile[] | undefined = request[this.imageName];
 
-    if (file && file.mimetype.startsWith('image')) {
-      file.buffer = await sharpImage(file);
-      file.size = file.buffer.length;
+    files && !Array.isArray(files) && (files = [files]);
+    if (Array.isArray(files) && files[0].mimetype.startsWith('image')) {
+      const sharpBuffer = await Promise.all(
+        files.map(async (file) => sharpImage(file)),
+      );
+      for (let i = 0; i < files.length; i++) {
+        files[i].buffer = sharpBuffer[i];
+        files[i].size = sharpBuffer[i].length;
+      }
     }
 
     return next.handle();
