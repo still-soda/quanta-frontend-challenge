@@ -17,6 +17,7 @@ export default {
                high: '#FF9232',
             },
             blue: {
+               base: '#3281FF',
                'ex-low': '#F1F0F0',
             },
             red: {
