@@ -3,6 +3,8 @@ const Rank = () => import('@/views/app/rank/index.vue');
 const Profile = () => import('@/views/app/profile/index.vue');
 const Challenge = () => import('@/views/app/challenge/index.vue');
 const ChallengeDetail = () => import('@/views/app/challenge/detail/index.vue');
+const ChallengeSubmission = () =>
+   import('@/views/app/challenge/submission/index.vue');
 const Notification = () => import('@/views/app/notification/index.vue');
 const NotificationDetail = () =>
    import('@/views/app/notification/detail/index.vue');
@@ -49,6 +51,12 @@ export default {
                name: 'ChallengeDetail',
                component: ChallengeDetail,
                meta: { deynamiceTitle: '挑战详情' },
+            },
+            {
+               path: 'submission',
+               name: 'ChallengeSubmission',
+               component: ChallengeSubmission,
+               meta: { deynamiceTitle: '提交详情' },
             },
          ],
       },
