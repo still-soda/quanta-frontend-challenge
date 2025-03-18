@@ -34,8 +34,8 @@
                class="py-2 px-4 rounded-md shadow-inside flex gap-2 items-center w-full">
                <Check class="text-green-base size-5" />
                {{ file.name }}
-               <Tag type="success" class="pb-1 pt-0 ml-auto">
-                  {{ file.name.split('.').pop() }}
+               <Tag type="success" class="ml-auto">
+                  {{ file.name.split('.').pop()?.toUpperCase() }}
                </Tag>
                <div
                   @click="files = files.filter((item) => item !== file)"
@@ -61,6 +61,7 @@ const props = defineProps<{
    disabled?: boolean;
    maxFileCounts?: number;
    accept?: string;
+   interceptor?: (file: File) => Promise<boolean> | boolean;
 }>();
 
 const shouldDisable = () =>
@@ -98,11 +99,20 @@ const onClick = () => {
    input.value.click();
 };
 
-const onInputChange = () => {
+const onInputChange = async () => {
    if (!input.value?.files) {
       return;
    }
-   files.value.push(...input.value.files);
+   // 使用拦截器拦截文件并做处理
+   const accept = await Promise.all(
+      Array.from(input.value.files).map(async (file) => {
+         return props.interceptor ? await props.interceptor(file) : true;
+      })
+   );
+   const validFiles = Array.from(input.value.files).filter(
+      (_, idx) => accept[idx]
+   );
+   files.value.push(...validFiles);
 };
 </script>
 
