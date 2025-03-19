@@ -19,7 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "paths": {
-      "@challenge/utils": ["../../utils"]
+      "@challenge/utils": ["../utils"]
     }
   }
 }

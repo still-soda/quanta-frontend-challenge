@@ -8,8 +8,8 @@
       "baseUrl": ".",
       "paths": {
          "@/*": ["src/*"],
-         "@challenge/utils": ["../../../utils/index.ts"],
-         "@challenge/api": ["../../../api/src/apis/index.ts"]
+         "@challenge/utils": ["../../utils/index.ts"],
+         "@challenge/api": ["../../api/src/apis/index.ts"]
       }
    }
 }

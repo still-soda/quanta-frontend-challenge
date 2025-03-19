@@ -15,9 +15,9 @@
       "baseUrl": ".",
       "paths": {
          "@/*": ["src/*"],
-         "@challenge/utils": ["../../../utils"],
-         "@challenge/api": ["../../../api/src/apis/index.ts"],
-         "@challenge/api/models": ["../../../api/src/models/index.ts"]
+         "@challenge/utils": ["../../utils"],
+         "@challenge/api": ["../../api/src/apis/index.ts"],
+         "@challenge/api/models": ["../../api/src/models/index.ts"]
       }
    },
    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
