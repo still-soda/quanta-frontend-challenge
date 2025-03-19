@@ -20,6 +20,12 @@ importers:
       '@challenge/utils':
         specifier: workspace:^
         version: link:../utils
+      '@types/event-source-polyfill':
+        specifier: ^1.0.5
+        version: 1.0.5
+      event-source-polyfill:
+        specifier: ^1.0.31
+        version: 1.0.31
 
   packages/backend:
     dependencies:

@@ -10,6 +10,12 @@
    "author": "",
    "license": "ISC",
    "dependencies": {
-      "@challenge/utils": "workspace:^"
+      "@challenge/utils": "workspace:^",
+      "@types/event-source-polyfill": "^1.0.5",
+      "event-source-polyfill": "^1.0.31"
+   },
+   "exports": {
+      "./model": "./src/models/index.ts",
+      "./apis": "./src/apis/index.ts"
    }
 }

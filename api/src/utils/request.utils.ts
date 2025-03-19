@@ -4,7 +4,7 @@ import {
    RequestOptions,
    RequestResultStatus,
 } from './request.types';
-import { getToken } from '../token';
+import { getToken } from './token.utils';
 
 /**
  * API 基础 URL
