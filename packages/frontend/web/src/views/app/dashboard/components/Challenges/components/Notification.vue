@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { svgToBase64 } from '@/adapters/svgToBase64.adapters';
+import { svgToBase64 } from '@challenge/utils';
 import { getDefaultAvatar, getUserById } from '@/apis/user.api';
 import { Tag, useMessage } from '@/components';
 import { TagType } from '@/components/Tag/index.types';

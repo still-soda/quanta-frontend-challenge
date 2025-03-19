@@ -169,7 +169,7 @@ import {
    getRecentRank,
 } from '@/apis/rank.api';
 import { getDefaultAvatar, getUserById } from '@/apis/user.api';
-import { svgToBase64 } from '@/adapters/svgToBase64.adapters';
+import { svgToBase64 } from '@challenge/utils';
 import { getEarlisetResolvedChallengesOfUser } from '@/apis/resolved.api';
 
 const userStore = useUserStore();

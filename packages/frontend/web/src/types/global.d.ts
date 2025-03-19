@@ -173,4 +173,11 @@ declare module '@challenge/utils' {
       minute: number;
       second: number;
    };
+
+   /**
+    * 将svg转换为base64
+    * @param svg SVG 文本
+    * @returns Base64 字符串
+    */
+   export declare function svgToBase64(svg: string): string;
 }

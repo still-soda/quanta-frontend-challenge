@@ -1,4 +1,4 @@
-import { svgToBase64 } from '@/adapters/svgToBase64.adapters';
+import { svgToBase64 } from '@challenge/utils';
 import { getDefaultAvatar } from '@/apis/user.api';
 import { DEFAULT_AVATAR } from '@/constant/default.constant';
 import { UserSelf } from '@/models/user.model';

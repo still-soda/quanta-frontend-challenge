@@ -10,7 +10,7 @@
 import {
    AcitveDataType,
    toActiveData,
-} from '@/adapters/heatmapToActiveData.adapter';
+} from '@/adapters/heatmap-to-active-data.adapter';
 import { getHeatmapData } from '@/apis/heatmap.api';
 import { HeatMap, BaseContainer, useMessage } from '@/components';
 import { onMounted, ref } from 'vue';

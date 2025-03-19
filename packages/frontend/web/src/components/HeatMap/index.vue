@@ -38,7 +38,7 @@ import { MONTH_TEXT, MONTH_DAY } from '@/constant/date.constant';
 import { range } from '@challenge/utils';
 import Cell from './components/Cell.vue';
 import Popover from '@/components/Popover/index.vue';
-import { AcitveDataType } from '@/adapters/heatmapToActiveData.adapter';
+import { AcitveDataType } from '@/adapters/heatmap-to-active-data.adapter';
 
 const props = defineProps<{
    activeData: AcitveDataType;

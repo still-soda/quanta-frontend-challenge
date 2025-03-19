@@ -5,3 +5,4 @@ export * from './src/unit-parse';
 export * from './src/event-emitter';
 export * from './src/range';
 export * from './src/data-structure-validator/index';
+export * from './src/svg-to-base64';
