@@ -34,7 +34,7 @@ import { getOvercomingPercent } from '@/apis/rank.api';
 import { BaseContainer, RingChart } from '@/components';
 import { Celebrate } from '@/components/Icons';
 import { ref } from 'vue';
-import { useMessage } from '../../../../../components/Message/index';
+import { useMessage } from '../../../../../components/Message/index.hook';
 
 const message = useMessage();
 

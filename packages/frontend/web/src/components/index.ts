@@ -22,6 +22,6 @@ export { default as Input } from './Input/index.vue';
 export { default as Skeleton } from './Skeleton/index.vue';
 
 export { default as MessageProvider } from './Message/Provider.vue';
-export { useMessage } from './Message/index';
+export { useMessage } from './Message/index.hook';
 
 export * as Icon from './Icons';
