@@ -11,10 +11,8 @@
    "dependencies": {
       "@challenge/api": "workspace:^",
       "@challenge/utils": "workspace:^",
-      "@types/event-source-polyfill": "^1.0.5",
       "@types/node": "^22.13.1",
       "echarts": "^5.6.0",
-      "event-source-polyfill": "^1.0.31",
       "marked": "^15.0.7",
       "pinia": "^2.3.1",
       "vue": "^3.5.13",
