@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { getOvercomingPercent } from '@/apis/rank.api';
+import { getOvercomingPercent } from '@challenge/api';
 import { BaseContainer, RingChart } from '@/components';
 import { Celebrate } from '@/components/Icons';
 import { ref } from 'vue';

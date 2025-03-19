@@ -11,7 +11,7 @@ import {
    AcitveDataType,
    toActiveData,
 } from '@/adapters/heatmap-to-active-data.adapter';
-import { getHeatmapData } from '@/apis/heatmap.api';
+import { getHeatmapData } from '@challenge/api';
 import { HeatMap, BaseContainer, useMessage } from '@/components';
 import { onMounted, ref } from 'vue';
 

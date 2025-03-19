@@ -85,7 +85,7 @@ import { Input, Button, useMessage } from '@/components';
 import { useRouter } from 'vue-router';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { Key, IdCard, Robot, Mail } from '@/components/Icons';
-import { getCaptcha } from '@/apis/auth.api';
+import { getCaptcha } from '@challenge/api';
 
 const router = useRouter();
 const message = useMessage();

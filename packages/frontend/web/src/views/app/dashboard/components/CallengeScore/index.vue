@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { getChallengesTotalScore } from '@/apis/challenges.api';
+import { getChallengesTotalScore } from '@challenge/api';
 import { BaseContainer, RingChart, useMessage } from '@/components';
 import { Fire } from '@/components/Icons';
 import { useUserStore } from '@/stores/user.store';

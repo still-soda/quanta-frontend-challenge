@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { subscribePrevTaskCount } from '@/apis/tasks.api';
+import { subscribePrevTaskCount } from '@challenge/api';
 import { useMessage } from '@/components';
 import { Box } from '@/components/Icons';
 import { onUnmounted, ref, watchEffect } from 'vue';

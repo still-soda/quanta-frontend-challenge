@@ -106,10 +106,9 @@ import Result from './components/Result.vue';
 import Record from './components/Record.vue';
 import { RecordData } from './components/record.type';
 import { useRoute, useRouter } from 'vue-router';
-import { getSubmissionById } from '@/apis/submissions.api';
-import { getStaticFileMetadata } from '@/apis/assets.api';
+import { getSubmissionById, getStaticFileMetadata } from '@challenge/api';
 import { parseMessage } from './utils/parse-message.utils';
-import { Submission } from '@/models/submission.model';
+import { Submission } from '@challenge/api/models';
 import { formatDateTime } from '@/utils/format-date.utils';
 import Queue from './components/Queue.vue';
 

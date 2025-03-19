@@ -151,13 +151,17 @@ import Category from './components/Category.vue';
 import { ref, watch, watchEffect } from 'vue';
 import { RouterLink } from 'vue-router';
 import { CompareChain } from '@challenge/utils';
-import { getAllPublishedChallenges } from '@/apis/challenges.api';
-import { Challenge } from '@/models/challenge.model';
+import {
+   getAllPublishedChallenges,
+   getEarlisetResolvedChallengesOfUser,
+} from '@challenge/api';
+import {
+   Challenge,
+   ResolvedChallenge,
+   Tag as TagType,
+} from '@challenge/api/models';
 import { TAG_TEXT_MAPPING } from '@/constant/tags.constant';
 import { useUserStore } from '@/stores/user.store';
-import { getEarlisetResolvedChallengesOfUser } from '@/apis/resolved.api';
-import { ResolvedChallenge } from '@/models/resolved-challenge.model';
-import { Tag as TagType } from '@/models/tag.model';
 
 const message = useMessage();
 const userStore = useUserStore();

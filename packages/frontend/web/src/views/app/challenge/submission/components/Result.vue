@@ -53,14 +53,14 @@
 </template>
 
 <script setup lang="ts">
-import { getChallengeById } from '@/apis/challenges.api';
 import {
    getChallengePassedRate,
    getMaxCorrectRate,
-} from '@/apis/submissions.api';
+   getChallengeById,
+} from '@challenge/api';
 import { BaseContainer, ProgressBar, useMessage } from '@/components';
 import { Success, Fail, Pending, Average, Thumb } from '@/components/Icons';
-import { Submission } from '@/models/submission.model';
+import { Submission } from '@challenge/api/models';
 import { computed, ref, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 

@@ -45,13 +45,13 @@
 </template>
 
 <script setup lang="ts">
-import { getLastestChallenges } from '@/apis/challenges.api';
 import Notification from './components/Notification.vue';
 import { Button, BaseContainer, useMessage, Markdown } from '@/components';
 import { Go } from '@/components/Icons';
 import { ref } from 'vue';
-import { LatestChallenge } from '@/models/challenge.model';
 import { resolveDoc } from '@/utils/resolve-doc.utils';
+import { getLastestChallenges } from '@challenge/api';
+import { LatestChallenge } from '@challenge/api/models';
 
 const message = useMessage();
 

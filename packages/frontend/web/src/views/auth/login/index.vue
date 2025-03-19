@@ -58,7 +58,7 @@ import { Input, Button, useMessage } from '@/components';
 import { RouterLink, useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { Key } from '@/components/Icons';
-import { login } from '@/apis/auth.api';
+import { login } from '@challenge/api';
 import IdCard from '@/components/Icons/IdCard.vue';
 
 const router = useRouter();

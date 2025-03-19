@@ -163,14 +163,15 @@ import { Trophy } from '@/components/Icons';
 import { inject, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 import { shiftDate, dateToObject } from '@challenge/utils';
 import { useUserStore } from '@/stores/user.store';
+import { svgToBase64 } from '@challenge/utils';
 import {
+   getRecentRank,
+   getUserById,
+   getDefaultAvatar,
    getMyHistoryRank,
    getOvercomingPercent,
-   getRecentRank,
-} from '@/apis/rank.api';
-import { getDefaultAvatar, getUserById } from '@/apis/user.api';
-import { svgToBase64 } from '@challenge/utils';
-import { getEarlisetResolvedChallengesOfUser } from '@/apis/resolved.api';
+   getEarlisetResolvedChallengesOfUser,
+} from '@challenge/api';
 
 const userStore = useUserStore();
 const message = useMessage();

@@ -63,14 +63,14 @@
 
 <script setup lang="ts">
 import { svgToBase64 } from '@challenge/utils';
-import { getDefaultAvatar, getUserById } from '@/apis/user.api';
 import { Tag, useMessage } from '@/components';
 import { TagType } from '@/components/Tag/index.types';
 import { DEFAULT_AVATAR } from '@/constant/default.constant';
 import { TAG_COLOR_MAPPING, TAG_TEXT_MAPPING } from '@/constant/tags.constant';
-import { User } from '@/models/user.model';
 import { ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
+import { getUserById, getDefaultAvatar } from '@challenge/api';
+import { User } from '@challenge/api/models';
 
 const message = useMessage();
 

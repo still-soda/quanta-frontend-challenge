@@ -30,9 +30,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import CategoryTag from './CategoryTag.vue';
-import { Tag } from '@/models/tag.model';
+import { Tag } from '@challenge/api/models';
 import { useMessage } from '@/components';
-import { getAllTags } from '@/apis/tags.api';
+import { getAllTags } from '@challenge/api';
 
 const message = useMessage();
 const SERVER_URL = import.meta.env.VITE_APP_API_BASE_URL as string;

@@ -57,7 +57,7 @@ import Navigator from './components/Navigator.vue';
 
 import { onMounted, provide, ref, watch } from 'vue';
 import { useUserStore } from '@/stores/user.store';
-import { getSelf } from '@/apis/user.api';
+import { getSelf } from '@challenge/api';
 
 const route = useRoute();
 const router = useRouter();

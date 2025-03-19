@@ -119,8 +119,8 @@ import {
    getChallengeDetail,
    getDownloadUrlOfAnswerTemplate,
    uploadAnswer,
-} from '@/apis/challenges.api';
-import { launchExecute } from '@/apis/tasks.api';
+   launchExecute,
+} from '@challenge/api';
 import {
    Tag,
    Button,
@@ -137,7 +137,7 @@ import {
    CodeFile,
    Download,
 } from '@/components/Icons';
-import { Challenge } from '@/models/challenge.model';
+import { Challenge } from '@challenge/api/models';
 import { resolveDoc } from '@/utils/resolve-doc.utils';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';

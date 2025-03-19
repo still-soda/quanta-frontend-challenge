@@ -67,12 +67,6 @@
 </template>
 
 <script setup lang="ts">
-import { getChallengeById } from '@/apis/challenges.api';
-import {
-   getChallengePassedRate,
-   getMaxCorrectRate,
-   getMyRecentSubmission,
-} from '@/apis/submissions.api';
 import { BaseContainer, Button, ProgressBar, useMessage } from '@/components';
 import {
    Success,
@@ -83,6 +77,12 @@ import {
    UnknowFile,
    Go,
 } from '@/components/Icons';
+import {
+   getMyRecentSubmission,
+   getChallengePassedRate,
+   getMaxCorrectRate,
+   getChallengeById,
+} from '@challenge/api';
 import { computed, ref } from 'vue';
 
 const message = useMessage();

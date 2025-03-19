@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { getMySubmissionsInChallenge } from '@/apis/submissions.api';
+import { getMySubmissionsInChallenge } from '@challenge/api';
 import { Table, Button, useMessage } from '@/components';
 import { Check, Close, Reduce } from '@/components/Icons';
 import { formatDateTime } from '@/utils/format-date.utils';

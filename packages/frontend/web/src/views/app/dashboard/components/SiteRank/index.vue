@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { getMyHistoryRank } from '@/apis/rank.api';
+import { getMyHistoryRank } from '@challenge/api';
 import { BaseContainer, TrendChart, Button } from '@/components';
 import { Go } from '@/components/Icons';
 import { ref } from 'vue';

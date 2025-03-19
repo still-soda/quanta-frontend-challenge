@@ -22,7 +22,9 @@
 
       "baseUrl": ".",
       "paths": {
-         "@/*": ["src/*"]
+         "@/*": ["src/*"],
+         "@challenge/utils": ["../../../utils/index.ts"],
+         "@challenge/api": ["../../../api/src/apis/index.ts"]
       }
    },
    "include": ["vite.config.ts"]

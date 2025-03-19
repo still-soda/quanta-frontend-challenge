@@ -1,4 +1,4 @@
-import { CommitHeatmap } from '@/models/commit-heatmap.model';
+import { CommitHeatmap } from '@challenge/api/models';
 
 /**
  * 活动数据

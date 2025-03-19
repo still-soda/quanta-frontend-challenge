@@ -15,7 +15,8 @@
       "event-source-polyfill": "^1.0.31"
    },
    "exports": {
-      "./model": "./src/models/index.ts",
-      "./apis": "./src/apis/index.ts"
+      ".": "./src/apis/index.ts",
+      "./models": "./src/models/index.ts",
+      "./utils": "./src/utils/index.ts"
    }
 }

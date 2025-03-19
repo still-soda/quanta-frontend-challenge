@@ -1,7 +1,7 @@
 import { svgToBase64 } from '@challenge/utils';
-import { getDefaultAvatar } from '@/apis/user.api';
+import { getDefaultAvatar } from '@challenge/api';
 import { DEFAULT_AVATAR } from '@/constant/default.constant';
-import { UserSelf } from '@/models/user.model';
+import { UserSelf } from '@challenge/api/';
 import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('user', {
