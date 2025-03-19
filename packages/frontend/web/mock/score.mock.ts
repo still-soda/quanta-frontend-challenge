@@ -3,7 +3,7 @@ function generateNormalDistributionData(
    stdDev: number,
    size: number
 ) {
-   const data = [];
+   const data: { score: number }[] = [];
    for (let i = 0; i < size; i++) {
       const u1 = Math.random();
       const u2 = Math.random();
