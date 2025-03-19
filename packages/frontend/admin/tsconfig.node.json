@@ -4,6 +4,7 @@
       "module": "ESNext",
       "moduleResolution": "Node",
       "allowSyntheticDefaultImports": true,
+      "baseUrl": ".",
       "paths": {
          "@/*": ["src/*"],
          "@challenge/utils": ["../../../utils"]
