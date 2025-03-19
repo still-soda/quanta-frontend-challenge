@@ -3,9 +3,5 @@
    "private": true,
    "version": "0.0.0",
    "type": "module",
-   "scripts": {},
-   "devDependencies": {
-      "typescript": "~5.6.3",
-      "vite": "^6.2.2"
-   }
+   "scripts": {}
 }
