@@ -5,12 +5,15 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { ConsoleLogger } from '@nestjs/common';
 import 'reflect-metadata';
+import initSuperAdmin from './scripts/init-super-admin';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: new ConsoleLogger(),
   });
   app.useGlobalFilters(new GlobalExceptionFilter());
+
+  await initSuperAdmin(app);
 
   // Swagger
   const config = new DocumentBuilder()

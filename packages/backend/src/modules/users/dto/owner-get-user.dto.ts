@@ -102,6 +102,15 @@ export class OwnerGetUserDto {
   })
   @Expose()
   tryingTasks: string[];
+
+  @ApiProperty({
+    example: 0,
+    default: 0,
+    required: true,
+    description: '用户角色',
+  })
+  @Expose()
+  role: number;
 }
 
 /**
@@ -186,5 +195,12 @@ export const ownerGetUserDtoProps: SchemaProp = {
     example: ['1', '2', '3'],
     required: true,
     description: '已尝试任务ID',
+  },
+  role: {
+    type: 'number',
+    example: 0,
+    default: 0,
+    required: true,
+    description: '用户角色',
   },
 };

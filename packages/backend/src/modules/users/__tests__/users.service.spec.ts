@@ -249,12 +249,12 @@ describe('UsersService', () => {
     ).rejects.toThrow('角色只能是0或1');
   });
 
-  it('角色不是0或1时应该抛出错误（update）', async () => {
+  it('角色不是0、1或2时应该抛出错误（update）', async () => {
     await expect(
       service.update(userId, {
-        role: 2,
+        role: 3,
       }),
-    ).rejects.toThrow('角色只能是0或1');
+    ).rejects.toThrow('角色只能是0、1或2');
   });
 
   it('不应该更新不在UpdateUserDto中的字段', async () => {

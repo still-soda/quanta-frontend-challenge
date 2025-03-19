@@ -121,7 +121,7 @@ export class UpdateUserDto {
     description: '角色',
   })
   @IsOptional()
-  @IsEnum([0, 1], { message: '角色只能是0或1' })
+  @IsEnum([0, 1, 2], { message: '角色只能是0、1或2' })
   @Expose()
   role?: number;
 }
