@@ -97,6 +97,7 @@ const password = ref('');
 const confirmPassword = ref('');
 
 const captchaContent = ref('');
+/// @ts-ignore
 let captchaId = '';
 onMounted(() => refreshCaptcha());
 async function refreshCaptcha() {

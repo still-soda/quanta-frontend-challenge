@@ -72,7 +72,7 @@ import { BaseContainer, Markdown, ReturnTop } from '@/components';
 import { parseToPixels } from '@challenge/utils';
 import { Topic } from './index.types';
 
-import content from '@/mock/markdown.mock';
+import content from '@/../mock/markdown.mock';
 
 const route = useRoute();
 const router = useRouter();

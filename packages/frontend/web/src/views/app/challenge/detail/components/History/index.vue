@@ -90,6 +90,7 @@ async function updateHistoryData() {
 
 // 映射作答详情
 function mapDetail(message: string, score: number) {
+   message && score;
    return '非常完美';
 }
 

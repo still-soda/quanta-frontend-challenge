@@ -51,8 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import { Fire } from '@/components/Icons';
-
 defineProps<{
    title: string;
    date: string;

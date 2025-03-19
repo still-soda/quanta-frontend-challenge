@@ -117,7 +117,7 @@ import {
 } from '@/components';
 import { Pen, Call, Chat, Trophy, Fire } from '@/components/Icons';
 import { inject, ref } from 'vue';
-import activeMock from '@/mock/active.mock';
+import activeMock from '@/../mock/active.mock';
 import { useUserStore } from '@/stores/user.store';
 
 const userStore = useUserStore();
