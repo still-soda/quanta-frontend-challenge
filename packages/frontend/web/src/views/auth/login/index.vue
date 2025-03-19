@@ -60,6 +60,7 @@ import { ref } from 'vue';
 import { Key } from '@/components/Icons';
 import { login } from '@challenge/api';
 import IdCard from '@/components/Icons/IdCard.vue';
+import { useUserStore } from '@/stores/user.store';
 
 const router = useRouter();
 const message = useMessage();
@@ -92,6 +93,7 @@ async function onLoginBtnClick() {
       await login({
          username: username.value,
          password: password.value,
+         callback: async (users) => await useUserStore().updateUser(users),
       });
       message.success(`登录成功，${username.value}`, { duration: 3000 });
       router.push('/dashboard');

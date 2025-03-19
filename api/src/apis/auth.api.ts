@@ -36,7 +36,7 @@ export async function getCaptcha() {
 export async function login(options: {
    username: string;
    password: string;
-   callback?: (users: UserSelf) => void;
+   callback?: (users: UserSelf) => Promise<void> | void;
 }) {
    const response = await post<RequestResult<{ token: string }>>(
       '/auth/login',
@@ -48,7 +48,7 @@ export async function login(options: {
    if (isSuccessful(response)) {
       setToken(response.data.token);
       const getSelfResponse = await getSelf();
-      options.callback && options.callback(getSelfResponse.data);
+      options.callback && (await options.callback(getSelfResponse.data));
    }
    return response;
 }
