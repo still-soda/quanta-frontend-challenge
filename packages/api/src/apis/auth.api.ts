@@ -4,6 +4,13 @@ import { post } from '../utils/request.utils';
 import { delToken, setToken } from '../utils/token.utils';
 import { getSelf } from './user.api';
 
+export enum AuthApi {
+   GET_CAPTCHA = '/auth/captcha',
+   LOGIN = '/auth/login',
+   REGISTER = '/auth/register',
+   RESET_PASSWORD = '/auth/reset-password',
+}
+
 /**
  * 判断请求是否成功
  * @param response 请求结果
@@ -19,8 +26,9 @@ function isSuccessful(response: RequestResult) {
  * @returns 验证码信息
  */
 export async function getCaptcha() {
-   const response =
-      await post<RequestResult<{ id: string; svg: string }>>('/auth/captcha');
+   const response = await post<RequestResult<{ id: string; svg: string }>>(
+      AuthApi.GET_CAPTCHA
+   );
    return response;
 }
 
@@ -39,7 +47,7 @@ export async function login(options: {
    callback?: (users: UserSelf) => Promise<void> | void;
 }) {
    const response = await post<RequestResult<{ token: string }>>(
-      '/auth/login',
+      AuthApi.LOGIN,
       {
          body: JSON.stringify(options),
          headers: { 'Content-Type': 'application/json' },
@@ -73,7 +81,7 @@ export async function register(options: {
    captcha: string;
    captchaId: string;
 }) {
-   const response = await post<RequestResult<string>>('/auth/register', {
+   const response = await post<RequestResult<string>>(AuthApi.REGISTER, {
       body: JSON.stringify(options),
       headers: { 'Content-Type': 'application/json' },
    });
@@ -93,7 +101,7 @@ export async function resetPassword(options: {
    username: string;
    newPassword: string;
 }) {
-   return await post<RequestResult<boolean>>('/auth/reset-password', {
+   return await post<RequestResult<boolean>>(AuthApi.RESET_PASSWORD, {
       body: JSON.stringify(options),
       headers: { 'Content-Type': 'application/json' },
    });

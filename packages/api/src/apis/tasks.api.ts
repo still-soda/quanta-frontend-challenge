@@ -3,6 +3,11 @@ import { RequestResult } from '../utils/request.types';
 import { post } from '../utils/request.utils';
 import { getToken } from '../utils/token.utils';
 
+export enum TaskApi {
+   LAUNCH_EXECUTE = '/tasks/launch-execute',
+   SUBSCRIBE_PREV_TASK_COUNT = '/tasks/subscribe-prev-task-count/',
+}
+
 type LaunchExecuteResponse = {
    jobId: string;
    submissionId: string;
@@ -16,7 +21,7 @@ type LaunchExecuteResponse = {
  * @returns 启动执行结果
  */
 export async function launchExecute(challengeId: string, submitFileId: string) {
-   return post<RequestResult<LaunchExecuteResponse>>('/tasks/launch-execute', {
+   return post<RequestResult<LaunchExecuteResponse>>(TaskApi.LAUNCH_EXECUTE, {
       body: JSON.stringify({ challengeId, submitFileId }),
       headers: { 'Content-Type': 'application/json' },
    });
@@ -41,7 +46,7 @@ type SubscribeOptions = {
 export async function subscribePrevTaskCount(options: SubscribeOptions) {
    const { submissionsId, onMessage, onError, onOpen } = options;
    const sse = new EventSourcePolyfill(
-      `/api/tasks/subscribe-prev-task-count/${submissionsId}`,
+      `${TaskApi.SUBSCRIBE_PREV_TASK_COUNT}${submissionsId}`,
       { headers: { authorization: getToken() ?? '' } }
    );
    sse.onmessage = (event) => onMessage && onMessage(event.data);

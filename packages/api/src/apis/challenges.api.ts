@@ -2,6 +2,17 @@ import { Challenge, LatestChallenge } from '../models';
 import { RequestResult } from '../utils/request.types';
 import { get, post } from '../utils/request.utils';
 
+export enum ChallengeApi {
+   GET_ALL_PUBLISHED_CHALLENGES = '/challenges/find-all',
+   GET_CHALLENGE_DETAIL = '/challenges/detail/',
+   GET_DOWNLOAD_URL_OF_ANSWER_TEMPLATE = '/challenges/download-answer-template',
+   GET_LASTEST_CHALLENGES = '/challenges/get-latest-challenges',
+   UPLOAD_ANSWER = '/challenges/upload-answer',
+   GET_CHALLENGE_BY_ID = '/challenges/find-one',
+   GET_CHALLENGES_TOTAL_SCORE = '/challenges/total-score',
+   ADMIN_GET_ALL_CHALLENGES = '/challenges/admin-find-all',
+}
+
 /**
  * 获取所有已发布的挑战
  * @api /challenges/find-all
@@ -11,7 +22,7 @@ export async function getAllPublishedChallenges(options?: {
    include?: string[];
    all?: string[];
 }) {
-   return get<RequestResult<Challenge[]>>('/challenges/find-all', {
+   return get<RequestResult<Challenge[]>>(ChallengeApi.GET_LASTEST_CHALLENGES, {
       query: options,
    });
 }
@@ -23,7 +34,9 @@ export async function getAllPublishedChallenges(options?: {
  * @returns 挑战详情
  */
 export async function getChallengeDetail(challengeId: string) {
-   return get<RequestResult<string>>(`/challenges/detail/${challengeId}`);
+   return get<RequestResult<string>>(
+      `${ChallengeApi.GET_CHALLENGE_DETAIL}${challengeId}`
+   );
 }
 
 /**
@@ -33,9 +46,10 @@ export async function getChallengeDetail(challengeId: string) {
  * @returns 作答模板下载链接
  */
 export async function getDownloadUrlOfAnswerTemplate(challengeId: string) {
-   return get<RequestResult<string[]>>(`/challenges/download-answer-template`, {
-      query: { challengeId },
-   });
+   return get<RequestResult<string[]>>(
+      ChallengeApi.GET_DOWNLOAD_URL_OF_ANSWER_TEMPLATE,
+      { query: { challengeId } }
+   );
 }
 
 /**
@@ -45,7 +59,7 @@ export async function getDownloadUrlOfAnswerTemplate(challengeId: string) {
  */
 export async function getLastestChallenges() {
    return get<RequestResult<LatestChallenge[]>>(
-      '/challenges/get-latest-challenges'
+      ChallengeApi.GET_LASTEST_CHALLENGES
    );
 }
 
@@ -58,7 +72,7 @@ export async function getLastestChallenges() {
 export async function uploadAnswer(files: File[]) {
    const formData = new FormData();
    files.forEach((file) => formData.append('files', file));
-   return post<RequestResult<string[]>>('/challenges/upload-answer', {
+   return post<RequestResult<string[]>>(ChallengeApi.UPLOAD_ANSWER, {
       body: formData,
    });
 }
@@ -70,7 +84,7 @@ export async function uploadAnswer(files: File[]) {
  * @returns 挑战详情
  */
 export async function getChallengeById(id: string) {
-   return get<RequestResult<Challenge>>(`/challenges/find-one`, {
+   return get<RequestResult<Challenge>>(ChallengeApi.GET_CHALLENGE_BY_ID, {
       query: { id },
    });
 }
@@ -81,5 +95,15 @@ export async function getChallengeById(id: string) {
  * @returns 挑战总分
  */
 export async function getChallengesTotalScore() {
-   return get<RequestResult<number>>('/challenges/total-score');
+   return get<RequestResult<number>>(ChallengeApi.GET_CHALLENGES_TOTAL_SCORE);
+}
+
+/**
+ * 管理员获取已发布挑战和自己的挑战，超级管理员获取所有挑战
+ * @returns 全部挑战
+ */
+export async function adminGetAllChallenges() {
+   return get<RequestResult<Challenge[]>>(
+      ChallengeApi.ADMIN_GET_ALL_CHALLENGES
+   );
 }

@@ -2,11 +2,18 @@ import { Rank } from '../models';
 import { RequestResult } from '../utils/request.types';
 import { get } from '../utils/request.utils';
 
+export enum RankApi {
+   GET_RECENT_RANK = '/rank/recent-rank',
+   GET_MY_HISTORY_RANK = '/rank/my-history',
+   GET_OVERCOMING_PERCENT = '/rank/overcoming-percent',
+   GET_SCORE_INTERVAL = '/rank/score-interval',
+}
+
 /**
  * 获取最近一次更新的全体排名
  */
 export async function getRecentRank() {
-   return get<RequestResult<Rank[]>>(`/rank/recent-rank`);
+   return get<RequestResult<Rank[]>>(RankApi.GET_RECENT_RANK);
 }
 
 /**
@@ -23,7 +30,7 @@ export type MyHistoryRank = {
  * 获取我的历史排名
  */
 export async function getMyHistoryRank() {
-   return get<RequestResult<MyHistoryRank>>(`/rank/my-history`);
+   return get<RequestResult<MyHistoryRank>>(RankApi.GET_MY_HISTORY_RANK);
 }
 
 /**
@@ -44,7 +51,7 @@ export type GetOvercomingPercentResult = {
  */
 export async function getOvercomingPercent() {
    return get<RequestResult<GetOvercomingPercentResult>>(
-      `/rank/overcoming-percent`
+      RankApi.GET_OVERCOMING_PERCENT
    );
 }
 
@@ -64,5 +71,7 @@ export type GetScoreIntervalResult = {
  * 获取分数区间
  */
 export async function getScoreInterval() {
-   return get<RequestResult<GetScoreIntervalResult>>(`/rank/score-interval`);
+   return get<RequestResult<GetScoreIntervalResult>>(
+      RankApi.GET_SCORE_INTERVAL
+   );
 }

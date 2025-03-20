@@ -3,6 +3,15 @@ import { User, UserSelf } from '../models';
 import { RequestResult } from '../utils/request.types';
 import { get, post } from '../utils/request.utils';
 
+export enum UserApi {
+   GET_USER_BY_ID = '/users/find-one',
+   GET_USER_BY_USERNAME = '/users/find-one',
+   GET_SELF = '/users/find-self',
+   UPDATE_SELF = '/users/update-self',
+   UPLOAD_AVATAR = '/users/upload-avatar',
+   GET_DEFAULT_AVATAR = '/users/get-default-avatar/',
+}
+
 /**
  * 获取用户信息
  * @api /users/find-one
@@ -10,7 +19,7 @@ import { get, post } from '../utils/request.utils';
  * @returns 用户信息
  */
 export async function getUserById(id: string) {
-   return await get<RequestResult<User>>(`/users/find-one`, {
+   return await get<RequestResult<User>>(UserApi.GET_USER_BY_ID, {
       query: { id },
    });
 }
@@ -22,7 +31,7 @@ export async function getUserById(id: string) {
  * @returns 用户信息
  */
 export async function getUserByUsername(username: string) {
-   return await get<RequestResult<User>>(`/users/find-one`, {
+   return await get<RequestResult<User>>(UserApi.GET_USER_BY_USERNAME, {
       query: { username },
    });
 }
@@ -33,7 +42,7 @@ export async function getUserByUsername(username: string) {
  * @returns 自己的信息
  */
 export async function getSelf() {
-   return await get<RequestResult<UserSelf>>(`/users/find-self`);
+   return await get<RequestResult<UserSelf>>(UserApi.GET_SELF);
 }
 
 /**
@@ -43,7 +52,7 @@ export async function getSelf() {
  * @returns 更新后的用户信息
  */
 export async function updateSelf(payload: UpdateUserDto) {
-   return await post<RequestResult<User>>(`/users/update-self`, {
+   return await post<RequestResult<User>>(UserApi.UPDATE_SELF, {
       body: JSON.stringify(payload),
       headers: { 'Content-Type': 'application/json' },
    });
@@ -58,7 +67,7 @@ export async function updateSelf(payload: UpdateUserDto) {
 export async function uploadAvatar(file: File) {
    const formData = new FormData();
    formData.append('file', file);
-   return await post<RequestResult<undefined>>(`/users/upload-avatar`, {
+   return await post<RequestResult<undefined>>(UserApi.UPLOAD_AVATAR, {
       body: formData,
    });
 }
@@ -71,6 +80,6 @@ export async function uploadAvatar(file: File) {
  */
 export async function getDefaultAvatar(id: string) {
    return await get<RequestResult<{ avatar: string }>>(
-      `/users/get-default-avatar/${id}`
+      `${UserApi.GET_DEFAULT_AVATAR}${id}`
    );
 }

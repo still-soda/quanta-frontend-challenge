@@ -2,6 +2,11 @@ import { ResolvedChallenge } from '../models';
 import { RequestResult } from '../utils/request.types';
 import { get } from '../utils/request.utils';
 
+export enum ResolvedChallengeApi {
+   GET_EARLIEST_THREE_OF_CHALLENGE = '/resolved-challenge/earliest-three-of-challenge',
+   GET_EARLIEST_THREE_OF_USER = '/resolved-challenge/earliest-of-user',
+}
+
 /**
  * 获取最早的三个已解决挑战
  * @api /resolved-challenge/earliest-three-of-challenge
@@ -9,7 +14,7 @@ import { get } from '../utils/request.utils';
  */
 export async function getEarliestThreeResolvedChallenges() {
    return get<RequestResult<ResolvedChallenge[]>>(
-      '/resolved-challenge/earliest-three-of-challenge'
+      ResolvedChallengeApi.GET_EARLIEST_THREE_OF_CHALLENGE
    );
 }
 
@@ -20,7 +25,7 @@ export async function getEarliestThreeResolvedChallenges() {
  */
 export async function getEarlisetResolvedChallengesOfUser(userId: string) {
    return get<RequestResult<ResolvedChallenge[]>>(
-      '/resolved-challenge/earliest-of-user',
+      ResolvedChallengeApi.GET_EARLIEST_THREE_OF_USER,
       { query: { userId } }
    );
 }

@@ -2,13 +2,25 @@ import { Submission } from '../models';
 import { RequestResult } from '../utils/request.types';
 import { get } from '../utils/request.utils';
 
+export enum SubmissionApi {
+   GET_MY_SUBMISSIONS = '/submissions/my-submissions',
+   GET_SUBMISSION_BY_ID = '/submissions/one-submission',
+   GET_SUBMIT_COUNT_OF_CHALLENGE = '/submissions/count',
+   GET_CHALLENGE_PASSED_RATE = '/submissions/passed-rate',
+   GET_MY_SUBMISSIONS_IN_CHALLENGE = '/submissions/my-submissions-in-challenge',
+   GET_MAX_CORRECT_RATE = '/submissions/max-correct-rate',
+   GET_MY_RECENT_SUBMISSION = '/submissions/my-recent-submission',
+}
+
 /**
  * 获取我的提交
  * @api /submissions/my-submissions
  * @returns 我的提交列表
  */
-export async function getMySubmissoins() {
-   return await get<RequestResult<Submission[]>>('/submissions/my-submissions');
+export async function getMySubmissions() {
+   return await get<RequestResult<Submission[]>>(
+      SubmissionApi.GET_MY_SUBMISSIONS
+   );
 }
 
 /**
@@ -18,9 +30,10 @@ export async function getMySubmissoins() {
  * @returns 提交详情
  */
 export async function getSubmissionById(submissionId: string) {
-   return await get<RequestResult<Submission>>(`/submissions/one-submission`, {
-      query: { submissionId },
-   });
+   return await get<RequestResult<Submission>>(
+      SubmissionApi.GET_SUBMISSION_BY_ID,
+      { query: { submissionId } }
+   );
 }
 
 /**
@@ -30,9 +43,10 @@ export async function getSubmissionById(submissionId: string) {
  * @returns 提交次数
  */
 export async function getSubmitCountOfChallenge(challengeId: string) {
-   return await get<RequestResult<{ count: number }>>(`/submissions/count`, {
-      query: { challengeId },
-   });
+   return await get<RequestResult<{ count: number }>>(
+      SubmissionApi.GET_SUBMIT_COUNT_OF_CHALLENGE,
+      { query: { challengeId } }
+   );
 }
 
 /**
@@ -55,7 +69,7 @@ export type GetChallengesPassRateResponse = {
  */
 export async function getChallengePassedRate(challengeId: string) {
    return await get<RequestResult<GetChallengesPassRateResponse>>(
-      `/submissions/passed-rate`,
+      SubmissionApi.GET_CHALLENGE_PASSED_RATE,
       { query: { challengeId } }
    );
 }
@@ -68,7 +82,7 @@ export async function getChallengePassedRate(challengeId: string) {
  */
 export async function getMySubmissionsInChallenge(challengeId: string) {
    return await get<RequestResult<Submission[]>>(
-      `/submissions/my-submissions-in-challenge`,
+      SubmissionApi.GET_MY_SUBMISSIONS_IN_CHALLENGE,
       { query: { challengeId } }
    );
 }
@@ -80,7 +94,7 @@ export async function getMySubmissionsInChallenge(challengeId: string) {
  * @returns 最大通过率
  */
 export async function getMaxCorrectRate(challengeId: string) {
-   return get<RequestResult<number>>(`/submissions/max-correct-rate`, {
+   return get<RequestResult<number>>(SubmissionApi.GET_MAX_CORRECT_RATE, {
       query: { challengeId },
    });
 }
@@ -91,5 +105,7 @@ export async function getMaxCorrectRate(challengeId: string) {
  * @returns 我的最近提交
  */
 export async function getMyRecentSubmission() {
-   return get<RequestResult<Submission>>(`/submissions/my-recent-submission`);
+   return get<RequestResult<Submission>>(
+      SubmissionApi.GET_MY_RECENT_SUBMISSION
+   );
 }

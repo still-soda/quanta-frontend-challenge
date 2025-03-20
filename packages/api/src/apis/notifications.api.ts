@@ -1,12 +1,17 @@
 import { RequestResult } from '../utils/request.types';
 import { get } from '../utils/request.utils';
 
+export enum NotificationApi {
+   GET_ALL_PUBLISHED_NOTIFICATIONS = '/notifications/find-all-published',
+   GET_NOTIFICATION_DETAIL = '/notifications/detail/',
+}
+
 /**
  * 获取所有已发布的公告
  */
 export function getAllPublishedNotifications() {
    return get<RequestResult<Notification[]>>(
-      '/notifications/find-all-published'
+      NotificationApi.GET_ALL_PUBLISHED_NOTIFICATIONS
    );
 }
 
@@ -15,5 +20,7 @@ export function getAllPublishedNotifications() {
  * @param id 公告id
  */
 export function getNotificationDetail(id: string) {
-   return get<RequestResult<string>>(`/notifications/detail/${id}`);
+   return get<RequestResult<string>>(
+      `${NotificationApi.GET_NOTIFICATION_DETAIL}${id}`
+   );
 }
