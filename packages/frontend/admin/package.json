@@ -21,6 +21,7 @@
    },
    "devDependencies": {
       "@vitejs/plugin-vue": "^5.0.4",
+      "@vue/babel-plugin-jsx": "^1.4.0",
       "autoprefixer": "^10.4.20",
       "postcss": "^8.5.2",
       "tailwindcss": "3",

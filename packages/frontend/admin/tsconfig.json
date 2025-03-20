@@ -5,7 +5,6 @@
       "module": "ESNext",
       "moduleResolution": "Node",
       "strict": true,
-      "jsx": "preserve",
       "sourceMap": true,
       "resolveJsonModule": true,
       "isolatedModules": true,
@@ -18,7 +17,9 @@
          "@challenge/utils": ["../../utils"],
          "@challenge/api": ["../../api/src/apis/index.ts"],
          "@challenge/api/models": ["../../api/src/models/index.ts"]
-      }
+      },
+      "jsx": "preserve",
+      "jsxImportSource": "vue"
    },
    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
    "references": [{ "path": "./tsconfig.node.json" }]
