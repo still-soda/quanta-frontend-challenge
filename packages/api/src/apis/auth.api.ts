@@ -1,7 +1,7 @@
 import { UserSelf } from '../models';
 import { RequestResult } from '../utils/request.types';
 import { post } from '../utils/request.utils';
-import { setToken } from '../utils/token.utils';
+import { delToken, setToken } from '../utils/token.utils';
 import { getSelf } from './user.api';
 
 /**
@@ -97,4 +97,11 @@ export async function resetPassword(options: {
       body: JSON.stringify(options),
       headers: { 'Content-Type': 'application/json' },
    });
+}
+
+/**
+ * 登出，清除token
+ */
+export async function logout() {
+   return delToken();
 }
