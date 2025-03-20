@@ -18,5 +18,9 @@
       ".": "./src/apis/index.ts",
       "./models": "./src/models/index.ts",
       "./utils": "./src/utils/index.ts"
+   },
+   "devDependencies": {
+      "@types/mockjs": "^1.0.10",
+      "mockjs": "^1.1.0"
    }
 }

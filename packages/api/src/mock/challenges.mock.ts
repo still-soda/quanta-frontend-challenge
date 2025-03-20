@@ -29,3 +29,5 @@ function mockAdminGetChallenges() {
       ],
    }).data;
 }
+
+export default {};
