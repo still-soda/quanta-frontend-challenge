@@ -1,3 +1,4 @@
+import { Notification } from '../models';
 import { RequestResult } from '../utils/request.types';
 import { get } from '../utils/request.utils';
 
