@@ -20,6 +20,9 @@ importers:
         specifier: ^1.0.31
         version: 1.0.31
     devDependencies:
+      '@types/express':
+        specifier: ^5.0.0
+        version: 5.0.0
       '@types/mockjs':
         specifier: ^1.0.10
         version: 1.0.10

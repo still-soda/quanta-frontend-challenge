@@ -10,7 +10,9 @@ import rankMock from './rank.mock';
 import notificationMock from './notification.mock';
 import heatmapMock from './heatmap.mock';
 
-export default [
+import express from 'express';
+
+const mocks = [
    ...challengeMock,
    ...authMock,
    ...assetMock,
@@ -23,3 +25,20 @@ export default [
    ...notificationMock,
    ...heatmapMock,
 ];
+
+const app = express();
+
+mocks.forEach(({ method, url, response }) => {
+   url.endsWith('/') && (url += ':id');
+   console.log(`[${method.toUpperCase().padStart(4, ' ')}] ${url}`);
+   app[method](url, (req, res) => {
+      console.log(
+         `[LOG] ${method.toUpperCase()} ${req.url} \t\t ${new Date().toLocaleString()}`
+      );
+      res.json(response(req));
+   });
+});
+
+app.listen(4010, () => {
+   console.log('\nMock server started at http://localhost:4010\n');
+});

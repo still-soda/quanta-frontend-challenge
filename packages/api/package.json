@@ -5,7 +5,7 @@
    "main": "index.ts",
    "type": "module",
    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1"
+      "mock": "bun ./src/mock/index.ts"
    },
    "keywords": [],
    "author": "",
@@ -21,6 +21,7 @@
       "./utils": "./src/utils/index.ts"
    },
    "devDependencies": {
+      "@types/express": "^5.0.0",
       "@types/mockjs": "^1.0.10",
       "express": "^4.21.2",
       "mockjs": "^1.1.0"

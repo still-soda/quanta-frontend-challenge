@@ -17,6 +17,11 @@ export default defineConfig({
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/api/, ''),
          },
+         '/mock': {
+            target: 'http://localhost:4010',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/mock/, ''),
+         },
       },
    },
    esbuild: {
