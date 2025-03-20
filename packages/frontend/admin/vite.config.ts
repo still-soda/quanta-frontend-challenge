@@ -11,6 +11,7 @@ export default defineConfig({
       viteMockServe({
          mockPath: 'mock',
          enable: true,
+         logger: true,
       }),
    ],
    resolve: {
