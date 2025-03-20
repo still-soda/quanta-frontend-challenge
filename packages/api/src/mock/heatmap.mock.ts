@@ -1,4 +1,4 @@
-import { MockMethod } from 'vite-plugin-mock';
+import { MockMethod } from './types';
 import { CommitHeatmapApi } from '../apis';
 import { GET } from './constants';
 import { mock } from 'mockjs';

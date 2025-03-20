@@ -1,4 +1,4 @@
-import { MockMethod } from 'vite-plugin-mock';
+import { MockMethod } from './types';
 import { NotificationApi } from '../apis';
 import { GET, NOTIFICATION_CONTENT } from './constants';
 import { mock, Random } from 'mockjs';

@@ -1,4 +1,4 @@
-import { MockMethod } from 'vite-plugin-mock';
+import { MockMethod } from './types';
 import { TagApi } from '../apis';
 import { mock, Random } from 'mockjs';
 import { GET } from './constants';

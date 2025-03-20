@@ -1,4 +1,4 @@
-import { MockMethod } from 'vite-plugin-mock';
+import { MockMethod } from './types';
 import { AssetApi } from '../apis';
 import { mock } from 'mockjs';
 import { POST } from './constants';

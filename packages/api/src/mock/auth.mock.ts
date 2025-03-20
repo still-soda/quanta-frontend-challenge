@@ -1,4 +1,4 @@
-import { MockMethod } from 'vite-plugin-mock';
+import { MockMethod } from './types';
 import { AuthApi } from '../apis';
 import { POST, Role, CAPTCAH_SVG, Token } from './constants';
 import { response } from './utils/response.utils';

@@ -1,4 +1,4 @@
-import { MockMethod } from 'vite-plugin-mock';
+import { MockMethod } from './types';
 import { SubmissionApi } from '../apis';
 import { GET, SUBMISSION_MESSAGE } from './constants';
 import { response } from './utils/response.utils';

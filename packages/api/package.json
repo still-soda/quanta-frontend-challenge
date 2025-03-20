@@ -3,6 +3,7 @@
    "version": "1.0.1",
    "description": "",
    "main": "index.ts",
+   "type": "module",
    "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
    },
@@ -17,12 +18,11 @@
    "exports": {
       ".": "./src/apis/index.ts",
       "./models": "./src/models/index.ts",
-      "./utils": "./src/utils/index.ts",
-      "./mock": "./src/mock/index.ts"
+      "./utils": "./src/utils/index.ts"
    },
    "devDependencies": {
       "@types/mockjs": "^1.0.10",
-      "mockjs": "^1.1.0",
-      "vite-plugin-mock": "^3.0.2"
+      "express": "^4.21.2",
+      "mockjs": "^1.1.0"
    }
 }

@@ -1,6 +1,6 @@
 import { mock, Random } from 'mockjs';
 import { response } from './utils/response.utils';
-import { MockMethod } from 'vite-plugin-mock';
+import { MockMethod } from './types';
 import { ChallengeApi } from '../apis';
 import { GET, MARKDOWN_SEQUENCE, POST } from './constants';
 import { notAdmin } from './utils/check.utils';
