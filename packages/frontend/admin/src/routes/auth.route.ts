@@ -1,7 +1,10 @@
-const authRoutes = [
+export enum AuthRoute {
+   Login = '/login',
+}
+
+export const authRoutes = [
    {
-      path: '/login',
+      path: AuthRoute.Login,
       component: () => import('@/views/auth/login/index.vue'),
    },
 ];
-export default authRoutes;
