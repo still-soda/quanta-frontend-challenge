@@ -1,9 +1,10 @@
 import { Asset } from '../models';
 import { RequestResult } from '../utils/request.types';
-import { post } from '../utils/request.utils';
+import { get, post } from '../utils/request.utils';
 
 export enum AssetApi {
    GET_STATIC_FILE_METADATA = '/assets/static-metadata',
+   ADMIN_READ_FILE = '/assets/read-one/',
 }
 
 /**
@@ -15,4 +16,12 @@ export async function getStaticFileMetadata(fileIdList: string[]) {
       body: JSON.stringify({ fileIdList }),
       headers: { 'Content-Type': 'application/json' },
    });
+}
+
+/**
+ * 管理员读取非静态文件
+ * @param fileId 文件id
+ */
+export async function adminReadFile(fileId: string) {
+   return get<RequestResult<string>>(AssetApi.ADMIN_READ_FILE + fileId);
 }
