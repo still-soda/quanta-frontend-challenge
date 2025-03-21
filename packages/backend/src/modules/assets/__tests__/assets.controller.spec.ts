@@ -29,7 +29,7 @@ describe('AssetsController', () => {
 
   it('应该正确获取文件静态信息', async () => {
     const getFileMataDataByIdListSpy = jest
-      .spyOn(controller['assetsService'], 'getFileMataDataByIdList')
+      .spyOn(controller['assetsService'], 'getFileMatadataByIdList')
       .mockImplementation(
         async () =>
           Promise.resolve([
