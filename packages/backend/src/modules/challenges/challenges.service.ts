@@ -185,7 +185,11 @@ export class ChallengesService {
       throw responseError('not found', { msg: '挑战不存在' });
     }
 
-    if (user.role < ROLE.SUPER_ADMIN && challenge.authorId !== user.id) {
+    if (
+      challenge.status !== CHALLENGE_STATUS.PUBLISHED &&
+      user.role < ROLE.SUPER_ADMIN &&
+      challenge.authorId !== user.id
+    ) {
       throw responseError('forbidden', {
         msg: '非超级管理员不能代替别人获取挑战详情',
       });
