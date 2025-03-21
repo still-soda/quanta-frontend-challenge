@@ -11,5 +11,5 @@ function cleanup(path) {
   console.log(`✅ ${path} 已清空！`);
 }
 
-cleanup('./assets/static');
-cleanup('./assets/uploads');
+cleanup('./storage/static');
+cleanup('./storage/uploads');
