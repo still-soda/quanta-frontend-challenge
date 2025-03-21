@@ -36,3 +36,43 @@ export interface Challenge {
 export interface LatestChallenge extends Challenge {
    content: string;
 }
+
+/**
+ * 挑战状态
+ * @enum
+ * 1. PENDING: 待审核
+ * 2. READY: 准备中
+ * 3. PUBLISHED: 已发布
+ * 4. CLOSED: 已关闭
+ */
+export enum ChallengeStatus {
+   PENDING = 0,
+   READY = 1,
+   PUBLISHED = 2,
+   CLOSED = 3,
+}
+
+/**
+ * 完整的挑战
+ * @extends Challenge
+ * @property status - 挑战状态
+ * - 0: 待审核
+ * - 1: 准备中
+ * - 2: 已发布
+ * - 3: 已关闭
+ * @property contentId - 内容ID
+ * @property flowdataId - 流程数据ID
+ * @property standardAnswer - 标准答案
+ * @property answerTemplate - 答案模板
+ * @property screenshots - 截图
+ * @property fastestSolvers - 最快解答者
+ */
+export interface IntegralChallenge extends Challenge {
+   status: ChallengeStatus;
+   contentId: string;
+   flowdataId?: string;
+   standardAnswer: string[];
+   answerTemplate: string[];
+   screenshots: string[];
+   fastestSolvers: string[];
+}

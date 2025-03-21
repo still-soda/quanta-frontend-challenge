@@ -1,4 +1,4 @@
-import { Challenge, LatestChallenge } from '../models';
+import { IntegralChallenge, Challenge, LatestChallenge } from '../models';
 import { RequestResult } from '../utils/request.types';
 import { get, post } from '../utils/request.utils';
 
@@ -11,6 +11,7 @@ export enum ChallengeApi {
    GET_CHALLENGE_BY_ID = '/challenges/find-one',
    GET_CHALLENGES_TOTAL_SCORE = '/challenges/total-score',
    ADMIN_GET_ALL_CHALLENGES = '/challenges/admin-find-all',
+   ADMIN_GET_CHALLENGE_DETAIL = '/challenges/admin-detail/',
 }
 
 /**
@@ -103,7 +104,19 @@ export async function getChallengesTotalScore() {
  * @returns 全部挑战
  */
 export async function adminGetAllChallenges() {
-   return get<RequestResult<Challenge[]>>(
+   return get<RequestResult<IntegralChallenge[]>>(
       ChallengeApi.ADMIN_GET_ALL_CHALLENGES
+   );
+}
+
+/**
+ * 管理员获取挑战详情
+ * @api /challenges/admin-detail/:challengeId
+ * @param challengeId 挑战 ID
+ * @returns 挑战详情
+ */
+export async function adminGetChallengeDetail(challengeId: string) {
+   return get<RequestResult<string>>(
+      `${ChallengeApi.ADMIN_GET_CHALLENGE_DETAIL}${challengeId}`
    );
 }

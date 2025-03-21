@@ -6,7 +6,21 @@ import { GET, MARKDOWN_SEQUENCE, POST } from './constants';
 import { notAdmin } from './utils/check.utils';
 
 // 生成 n 条挑战数据
-export function genChallenges(n = 10) {
+export function genChallenges(n = 10, integral = false) {
+   const extendPayload = integral
+      ? {
+           status: '@pick([0, 1, 2, 3])',
+           contentId: '@id',
+           flowdataId: '@id',
+           'standardAnswer|2': ['@cparagraph'],
+           'answerTemplate|2': ['@cparagraph'],
+           'screenshots|2': [
+              Random.image('100x100', Random.color(), Random.word(1)),
+           ],
+           'fastestSolvers|2': ['@id'],
+        }
+      : {};
+
    return mock({
       [`data|${n}`]: [
          {
@@ -16,10 +30,12 @@ export function genChallenges(n = 10) {
             score: '@integer(10, 100)',
             type: '@pick(["css", "javascript", "typescript"])',
             authorId: '@id',
+            totalSubmissions: '@integer(10, 1000)',
+            totalPass: '@integer(10, 1000)',
             'tags|2': [
                {
                   id: '@id',
-                  name: '@cname',
+                  name: '@pick(["CSS", "JavaScript", "TypeScript", "React", "Vue", "Angular"])',
                   description: '@cparagraph',
                   color: '@hex',
                   creatorId: '@id',
@@ -30,6 +46,7 @@ export function genChallenges(n = 10) {
             ],
             updatedAt: '@datetime',
             createdAt: '@datetime',
+            ...extendPayload,
          },
       ],
    }).data;
@@ -47,7 +64,7 @@ export default <MockMethod[]>[
       response: ({ headers }: any) =>
          notAdmin(headers)
             ? response('forbidden', null, 'Mock: 无权限')
-            : response('ok', genChallenges(), 'Mock: 获取成功'),
+            : response('ok', genChallenges(10, true), 'Mock: 获取成功'),
    },
    {
       url: ChallengeApi.GET_CHALLENGES_TOTAL_SCORE,
@@ -82,5 +99,13 @@ export default <MockMethod[]>[
       url: ChallengeApi.UPLOAD_ANSWER,
       method: POST,
       response: () => response('ok', [mock('@id')], 'Mock: 上传成功'),
+   },
+   {
+      url: ChallengeApi.ADMIN_GET_CHALLENGE_DETAIL,
+      method: GET,
+      response: ({ headers }: any) =>
+         notAdmin(headers)
+            ? response('forbidden', null, 'Mock: 无权限')
+            : response('ok', MARKDOWN_SEQUENCE, 'Mock: 获取成功'),
    },
 ];

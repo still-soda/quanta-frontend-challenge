@@ -35,7 +35,7 @@ mocks.forEach(({ method, url, response }) => {
    console.log(`[${method.toUpperCase().padStart(4, ' ')}] ${url}`);
    app[method](url, (req, res) => {
       console.log(
-         `[LOG] ${method.toUpperCase()} ${req.url} \t\t ${new Date().toLocaleString()}`
+         `[LOG] ${method.toUpperCase().padEnd(4, ' ')} ${req.url.padEnd(40, ' ')} ${new Date().toLocaleString()}`
       );
       res.json(response(req));
    });

@@ -55,7 +55,7 @@ export const CAPTCAH_SVG = `<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10
 /**
  * 默认头像SVG
  */
-export const AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231" fill="#F5F7FB"></svg>`;
+export const AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 231" fill="#FF9232"></svg>`;
 
 /**
  * 用户账号

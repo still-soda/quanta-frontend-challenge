@@ -35,7 +35,7 @@ export default <MockMethod[]>[
    {
       url: UserApi.GET_DEFAULT_AVATAR,
       method: GET,
-      response: () => response('ok', AVATAR_SVG, 'Mock: 获取成功'),
+      response: () => response('ok', { avatar: AVATAR_SVG }, 'Mock: 获取成功'),
    },
    {
       url: UserApi.GET_SELF,
