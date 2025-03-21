@@ -65,7 +65,7 @@ export default <MockMethod[]>[
    {
       url: SubmissionApi.GET_SUBMISSION_BY_ID,
       method: GET,
-      response: () => response('ok', genSubmission(1)[0], 'Mock: 获取成功'),
+      response: () => response('ok', genSubmission(1), 'Mock: 获取成功'),
    },
    {
       url: SubmissionApi.GET_SUBMIT_COUNT_OF_CHALLENGE,

@@ -45,17 +45,17 @@ export default <MockMethod[]>[
    {
       url: UserApi.GET_USER_BY_ID,
       method: GET,
-      response: () => response('ok', genUsers(1)[0], 'Mock: 获取成功'),
+      response: () => response('ok', genUsers(1), 'Mock: 获取成功'),
    },
    {
       url: UserApi.GET_USER_BY_USERNAME,
       method: GET,
-      response: () => response('ok', genUsers(1)[0], 'Mock: 获取成功'),
+      response: () => response('ok', genUsers(1), 'Mock: 获取成功'),
    },
    {
       url: UserApi.UPDATE_SELF,
       method: POST,
-      response: () => response('ok', genUsers(1, true)[0], 'Mock: 更新成功'),
+      response: () => response('ok', genUsers(1, true), 'Mock: 更新成功'),
    },
    {
       url: UserApi.UPLOAD_AVATAR,

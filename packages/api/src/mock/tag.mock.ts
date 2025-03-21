@@ -41,6 +41,6 @@ export default <MockMethod[]>[
    {
       url: TagApi.GET_TAG_BY_ID,
       method: GET,
-      response: () => response('ok', genTags(1)[0], 'Mock: 获取标签成功'),
+      response: () => response('ok', genTags(1), 'Mock: 获取标签成功'),
    },
 ];

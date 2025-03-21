@@ -75,7 +75,7 @@ export default <MockMethod[]>[
    {
       url: ChallengeApi.GET_CHALLENGE_BY_ID,
       method: GET,
-      response: () => response('ok', genChallenges(1)[0], 'Mock: 获取成功'),
+      response: () => response('ok', genChallenges(1), 'Mock: 获取成功'),
    },
    {
       url: ChallengeApi.GET_CHALLENGE_DETAIL,
@@ -107,5 +107,10 @@ export default <MockMethod[]>[
          notAdmin(headers)
             ? response('forbidden', null, 'Mock: 无权限')
             : response('ok', MARKDOWN_SEQUENCE, 'Mock: 获取成功'),
+   },
+   {
+      url: ChallengeApi.ADMIN_GET_CHALLENGE_BY_ID,
+      method: GET,
+      response: () => response('ok', genChallenges(1, true), 'Mock: 获取成功'),
    },
 ];

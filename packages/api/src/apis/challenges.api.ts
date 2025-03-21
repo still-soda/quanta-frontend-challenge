@@ -12,6 +12,7 @@ export enum ChallengeApi {
    GET_CHALLENGES_TOTAL_SCORE = '/challenges/total-score',
    ADMIN_GET_ALL_CHALLENGES = '/challenges/admin-find-all',
    ADMIN_GET_CHALLENGE_DETAIL = '/challenges/admin-detail/',
+   ADMIN_GET_CHALLENGE_BY_ID = '/challenges/admin-find-one',
 }
 
 /**
@@ -118,5 +119,18 @@ export async function adminGetAllChallenges() {
 export async function adminGetChallengeDetail(challengeId: string) {
    return get<RequestResult<string>>(
       `${ChallengeApi.ADMIN_GET_CHALLENGE_DETAIL}${challengeId}`
+   );
+}
+
+/**
+ * 管理员根据ID获取挑战详情
+ * @api /challenges/admin-find-one
+ * @param id 挑战 ID
+ * @returns 挑战详情
+ */
+export async function adminGetChallengeById(id: string) {
+   return get<RequestResult<IntegralChallenge>>(
+      ChallengeApi.ADMIN_GET_CHALLENGE_BY_ID,
+      { query: { id } }
    );
 }
