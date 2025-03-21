@@ -70,10 +70,7 @@ export class ChallengesController {
   @Get('/admin-find-all')
   async adminFindAll(@CurrentUser() user: UserData) {
     const result = await this.challengesService.adminFindAll(user);
-    const filteredResult = result.map((item) =>
-      filterData(UserGetChallengeDto, item),
-    );
-    return responseSuccess('ok', filteredResult, '获取成功');
+    return responseSuccess('ok', result, '获取成功');
   }
 
   /**
@@ -185,8 +182,7 @@ export class ChallengesController {
     @CurrentUser() user: UserData,
   ) {
     const result = await this.challengesService.switchStatus(body, user);
-    const filteredResult = filterData(UserGetChallengeDto, result);
-    return responseSuccess('ok', filteredResult, '切换成功');
+    return responseSuccess('ok', result, '切换成功');
   }
 
   /**
@@ -325,7 +321,7 @@ export class ChallengesController {
   }
 
   /**
-   * 获取用户作答结果。
+   * 根据ID查找挑战。
    * @param id 作答ID
    */
   @ChallengeDoc.forRoute('/find-one')

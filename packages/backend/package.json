@@ -89,7 +89,7 @@
       "ts"
     ],
     "moduleNameMapper": {
-      "@challenge/utils": "<rootDir>/../../../utils/index.ts"
+      "@challenge/utils": "<rootDir>/../../utils/index.ts"
     },
     "resolver": "jest-ts-webcompat-resolver",
     "rootDir": "src",

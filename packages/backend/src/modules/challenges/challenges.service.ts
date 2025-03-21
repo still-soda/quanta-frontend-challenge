@@ -115,12 +115,19 @@ export class ChallengesService {
   async adminFindAll(user: UserData) {
     if (user.role < ROLE.SUPER_ADMIN) {
       return await this.challengeModel.aggregate([
-        { $match: { authorId: user.id } },
+        {
+          $match: {
+            $or: [
+              { authorId: user.id },
+              { status: CHALLENGE_STATUS.PUBLISHED },
+            ],
+          },
+        },
         { $set },
         { $lookup },
       ]);
     }
-    return await this.challengeModel.aggregate([{ $lookup }]);
+    return await this.challengeModel.aggregate([{ $set }, { $lookup }]);
   }
 
   /**

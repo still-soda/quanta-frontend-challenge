@@ -124,7 +124,7 @@ export const ChallengeDoc = new ApiDocumentHelper({
         description: '切换成功',
         schema: responseSchema('ok', '切换成功', {
           type: 'array',
-          items: { type: 'object', properties: userGetChallengeProps },
+          items: { type: 'object', properties: adminGetChallengeProps },
         }),
       }),
       ApiResponse({
@@ -314,7 +314,7 @@ export const ChallengeDoc = new ApiDocumentHelper({
         description: '获取成功',
         schema: responseSchema('ok', '获取成功', {
           type: 'array',
-          items: { type: 'object', properties: userGetChallengeProps },
+          items: { type: 'object', properties: adminGetChallengeProps },
         }),
       }),
     ];

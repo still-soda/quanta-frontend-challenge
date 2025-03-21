@@ -67,8 +67,6 @@ describe('ChallengesController', () => {
   describe('adminFindAll', () => {
     it('应该正确调用 adminFindAll 方法并过滤结果', async () => {
       const data = [{}, {}];
-      mockFilterData.mockImplementation((_, item) => item);
-      mockFilterData.mockClear();
 
       const mockAdminFindAll = jest
         .spyOn(challengesService, 'adminFindAll')
@@ -82,7 +80,6 @@ describe('ChallengesController', () => {
         message: '获取成功',
       });
       expect(mockAdminFindAll).toHaveBeenCalledTimes(1);
-      expect(mockFilterData).toHaveBeenCalledTimes(2);
     });
   });
 
