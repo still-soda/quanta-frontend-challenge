@@ -22,7 +22,7 @@ export class AssetsController {
   @HttpCode(200)
   @Post('static-metadata')
   async getStaticFileMetadata(@Body('fileIdList') fileId: string[]) {
-    const result = await this.assetsService.getFileMataDataByIdList(fileId);
+    const result = await this.assetsService.getFileMatadataByIdList(fileId);
     const filterResult = filterData(GetFileMetaDto, result as any);
     return responseSuccess('ok', filterResult, '获取成功');
   }

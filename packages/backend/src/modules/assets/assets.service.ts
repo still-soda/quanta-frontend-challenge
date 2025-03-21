@@ -33,6 +33,19 @@ export class AssetsService {
   }
 
   /**
+   * 获取文件保存路径前缀
+   * @param time 时间
+   * @returns 文件
+   */
+  private getFilePrePath(time: string | Date) {
+    typeof time === 'string' && (time = new Date(time));
+    const year = time.getFullYear();
+    const month = time.getMonth() + 1;
+    const day = time.getDate();
+    return `/${year}/${month}/${day}`;
+  }
+
+  /**
    * 如果目录不存在的话创建目录
    * @param dir 目录路径
    */
@@ -91,9 +104,10 @@ export class AssetsService {
     }
 
     const fileName = convertNameToUuid(name);
+    const dirPath = this.FILE_ROOT + this.getFilePrePath(new Date());
     try {
-      await this.createDirectoryIfNotExists(this.FILE_ROOT);
-      fs.writeFileSync(`${this.FILE_ROOT}/${fileName}`, content);
+      await this.createDirectoryIfNotExists(dirPath);
+      fs.writeFileSync(`${dirPath}/${fileName}`, content);
       const { id } = await this.assetsModel.create({
         name: name,
         localName: fileName,
@@ -131,9 +145,10 @@ export class AssetsService {
     }
 
     const fileName = convertNameToUuid(name);
+    const dirPath = this.STATIC_ROOT + this.getFilePrePath(new Date());
     try {
-      await this.createDirectoryIfNotExists(this.STATIC_ROOT);
-      fs.writeFileSync(`${this.STATIC_ROOT}/${fileName}`, content);
+      await this.createDirectoryIfNotExists(dirPath);
+      fs.writeFileSync(`${dirPath}/${fileName}`, content);
       const { id } = await this.assetsModel.create({
         name: name,
         localName: fileName,
@@ -170,9 +185,10 @@ export class AssetsService {
       file instanceof Buffer
         ? file
         : new Uint8Array(await (file as File).arrayBuffer());
+    const dirPath = this.FILE_ROOT + this.getFilePrePath(new Date());
     try {
-      await this.createDirectoryIfNotExists(this.FILE_ROOT);
-      fs.writeFileSync(`${this.FILE_ROOT}/${fileName}`, buffer);
+      await this.createDirectoryIfNotExists(dirPath);
+      fs.writeFileSync(`${dirPath}/${fileName}`, buffer);
       const { id } = await this.assetsModel.create({
         localName: fileName,
         name: name,
@@ -210,9 +226,10 @@ export class AssetsService {
       file instanceof Buffer
         ? file
         : new Uint8Array(await (file as File).arrayBuffer());
+    const dirPath = this.STATIC_ROOT + this.getFilePrePath(new Date());
     try {
-      await this.createDirectoryIfNotExists(this.STATIC_ROOT);
-      fs.writeFileSync(`${this.STATIC_ROOT}/${fileName}`, buffer);
+      await this.createDirectoryIfNotExists(dirPath);
+      fs.writeFileSync(`${dirPath}/${fileName}`, buffer);
       const { id } = await this.assetsModel.create({
         localName: fileName,
         name: name,
@@ -260,8 +277,9 @@ export class AssetsService {
       return null;
     }
 
+    const dirPath = this.FILE_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
-      const buffer = fs.readFileSync(`${this.FILE_ROOT}/${fileName}`);
+      const buffer = fs.readFileSync(`${dirPath}/${fileName}`);
       return buffer;
     } catch (error) {
       console.error(error);
@@ -280,8 +298,9 @@ export class AssetsService {
       return null;
     }
 
+    const dirPath = this.FILE_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
-      const buffer = fs.readFileSync(`${this.FILE_ROOT}/${metadata.localName}`);
+      const buffer = fs.readFileSync(`${dirPath}/${metadata.localName}`);
       return buffer;
     } catch (error) {
       console.error(error);
@@ -300,8 +319,9 @@ export class AssetsService {
       return null;
     }
 
+    const dirPath = this.STATIC_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
-      const buffer = fs.readFileSync(`${this.STATIC_ROOT}/${fileName}`);
+      const buffer = fs.readFileSync(`${dirPath}/${fileName}`);
       return buffer;
     } catch (error) {
       console.error(error);
@@ -320,10 +340,9 @@ export class AssetsService {
       return null;
     }
 
+    const dirPath = this.STATIC_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
-      const buffer = fs.readFileSync(
-        `${this.STATIC_ROOT}/${metadata.localName}`,
-      );
+      const buffer = fs.readFileSync(`${dirPath}/${metadata.localName}`);
       return buffer;
     } catch (error) {
       console.error(error);
@@ -342,8 +361,9 @@ export class AssetsService {
       return '';
     }
 
+    const dirPath = this.FILE_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
-      const content = fs.readFileSync(`${this.FILE_ROOT}/${fileName}`, 'utf-8');
+      const content = fs.readFileSync(`${dirPath}/${fileName}`, 'utf-8');
       return content;
     } catch (error) {
       console.error(error);
@@ -362,9 +382,10 @@ export class AssetsService {
       return '';
     }
 
+    const dirPath = this.FILE_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
       const content = fs.readFileSync(
-        `${this.FILE_ROOT}/${metadata.localName}`,
+        `${dirPath}/${metadata.localName}`,
         'utf-8',
       );
       return content;
@@ -385,11 +406,9 @@ export class AssetsService {
       return '';
     }
 
+    const dirPath = this.STATIC_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
-      const content = fs.readFileSync(
-        `${this.STATIC_ROOT}/${fileName}`,
-        'utf-8',
-      );
+      const content = fs.readFileSync(`${dirPath}/${fileName}`, 'utf-8');
       return content;
     } catch (error) {
       console.error(error);
@@ -408,9 +427,10 @@ export class AssetsService {
       return '';
     }
 
+    const dirPath = this.STATIC_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
       const content = fs.readFileSync(
-        `${this.STATIC_ROOT}/${metadata.localName}`,
+        `${dirPath}/${metadata.localName}`,
         'utf-8',
       );
       return content;
@@ -431,9 +451,10 @@ export class AssetsService {
       return true;
     }
 
+    const dirPath = this.FILE_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
       await this.assetsModel.deleteOne({ _id: metadata._id });
-      fs.unlinkSync(`${this.FILE_ROOT}/${fileName}`);
+      fs.unlinkSync(`${dirPath}/${fileName}`);
       return true;
     } catch (error) {
       console.error(error);
@@ -452,9 +473,10 @@ export class AssetsService {
       return true;
     }
 
+    const dirPath = this.STATIC_ROOT + this.getFilePrePath(metadata.createdAt);
     try {
       await this.assetsModel.deleteOne({ _id: metadata._id });
-      fs.unlinkSync(`${this.STATIC_ROOT}/${fileName}`);
+      fs.unlinkSync(`${dirPath}/${fileName}`);
       return true;
     } catch (error) {
       console.error(error);
@@ -488,7 +510,7 @@ export class AssetsService {
    * @param idList 文件元数据 Id 列表
    * @returns 文件元数据列表
    */
-  async getFileMataDataByIdList(idList: string[]) {
+  async getFileMatadataByIdList(idList: string[]) {
     const promises = idList.map((id) => this.getFileMetadataById(id));
     return await Promise.all(promises);
   }
@@ -504,6 +526,7 @@ export class AssetsService {
       return '';
     }
 
-    return `${this.STATIC_URL}${metadata.localName}`;
+    const dirPath = this.STATIC_ROOT + this.getFilePrePath(metadata.createdAt);
+    return `${dirPath}${metadata.localName}`;
   }
 }
