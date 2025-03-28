@@ -12,7 +12,7 @@ import {
   ExpectTestpointFlowData,
   MoveMouseFlowData,
   ScreenShotTestpointFlowData,
-} from '../core/flow-data/index';
+} from '@challenge/core';
 import { uuidFileNameRegEndWith } from '../../../utils/testing.utils';
 import { AssetsModule } from '../../assets/assets.module';
 import { CHALLENGE_STATUS } from '../../../schemas/challenges.schema';

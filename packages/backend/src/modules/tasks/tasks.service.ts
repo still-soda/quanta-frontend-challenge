@@ -10,11 +10,11 @@ import { responseError } from '../../utils/http-response.utils';
 import { JudgementsService } from '../judgements/judgements.service';
 import { CounterService } from '../counter/counter.service';
 import { CachesService } from '../caches/caches.service';
-import { map, startWith, Subject, throttleTime } from 'rxjs';
+import { map, startWith, Subject } from 'rxjs';
 import { UserData } from '../../common/decorators/user.decorator';
 import { ROLE } from '../../common/decorators/auth.decorator';
 import { ConfigService } from '@nestjs/config';
-import { FlowData } from '../judgements/core/flow-data';
+import { FlowData } from '@challenge/core';
 
 export interface ExecuteTasksOptions {
   challengeId: string;

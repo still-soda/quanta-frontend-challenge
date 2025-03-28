@@ -7,9 +7,14 @@ import {
 import { Browser, chromium } from 'playwright';
 import { AssetsService } from '../assets/assets.service';
 import { ChallengesService } from '../challenges/challenges.service';
-import { explainOneFlowData, handleOneFlowData } from './core';
-import { dataValidators, FlowData, Validator } from './core/flow-data';
-import { HandlerOptions } from './core/flow-handlers/index.type';
+import {
+  explainOneFlowData,
+  handleOneFlowData,
+  dataValidators,
+  FlowData,
+  Validator,
+  HandlerOptions,
+} from '@challenge/core';
 import { FlowDataDto } from './dto/flow-data.dto';
 import { CHALLENGE_STATUS } from '../../schemas/challenges.schema';
 

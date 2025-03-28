@@ -1,4 +1,4 @@
-import { FlowData } from '../core/flow-data/flow-data.type';
+import { FlowData } from '@challenge/core';
 
 export class FlowDataDto {
   data: FlowData[];
