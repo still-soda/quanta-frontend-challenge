@@ -4,15 +4,15 @@
 /// @author still-soda
 
 import {
-  TestpointFlowData,
-  ScreenShotTestpointFlowData,
-  ExpectTestpointFlowData,
-  MouseFlowData,
-  TriggerFlowData,
+   TestpointFlowData,
+   ScreenShotTestpointFlowData,
+   ExpectTestpointFlowData,
+   MouseFlowData,
+   TriggerFlowData,
 } from '../flow-data';
 import {
-  MouseActionsDetail,
-  TriggerActionsDetail,
+   MouseActionsDetail,
+   TriggerActionsDetail,
 } from './actions/actions.handler';
 
 /**
@@ -22,32 +22,32 @@ import {
  * 需要携带 `testImgBuffer` 作为测试图片
  */
 export interface TestpointFlowDataHandlerOptions extends TestpointFlowData {
-  detail:
-    | (ScreenShotTestpointFlowData['detail'] & { testImgBuffer: Buffer })
-    | ExpectTestpointFlowData['detail'];
+   detail:
+      | (ScreenShotTestpointFlowData['detail'] & { testImgBuffer: Buffer })
+      | ExpectTestpointFlowData['detail'];
 }
 
 /**
  * 鼠标事件 handler-options
  */
 export interface MouseFlowDataHandlerOptions extends MouseFlowData {
-  detail: MouseActionsDetail;
+   detail: MouseActionsDetail;
 }
 
 /**
  * 触发器 handler-options
  */
 export interface TriggerFlowDataHandlerOptions extends TriggerFlowData {
-  detail: TriggerActionsDetail;
+   detail: TriggerActionsDetail;
 }
 
 /**
  * 所有 handler-options 类型
  */
 export type HandlerOptions =
-  | TestpointFlowDataHandlerOptions
-  | MouseFlowDataHandlerOptions
-  | TriggerFlowDataHandlerOptions;
+   | TestpointFlowDataHandlerOptions
+   | MouseFlowDataHandlerOptions
+   | TriggerFlowDataHandlerOptions;
 
 /**
  * 鼠标事件和触发事件等操作的结果
@@ -57,8 +57,8 @@ export type HandlerOptions =
  * - `generateImgBuffer`: 生成的图片 Buffer，仅在截图测试点操作中存在
  */
 export interface HandlingResult {
-  msg: string;
-  success: boolean;
-  score: number;
-  generateImgBuffer?: Buffer;
+   msg: string;
+   success: boolean;
+   score: number;
+   generateImgBuffer: Buffer | null;
 }

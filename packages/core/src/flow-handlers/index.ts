@@ -1,13 +1,13 @@
 import { Page } from 'playwright';
 import {
-  handleMouseAction,
-  handleTriggerAction,
+   handleMouseAction,
+   handleTriggerAction,
 } from './actions/actions.handler';
 import { HandlerOptions, HandlingResult } from './index.type';
 import {
-  handleExpectTestpointAction,
-  handleScreenShotTestpointAction,
-  handleScreenShotTestpointPreAction,
+   handleExpectTestpointAction,
+   handleScreenShotTestpointAction,
+   handleScreenShotTestpointPreAction,
 } from './testpoints/testpoints.handler';
 
 /**
@@ -19,12 +19,12 @@ import {
  * @returns 测试结果对象
  */
 function res(
-  success: boolean,
-  msg: string,
-  score: number,
-  generateImgBuffer: Buffer = null,
+   success: boolean,
+   msg: string,
+   score: number,
+   generateImgBuffer: Buffer | null = null
 ): HandlingResult {
-  return { success, msg, score, generateImgBuffer };
+   return { success, msg, score, generateImgBuffer };
 }
 
 /**
@@ -45,56 +45,56 @@ function res(
  * @param isPre 是否是预执行，默认为 `false`
  */
 export async function handleOneFlowData(
-  page: Page,
-  data: HandlerOptions,
-  isPre: boolean = false,
+   page: Page,
+   data: HandlerOptions,
+   isPre: boolean = false
 ): Promise<HandlingResult> {
-  if (data.type === 'mouse') {
-    try {
-      await handleMouseAction({ page, detail: data.detail });
-    } catch (error) {
-      return res(false, error.message, 0);
-    }
-    return res(true, 'ok', 0);
-  }
-
-  if (data.type === 'trigger') {
-    try {
-      await handleTriggerAction({ page, detail: data.detail });
-    } catch (error) {
-      return res(false, error.message, 0);
-    }
-    return res(true, 'ok', 0);
-  }
-
-  if (data.type === 'testpoint') {
-    if (data.detail.type === 'screenshot') {
+   if (data.type === 'mouse') {
       try {
-        const fn = isPre
-          ? handleScreenShotTestpointPreAction
-          : handleScreenShotTestpointAction;
-        const { testImgBuffer } = data.detail;
-        const { msg, score, generatedImgBuffer } = await fn({
-          page,
-          detail: data.detail,
-          testImgBuffer,
-        } as any);
-        return res(true, msg, score, generatedImgBuffer);
-      } catch (error) {
-        return res(false, error.message, 0);
+         await handleMouseAction({ page, detail: data.detail });
+      } catch (error: any) {
+         return res(false, error.message, 0);
       }
-    } else {
-      try {
-        const { msg, score } = await handleExpectTestpointAction({
-          page,
-          detail: data.detail,
-        });
-        return res(true, msg, score);
-      } catch (error) {
-        return res(false, error.message, 0);
-      }
-    }
-  }
+      return res(true, 'ok', 0);
+   }
 
-  return res(false, '未知的流程数据类型', 0);
+   if (data.type === 'trigger') {
+      try {
+         await handleTriggerAction({ page, detail: data.detail });
+      } catch (error: any) {
+         return res(false, error.message, 0);
+      }
+      return res(true, 'ok', 0);
+   }
+
+   if (data.type === 'testpoint') {
+      if (data.detail.type === 'screenshot') {
+         try {
+            const fn = isPre
+               ? handleScreenShotTestpointPreAction
+               : handleScreenShotTestpointAction;
+            const { testImgBuffer } = data.detail;
+            const { msg, score, generatedImgBuffer } = await fn({
+               page,
+               detail: data.detail,
+               testImgBuffer,
+            } as any);
+            return res(true, msg, score, generatedImgBuffer);
+         } catch (error: any) {
+            return res(false, error.message, 0);
+         }
+      } else {
+         try {
+            const { msg, score } = await handleExpectTestpointAction({
+               page,
+               detail: data.detail,
+            });
+            return res(true, msg, score);
+         } catch (error: any) {
+            return res(false, error.message, 0);
+         }
+      }
+   }
+
+   return res(false, '未知的流程数据类型', 0);
 }
