@@ -19,7 +19,7 @@ export function genNotifications(n = 10) {
    }).data;
 }
 
-export default <MockMethod[]>[
+export default [
    {
       url: NotificationApi.GET_ALL_PUBLISHED_NOTIFICATIONS,
       method: GET,
@@ -30,4 +30,4 @@ export default <MockMethod[]>[
       method: GET,
       response: () => response('ok', NOTIFICATION_CONTENT, 'Mock: 获取成功'),
    },
-];
+] satisfies MockMethod[];

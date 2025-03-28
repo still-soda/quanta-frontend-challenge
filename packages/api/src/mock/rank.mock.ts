@@ -18,7 +18,7 @@ export function genRanks(n = 10) {
    }).data;
 }
 
-export default <MockMethod[]>[
+export default [
    {
       url: RankApi.GET_MY_HISTORY_RANK,
       method: GET,
@@ -56,4 +56,4 @@ export default <MockMethod[]>[
             'Mock: 获取成功'
          ),
    },
-];
+] satisfies MockMethod[];

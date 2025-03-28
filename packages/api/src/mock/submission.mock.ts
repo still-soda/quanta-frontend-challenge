@@ -26,7 +26,7 @@ export function genSubmission(n = 10) {
    }).data;
 }
 
-export default <MockMethod[]>[
+export default [
    {
       url: SubmissionApi.GET_CHALLENGE_PASSED_RATE,
       method: GET,
@@ -73,4 +73,4 @@ export default <MockMethod[]>[
       response: () =>
          response('ok', { count: mock('@integer(1, 100)') }, 'Mock: 获取成功'),
    },
-];
+] satisfies MockMethod[];

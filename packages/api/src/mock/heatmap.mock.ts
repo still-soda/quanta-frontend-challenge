@@ -17,10 +17,10 @@ export function genHeatmap(n = 10) {
    }).data;
 }
 
-export default <MockMethod[]>[
+export default [
    {
       url: CommitHeatmapApi.GET_HEATMAP,
       method: GET,
       response: () => response('ok', genHeatmap(), 'Mock: 获取成功'),
    },
-];
+] satisfies MockMethod[];

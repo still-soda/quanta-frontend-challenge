@@ -52,7 +52,7 @@ export function genChallenges(n = 10, integral = false) {
    }).data;
 }
 
-export default <MockMethod[]>[
+export default [
    {
       url: ChallengeApi.GET_ALL_PUBLISHED_CHALLENGES,
       method: GET,
@@ -113,4 +113,4 @@ export default <MockMethod[]>[
       method: GET,
       response: () => response('ok', genChallenges(1, true), 'Mock: 获取成功'),
    },
-];
+] satisfies MockMethod[];

@@ -5,7 +5,7 @@ import { response } from './utils/response.utils';
 import { mock } from 'mockjs';
 import { checkRole } from './utils/check.utils';
 
-export default <MockMethod[]>[
+export default [
    {
       url: AuthApi.GET_CAPTCHA,
       method: POST,
@@ -48,4 +48,4 @@ export default <MockMethod[]>[
       method: POST,
       response: () => response('ok', null, 'Mock: 重置成功'),
    },
-];
+] satisfies MockMethod[];

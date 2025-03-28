@@ -17,7 +17,7 @@ export function genAssets(n = 1) {
    }).data;
 }
 
-export default <MockMethod[]>[
+export default [
    {
       url: AssetApi.GET_STATIC_FILE_METADATA,
       method: POST,
@@ -33,4 +33,4 @@ export default <MockMethod[]>[
          return response('ok', mock('@cparagraph'), 'Mock: 获取成功');
       },
    },
-];
+] satisfies MockMethod[];

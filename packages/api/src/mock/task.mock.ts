@@ -4,7 +4,7 @@ import { POST } from './constants';
 import { response } from './utils/response.utils';
 import { mock } from 'mockjs';
 
-export default <MockMethod[]>[
+export default [
    {
       url: TaskApi.LAUNCH_EXECUTE,
       method: POST,
@@ -20,4 +20,4 @@ export default <MockMethod[]>[
       method: POST,
       response: () => response('ok', '0', 'Mock: 订阅成功'),
    },
-];
+] satisfies MockMethod[];

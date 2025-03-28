@@ -20,7 +20,7 @@ export function genResolvedChallenge(n = 10) {
    }).data;
 }
 
-export default <MockMethod[]>[
+export default [
    {
       url: ResolvedChallengeApi.GET_EARLIEST_THREE_OF_CHALLENGE,
       method: GET,
@@ -31,4 +31,4 @@ export default <MockMethod[]>[
       method: GET,
       response: () => response('ok', genResolvedChallenge(3), 'Mock: 获取成功'),
    },
-];
+] satisfies MockMethod[];

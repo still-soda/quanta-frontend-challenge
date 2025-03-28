@@ -22,7 +22,7 @@ export function genTags(n = 10) {
    }).data;
 }
 
-export default <MockMethod[]>[
+export default [
    {
       url: TagApi.FIND_BY_IDS,
       method: GET,
@@ -43,4 +43,4 @@ export default <MockMethod[]>[
       method: GET,
       response: () => response('ok', genTags(1), 'Mock: 获取标签成功'),
    },
-];
+] satisfies MockMethod[];

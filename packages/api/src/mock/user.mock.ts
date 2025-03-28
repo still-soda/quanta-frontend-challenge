@@ -31,7 +31,7 @@ export function genUsers(n = 10, self = false) {
    }).data;
 }
 
-export default <MockMethod[]>[
+export default [
    {
       url: UserApi.GET_DEFAULT_AVATAR,
       method: GET,
@@ -62,4 +62,4 @@ export default <MockMethod[]>[
       method: POST,
       response: () => response('ok', undefined, 'Mock: 上传成功'),
    },
-];
+] satisfies MockMethod[];
