@@ -1,38 +1,38 @@
 import { FlowData } from '../flow-data.type';
 
 export interface MouseFlowData extends FlowData {
-  type: 'mouse';
-  detail: {
-    type: 'move' | 'click' | 'dbclick' | 'scroll';
-  };
+   type: 'mouse';
+   detail: {
+      type: 'move' | 'click' | 'dbclick' | 'scroll';
+   };
 }
 
 export interface MoveMouseFlowData extends MouseFlowData {
-  type: 'mouse';
-  detail: {
-    type: 'move';
-    x?: number;
-    y?: number;
-    selector?: string;
-  };
+   type: 'mouse';
+   detail: {
+      type: 'move';
+      x?: number;
+      y?: number;
+      selector?: string;
+   };
 }
 
 export interface ClickMouseFlowData extends MouseFlowData {
-  type: 'mouse';
-  detail: {
-    type: 'click' | 'dbclick';
-    button?: 'left' | 'right' | 'middle';
-    x?: number;
-    y?: number;
-    selector?: string;
-  };
+   type: 'mouse';
+   detail: {
+      type: 'click' | 'dbclick';
+      button?: 'left' | 'right' | 'middle';
+      x?: number;
+      y?: number;
+      selector?: string;
+   };
 }
 
 export interface ScrollMouseFlowData extends MouseFlowData {
-  type: 'mouse';
-  detail: {
-    type: 'scroll';
-    x?: number;
-    y?: number;
-  };
+   type: 'mouse';
+   detail: {
+      type: 'scroll';
+      x?: number;
+      y?: number;
+   };
 }
