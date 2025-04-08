@@ -23,5 +23,5 @@
          "@challenge/utils": ["../utils/index.ts"]
       }
    },
-   "include": ["src", "index.ts"]
+   "include": ["src", "_src", "index.ts", "_src/flow-node"]
 }
