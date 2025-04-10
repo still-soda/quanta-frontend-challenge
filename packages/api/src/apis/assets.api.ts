@@ -9,6 +9,7 @@ export enum AssetApi {
 
 /**
  * 获取静态文件元数据
+ * @api /assets/static-metadata
  * @param fileIdList 文件id列表
  */
 export async function getStaticFileMetadata(fileIdList: string[]) {
@@ -20,6 +21,7 @@ export async function getStaticFileMetadata(fileIdList: string[]) {
 
 /**
  * 管理员读取非静态文件
+ * @api /assets/read-one/:fileId
  * @param fileId 文件id
  */
 export async function adminReadFile(fileId: string) {
