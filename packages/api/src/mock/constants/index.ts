@@ -84,8 +84,55 @@ export enum Role {
    SUPER_ADMIN,
 }
 
+/**
+ * 提交信息
+ */
 export const SUBMISSION_MESSAGE = JSON.stringify({
    message: '[Mock测试点:100]: 这是一条虚假提交信息 :: ok',
    success: true,
    score: 100,
 });
+
+/**
+ * 流程数据
+ */
+export const FLOW_DATA = JSON.stringify([
+   {
+      type: 'testpoint',
+      detail: {
+         type: 'expect',
+         selector: '#output',
+         text: 'Not Clicked',
+         name: '#output 元素的文本应该是 Not Clicked',
+         score: 30,
+      },
+   },
+   {
+      type: 'mouse',
+      detail: {
+         type: 'click',
+         button: 'left',
+         selector: '#button',
+      },
+   },
+   {
+      type: 'testpoint',
+      detail: {
+         type: 'expect',
+         selector: '#output',
+         text: 'Clicked',
+         name: '#output 元素的文本应该是 Clicked',
+         score: 30,
+      },
+   },
+   {
+      type: 'testpoint',
+      detail: {
+         type: 'screenshot',
+         root: '#output',
+         threshold: 0.9,
+         name: '#output 元素的截图应该和参考图一致',
+         score: 40,
+      },
+   },
+]);

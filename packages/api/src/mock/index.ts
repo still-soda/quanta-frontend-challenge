@@ -31,7 +31,7 @@ const app = express();
 app.use(express.json());
 
 mocks.forEach(({ method, url, response }) => {
-   url.endsWith('/') && (url += ':id');
+   url.endsWith('/') && ((url as string) += ':id');
    console.log(`[${method.toUpperCase().padStart(4, ' ')}] ${url}`);
    app[method](url, (req, res) => {
       console.log(
