@@ -20,7 +20,8 @@
       "@challenge/utils": "workspace:^",
       "@types/node": "^22.13.14",
       "jimp": "^1.6.0",
-      "playwright": "^1.50.1"
+      "playwright": "^1.50.1",
+      "zod": "^3.24.2"
    },
    "jest": {
       "moduleFileExtensions": [
