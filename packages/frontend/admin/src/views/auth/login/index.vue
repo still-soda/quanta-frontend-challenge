@@ -48,7 +48,9 @@
             </FormItem>
 
             <FormItem>
-               <Button block size="large" type="submit">登录</Button>
+               <Button block size="large" type="submit" :loading="loading">
+                  登录
+               </Button>
             </FormItem>
          </Form>
       </Content>
@@ -57,6 +59,7 @@
 
 <script setup lang="ts">
 import { useMessage } from '@/hooks/use-message.hook';
+import { getSelf, login } from '@challenge/api';
 import {
    Form,
    FormItem,
@@ -67,8 +70,12 @@ import {
    Content,
 } from 'tdesign-vue-next';
 import { ref } from 'vue';
+import { useUserStore } from '@/stores/user.store';
+import { useRouter } from 'vue-router';
+import { AppRoute } from '@/routes/app.route';
 
 const message = useMessage();
+const router = useRouter();
 
 const showPassword = ref(false);
 const formData = ref({
@@ -76,7 +83,34 @@ const formData = ref({
    password: '',
 });
 
-const handleSubmit = () => {
-   message.success('登录成功', { duration: 3000 });
-};
+const loading = ref(false);
+
+async function handleSubmit() {
+   if (formData.value.username === '') {
+      message.error('请输入用户名', { duration: 3000 });
+      return;
+   }
+
+   if (formData.value.password === '') {
+      message.error('请输入密码', { duration: 3000 });
+      return;
+   }
+
+   try {
+      loading.value = true;
+      const result = await login(formData.value).then(getSelf);
+      const self = result.data;
+
+      if (self.role < 1) {
+         throw new Error('你没有权限登录后台！');
+      }
+      await useUserStore().updateUser(self);
+      message.success('登录成功', { duration: 3000 });
+
+      router.push(AppRoute.DASHBOARD);
+   } catch (error: any) {
+      message.error(error.message, { duration: 3000 });
+      loading.value = false;
+   }
+}
 </script>
