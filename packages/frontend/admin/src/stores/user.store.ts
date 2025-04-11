@@ -17,6 +17,7 @@ export const useUserStore = defineStore('user', {
       tryingChallenges: new Array<string>(),
       failedChallenges: new Array<string>(),
       avatar: DEFAULT_AVATAR,
+      role: 0,
    }),
    actions: {
       async updateUser(user: UserSelf) {
@@ -30,6 +31,7 @@ export const useUserStore = defineStore('user', {
          this.tryingChallenges = user.tryingTasks;
          this.failedChallenges = user.failedTasks;
          this.number = user.number;
+         this.role = user.role;
 
          if (user.avatar) {
             this.avatar = user.avatar;

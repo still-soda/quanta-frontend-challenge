@@ -3,8 +3,10 @@ export enum AppRoute {
    DASHBOARD = '/dashboard',
    // 挑战
    CHALLENGE_MANAGE = '/challenge/manage',
+   CHALLENGE_DETAIL = '/challenge/detail',
    CHALLENGE_SUBMIT = '/challenge/submit',
    CHALLENGE_PUBLISH = '/challenge/publish',
+   CHALLENGE_EDIT = '/challenge/edit',
    // 标签
    TAG_MANAGE = '/tag/manage',
    TAG_SEARCH = '/tag/search',
@@ -28,84 +30,94 @@ export const appRoutes = [
    // 仪表盘
    {
       path: AppRoute.DASHBOARD,
-      name: '/Dashboard',
+      name: 'Dashboard',
       component: () => import('@/views/app/dashboard/index.vue'),
    },
    // 挑战
    {
       path: AppRoute.CHALLENGE_MANAGE,
-      name: '/Challenge Manage',
+      name: 'Challenge Manage',
       component: () => import('@/views/app/challenge/manage/index.vue'),
    },
    {
-      path: AppRoute.CHALLENGE_SUBMIT,
-      name: '/Challenge Submit',
-      component: () => import('@/views/app/challenge/submit/index.vue'),
+      path: AppRoute.CHALLENGE_DETAIL,
+      name: 'Challenge Detail',
+      component: () => import('@/views/app/challenge/detail/index.vue'),
    },
    {
       path: AppRoute.CHALLENGE_PUBLISH,
-      name: '/Challenge Publish',
+      name: 'Challenge Publish',
       component: () => import('@/views/app/challenge/publish/index.vue'),
+   },
+   {
+      path: AppRoute.CHALLENGE_SUBMIT,
+      name: 'Challenge Submit',
+      component: () => import('@/views/app/challenge/submit/index.vue'),
+   },
+   {
+      path: AppRoute.CHALLENGE_EDIT,
+      name: 'Challenge Edit',
+      component: () => import('@/views/app/challenge/edit/index.vue'),
    },
    // // 标签
    // {
    //    path: AppRoute.TAG_MANAGE,
-   //    name: '/Tag Manage',
+   //    name: 'Tag Manage',
    //    component: () => import('@/views/app/tag/manage/index.vue'),
    // },
    // {
    //    path: AppRoute.TAG_SEARCH,
-   //    name: '/Tag Search',
+   //    name: 'Tag Search',
    //    component: () => import('@/views/app/tag/search/index.vue'),
    // },
    // // 公告
    // {
    //    path: AppRoute.NOTIFICATION_MANAGE,
-   //    name: '/Notification Manage',
+   //    name: 'Notification Manage',
    //    component: () => import('@/views/app/notification/manage/index.vue'),
    // },
    // {
    //    path: AppRoute.NOTIFICATION_VIEW_DATA,
-   //    name: '/Notification View Data',
+   //    name: 'Notification View Data',
    //    component: () => import('@/views/app/notification/view-data/index.vue'),
    // },
    // {
    //    path: AppRoute.NOTIFICATION_PUBLISH,
-   //    name: '/Notification Publish',
+   //    name: 'Notification Publish',
    //    component: () => import('@/views/app/notification/publish/index.vue'),
    // },
    // // 用户
    // {
    //    path: AppRoute.USER_MANAGE,
-   //    name: '/User Manage',
+   //    name: 'User Manage',
    //    component: () => import('@/views/app/user/manage/index.vue'),
    // },
    // {
    //    path: AppRoute.USER_ACTION,
-   //    name: '/User Action',
+   //    name: 'User Action',
    //    component: () => import('@/views/app/user/action/index.vue'),
    // },
    // {
    //    path: AppRoute.USER_RESPONSE,
-   //    name: '/User Response',
+   //    name: 'User Response',
    //    component: () => import('@/views/app/user/response/index.vue'),
    // },
    // // 得分排名
    // {
    //    path: AppRoute.RANK,
-   //    name: '/Rank',
+   //    name: 'Rank',
    //    component: () => import('@/views/app/rank/index.vue'),
    // },
    // // 访问数据
    // {
    //    path: AppRoute.BROWSE,
-   //    name: '/Browse',
+   //    name: 'Browse',
    //    component: () => import('@/views/app/browse/index.vue'),
    // },
    // // 作答情况
    // {
    //    path: AppRoute.RESPONSE,
-   //    name: '/Response',
+   //    name: 'Response',
    //    component: () => import('@/views/app/response/index.vue'),
    // },
 ];
