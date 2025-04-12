@@ -16,7 +16,11 @@ export const useChallengeFlow = () => {
    const message = useMessage();
 
    async function updateChallengeFlow(flowdataId?: string) {
-      if (!customFlowRef.value || !flowdataId) return;
+      if (!customFlowRef.value) return;
+      if (!flowdataId) {
+         customFlowRef.value.updateFlowData('[]');
+         return;
+      }
       try {
          const res = await adminReadFile(flowdataId);
          const { data } = res;
