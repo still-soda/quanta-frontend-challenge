@@ -1,11 +1,11 @@
 import { useVueFlow } from '@vue-flow/core';
-import { nextTick, watchEffect } from 'vue';
+import { watchEffect } from 'vue';
 
 export const useLayout = () => {
    const { nodes, fitView } = useVueFlow();
 
-   function layout(options?: { gap?: number }) {
-      watchEffect(() => {
+   function layout(options?: { gap?: number; once?: boolean }) {
+      const stop = watchEffect(() => {
          if (!nodes.value.length || nodes.value[0].dimensions.width === 0) {
             return;
          }
@@ -17,7 +17,9 @@ export const useLayout = () => {
             currentX += node.dimensions.width + gap;
          });
          fitView();
+         options?.once && stop();
       });
+      return stop;
    }
 
    return { layout };

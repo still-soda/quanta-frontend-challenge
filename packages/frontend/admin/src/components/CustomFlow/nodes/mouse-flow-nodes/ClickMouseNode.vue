@@ -85,7 +85,8 @@ watchEffect(() => {
    data.x = node.data.detail.x;
    data.y = node.data.detail.y;
    data.selector = node.data.detail.selector;
-   kind.value = node.data.detail.selector ? 'selector' : 'point';
+   kind.value =
+      typeof node.data.detail.selector === 'string' ? 'selector' : 'point';
    type.value = node.data.detail.type as 'click' | 'dbclick';
 });
 
@@ -107,7 +108,7 @@ watchEffect(() => {
       node.data.detail = {
          type: type.value,
          button: data.button,
-         selector: data.selector,
+         selector: data.selector ?? '',
       };
    }
 });

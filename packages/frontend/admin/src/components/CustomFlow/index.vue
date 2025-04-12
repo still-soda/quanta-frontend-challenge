@@ -22,6 +22,7 @@ import { nextTick, provide, ref, watchEffect } from 'vue';
 import { CUSTOM_FLOW_NODES } from './nodes';
 import { useFlowBuilder } from './hooks/use-flow-builder.hook';
 import { useLayout } from './hooks/use-layout.hook';
+import { FlowData } from '@challenge/core';
 
 defineOptions({
    name: 'CustomFlow',
@@ -32,7 +33,7 @@ const edges = ref<Edge[]>([]);
 const { buildFlowData, destructureFlowData } = useFlowBuilder();
 
 // 更新生成结果
-const flowData = defineModel('flowData');
+const flowData = defineModel<FlowData[]>('flowData');
 watchEffect(() => {
    try {
       const result = buildFlowData(nodes.value, edges.value);
@@ -56,14 +57,14 @@ const { layout } = useLayout();
 
 // 暴露更新方法
 const updateFlowData = (flowdataStr: string) => {
-   console.log('updateFlowData', flowdataStr);
    try {
       const flowdata = JSON.parse(flowdataStr);
       const result = destructureFlowData(flowdata);
       nodes.value = result.nodes;
       edges.value = result.edges;
       nextTick(() => {
-         layout();
+         const stop = layout();
+         setTimeout(stop, 100);
       });
    } catch (error) {
       console.error('Invalid flow data format');

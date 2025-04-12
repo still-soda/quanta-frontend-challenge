@@ -38,5 +38,3 @@ defineProps<{
 
 const readonly = !!inject<boolean>('readonly');
 </script>
-
-<style scoped></style>
