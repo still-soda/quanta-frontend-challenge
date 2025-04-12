@@ -16,6 +16,7 @@
          "@/*": ["src/*"],
          "@challenge/utils": ["../../utils"],
          "@challenge/api": ["../../api/src/apis/index.ts"],
+         "@challenge/api/utils": ["../../api/src/utils/index.ts"],
          "@challenge/api/models": ["../../api/src/models/index.ts"]
       },
       "jsx": "preserve",

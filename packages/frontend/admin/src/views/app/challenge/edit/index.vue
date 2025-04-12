@@ -1,6 +1,22 @@
 <template>
    <div class="flex flex-col gap-4">
       <div class="card">
+         <TRow class="justify-between w-full">
+            <TButton shape="square" theme="default" @click="handleBack">
+               <template #icon>
+                  <TIcon name="chevron-left" />
+               </template>
+            </TButton>
+            <TButton theme="primary" @click="handleSave" :loading="saving">
+               <template #icon>
+                  <TIcon name="save" />
+               </template>
+               保存
+            </TButton>
+         </TRow>
+      </div>
+
+      <div class="card">
          <TDescriptions
             title="挑战详情"
             class="w-full"
@@ -42,8 +58,38 @@
                   :options="label.options"
                   :disabled="label.readonly" />
             </TDescriptionsItem>
+
+            <TDescriptionsItem label="挑战介绍" :span="2">
+               <MdEditor v-model="detail" no-mermaid />
+            </TDescriptionsItem>
+
+            <TDescriptionsItem label="挑战图片" :span="2">
+               <TUpload
+                  v-model="files"
+                  placeholder="最多只能上传 3 张图片"
+                  theme="file-flow"
+                  accept="image/*"
+                  multiple
+                  :max="3"
+                  show-thumbnail></TUpload>
+            </TDescriptionsItem>
+
+            <TDescriptionsItem label="判题流程" :span="2">
+               <div class="h-[28rem]">
+                  <CustomFlow :ref="FLOW_KEY" v-model:flow-data="flowdata" />
+               </div>
+            </TDescriptionsItem>
          </TDescriptions>
       </div>
+
+      <!-- <TCard :bordered="false">
+         <div class="-mt-3">
+            <TTypographyTitle level="h5">判题流程</TTypographyTitle>
+         </div>
+         <div class="h-[34rem]">
+            <CustomFlow :ref="FLOW_KEY" v-model:flow-data="flowdata" />
+         </div>
+      </TCard> -->
    </div>
 </template>
 
@@ -52,12 +98,25 @@ import { useMessage } from '@/hooks/use-message.hook';
 import { resolveDoc } from '@/utils/resolve-doc.utils';
 import { adminGetChallengeById, adminGetChallengeDetail } from '@challenge/api';
 import { IntegralChallenge } from '@challenge/api/models';
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { MdEditor } from 'md-editor-v3';
+import CustomFlow from '@/components/CustomFlow/index.vue';
+import EMPTY_INTEGRAL_CHALLENGE from './empty-integral-challenge';
+import { challengeInfoLabels } from './challenge-info-labels';
+import 'md-editor-v3/lib/style.css';
+import { useChallengeFlow } from '../composabals/use-challenge-flow';
+import { FlowData } from '@challenge/core';
 
 const route = useRoute();
 const router = useRouter();
 const message = useMessage();
+
+// 文件
+const files = ref<File[]>([]);
+
+// 挑战内容
+const detail = ref('Loading...');
 
 // 拦截获取 Challenge ID
 const challengeId = route.query.id as string;
@@ -66,90 +125,17 @@ if (typeof challengeId !== 'string') {
    router.push('/challenge/manage');
 }
 
+// 挑战信息标签
+const labels = challengeInfoLabels;
+
+// use 更新流程数据
+const { updateChallengeFlow, FLOW_KEY } = useChallengeFlow();
+const flowdata = ref<FlowData[]>([]);
+
 // 获取 Challenge 详情
 const challengeDetail = ref('');
 const challengeImages = ref<string[]>([]);
-const challenge = ref<IntegralChallenge>({
-   id: '',
-   title: '',
-   createdAt: '',
-   updatedAt: '',
-   status: 0,
-   answerTemplate: [],
-   authorId: '',
-   contentId: '',
-   difficulty: '',
-   fastestSolvers: [],
-   score: 0,
-   screenshots: [],
-   tags: [],
-   standardAnswer: [],
-   totalPass: 0,
-   totalSubmissions: 0,
-   type: '',
-});
-
-interface Labels {
-   [key: string]:
-      | {
-           title: string;
-           type: 'text' | 'number' | 'raw';
-           readonly?: boolean;
-        }
-      | {
-           title: string;
-           type: 'select' | 'pick';
-           options: { label: string; value: string }[];
-           readonly?: boolean;
-        };
-}
-const labels: Labels = {
-   id: {
-      title: '挑战 ID',
-      type: 'raw',
-      readonly: true,
-   },
-   createdAt: {
-      title: '创建时间',
-      type: 'raw',
-      readonly: true,
-   },
-   title: {
-      title: '挑战标题',
-      type: 'text',
-   },
-   difficulty: {
-      title: '难度',
-      type: 'select',
-      options: [
-         { label: '简单', value: 'easy' },
-         { label: '中等', value: 'medium' },
-         { label: '困难', value: 'hard' },
-      ],
-   },
-   score: {
-      title: '分数',
-      type: 'number',
-   },
-   type: {
-      title: '类型',
-      type: 'text',
-   },
-   tags: {
-      title: '标签',
-      type: 'pick',
-      options: [
-         { label: 'Web', value: 'web' },
-         { label: 'Crypto', value: 'crypto' },
-         { label: 'Pwn', value: 'pwn' },
-         { label: 'Reversing', value: 'reversing' },
-         { label: 'Misc', value: 'misc' },
-         { label: 'Forensics', value: 'forensics' },
-         { label: 'OSINT', value: 'osint' },
-         { label: 'Steganography', value: 'steganography' },
-      ],
-   },
-};
+const challenge = ref<IntegralChallenge>(EMPTY_INTEGRAL_CHALLENGE);
 
 updateChallengeDetail();
 async function updateChallengeDetail() {
@@ -166,17 +152,40 @@ async function updateChallengeDetail() {
          .toLocaleString()
          .split('/')
          .join('-');
+      updateChallengeFlow(challenge.value.flowdataId);
       (challenge.value as any).tags = challenge.value.tags.map((tag) => {
          return tag.name;
       });
+      // 更新默认 detail 值
+      if (detail.value === 'Loading...') {
+         detail.value = challengeDetail.value;
+      }
    } catch (error) {
       message.error('获取 Challenge 详情失败');
       handleBack();
    }
 }
 
+// 更新总得分
+watchEffect(() => {
+   challenge.value.score = flowdata.value.reduce((acc, cur: any) => {
+      return acc + (cur.detail.score || 0);
+   }, 0);
+});
+
 // 返回挑战管理页面
 const handleBack = () => {
    router.push('/challenge/manage');
+};
+
+// 保存挑战
+const saving = ref(false);
+const handleSave = async () => {
+   if (saving.value) return;
+   saving.value = true;
+   setTimeout(() => {
+      message.success('保存成功');
+      saving.value = false;
+   }, 1000);
 };
 </script>

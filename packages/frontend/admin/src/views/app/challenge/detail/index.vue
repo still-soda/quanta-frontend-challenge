@@ -101,9 +101,7 @@
                </div>
             </TDescriptionsItem>
             <TDescriptionsItem label="挑战描述" :span="2">
-               <div class="rounded-inside border-gray-200">
-                  <pre class="text-wrap">{{ challengeDetail }}</pre>
-               </div>
+               <MdEditor v-model="challengeDetail" no-mermaid read-only />
             </TDescriptionsItem>
             <TDescriptionsItem label="挑战图片">
                <TSpace>
@@ -122,7 +120,7 @@
             <TTypographyTitle level="h5">判题流程</TTypographyTitle>
          </div>
          <div class="h-[34rem]">
-            <CustomFlow ref="flow" readonly />
+            <CustomFlow :ref="FLOW_KEY" readonly />
          </div>
       </TCard>
    </TSpace>
@@ -130,25 +128,25 @@
 
 <script setup lang="tsx">
 import { useMessage } from '@/hooks/use-message.hook';
-import { IntegralChallenge, User } from '@challenge/api/models';
+import { IntegralChallenge } from '@challenge/api/models';
 import TagComponent from '@/components/Tag/index.vue';
-import {
-   adminGetChallengeById,
-   adminGetChallengeDetail,
-   adminReadFile,
-   getDefaultAvatar,
-   getUserById,
-} from '@challenge/api';
-import { computed, ref, useTemplateRef } from 'vue';
+import { adminGetChallengeById, adminGetChallengeDetail } from '@challenge/api';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
    STATUS_COLOR_MAPPING,
    STATUS_TEXT_MAPPING,
    TAG_TEXT_MAPPING,
 } from '@/constant/tags.constant';
-import { resolveDoc, svgToBase64 } from '@challenge/utils';
+import { resolveDoc } from '@challenge/utils';
 import { UserIcon } from 'tdesign-icons-vue-next';
 import CustomFlow from '@/components/CustomFlow/index.vue';
+import { MdEditor } from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
+import { useChallengeFlow } from '../composabals/use-challenge-flow';
+import { useAuthor } from '../composabals/use-author';
+import { useFastestSolvers } from '../composabals/use-fastest-solvers';
+import { challengeInfoLayout } from './challenge-info-layout';
 
 const icon = () => <UserIcon />;
 
@@ -156,27 +154,8 @@ const router = useRouter();
 const route = useRoute();
 const message = useMessage();
 
-interface Layout {
-   title: string;
-   key: keyof IntegralChallenge | 'passRate' | 'author';
-}
-
-const layout: Layout[] = [
-   { title: '挑战名称', key: 'title' },
-   { title: '挑战ID', key: 'id' },
-   { title: '作者名称', key: 'author' },
-   { title: '作者ID', key: 'authorId' },
-   { title: '挑战难度', key: 'difficulty' },
-   { title: '挑战类型', key: 'type' },
-   { title: '挑战状态', key: 'status' },
-   { title: '挑战分数', key: 'score' },
-   { title: '挑战标签', key: 'tags' },
-   { title: '创建时间', key: 'createdAt' },
-   { title: '总提交', key: 'totalSubmissions' },
-   { title: '通过人数', key: 'totalPass' },
-   { title: '最快解决者', key: 'fastestSolvers' },
-   { title: '提交通过率', key: 'passRate' },
-];
+// 挑战信息布局
+const layout = challengeInfoLayout;
 
 // 拦截获取 Challenge ID
 const challengeId = route.query.id as string;
@@ -184,6 +163,13 @@ if (typeof challengeId !== 'string') {
    message.error('未知 Challenge ID');
    router.push('/challenge/manage');
 }
+
+// 在获取 Challenge 详情后调用
+const { updateAuthor, author } = useAuthor();
+const { updateFastestSolvers, fastestSolvers } = useFastestSolvers();
+
+// use 更新流程数据
+const { updateChallengeFlow, FLOW_KEY } = useChallengeFlow();
 
 // 获取 Challenge 详情
 const challengeDetail = ref('');
@@ -216,56 +202,6 @@ async function updateChallengeDetail() {
    }
 }
 
-// 获取作者信息，在获取 Challenge 详情后调用
-const author = ref<User>();
-async function updateAuthor(authorId: string) {
-   try {
-      const res = await getUserById(authorId);
-      res.data.avatar =
-         res.data.avatar ??
-         svgToBase64((await getDefaultAvatar(authorId)).data.avatar);
-      author.value = res.data;
-   } catch (error) {
-      message.error('获取作者信息失败');
-   }
-}
-
-// 获取最快解决者信息，在获取 Challenge 详情后调用
-const fastestSolvers = ref<User[]>([]);
-async function updateFastestSolvers(resolverIds: string[]) {
-   try {
-      const res = await Promise.all(resolverIds.map((id) => getUserById(id)));
-      const datas = res.map((item) => item.data);
-      const avatarPromises = datas
-         .filter((item) => !item.avatar)
-         .map(async (item) => {
-            return getDefaultAvatar(item.id).then((res) => {
-               item.avatar = svgToBase64(res.data.avatar);
-            });
-         });
-      await Promise.all(avatarPromises);
-      fastestSolvers.value = datas;
-      console.log(fastestSolvers.value);
-   } catch (error) {
-      message.error('获取最快解决者失败');
-   }
-}
-
-// 更新流程数据
-const customFlowRef = useTemplateRef<InstanceType<typeof CustomFlow>>('flow');
-async function updateChallengeFlow(flowdataId?: string) {
-   if (!customFlowRef.value || !flowdataId) return;
-   try {
-      const res = await adminReadFile(flowdataId);
-      const { data } = res;
-      if (data) {
-         customFlowRef.value.updateFlowData(data);
-      }
-   } catch (error) {
-      message.error('获取挑战流程失败');
-   }
-}
-
 // 计算通过率
 const passRate = computed(() =>
    parseFloat(
@@ -282,9 +218,3 @@ const handleBack = () => {
    router.push('/challenge/manage');
 };
 </script>
-
-<style lang="css" scoped>
-@import '@vue-flow/core/dist/style.css';
-@import '@vue-flow/core/dist/theme-default.css';
-@import '@vue-flow/controls/dist/style.css';
-</style>
