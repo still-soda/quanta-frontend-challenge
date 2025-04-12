@@ -242,9 +242,9 @@ export const ChallengeDoc = new ApiDocumentHelper({
   '/admin-detail/:id': () => {
     return [
       ApiOperation({
-        summary: '获取挑战详情',
+        summary: '管理员获取挑战内容（详情）',
         description:
-          '管理员获取挑战详情，需要管理员及以上的权限，超级管理员可以获取所有详情',
+          '管理员获取挑战内容，需要管理员及以上的权限，超级管理员可以获取所有内容',
       }),
       ApiNeedAuth({ level: ROLE.ADMIN }),
       ApiResponse({
@@ -278,8 +278,8 @@ export const ChallengeDoc = new ApiDocumentHelper({
   '/detail/:id': () => {
     return [
       ApiOperation({
-        summary: '获取挑战详情',
-        description: '用户获取挑战详情',
+        summary: '用户获取挑战内容（详情）',
+        description: '用户获取挑战内容（详情）',
       }),
       ApiResponse({
         status: HttpStatus.OK,
@@ -537,7 +537,11 @@ export const ChallengeDoc = new ApiDocumentHelper({
       ApiResponse({
         status: HttpStatus.OK,
         description: '上传成功',
-        schema: responseSchema('ok', '上传成功'),
+        schema: responseSchema('ok', '上传成功', {
+          type: 'string',
+          example: '/static/example.png',
+          description: '上传成功后返回的图片地址',
+        } as any),
       }),
     ];
   },
